@@ -1,5 +1,6 @@
 // CONFIG START //////////////////////////////////////////////////////////////
-// If you edit these values be sure to add to the version number in resources.
+// If you edit these values and don't use custom updater...
+// add to the version number in your lovelace resources after editing.
 
 let swipe_amount = 15 // Percent of screen to swipe.
 
