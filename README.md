@@ -37,7 +37,7 @@ resources:
 
 3. Run the service `custom_updater.check_all` or click the "CHECK" button if you use the tracker-card.
 
-4. That's it, nothing to configure and no card to add.
-
 4. Refresh the page.
+
+5. That's it, nothing to configure and no card to add.
 
