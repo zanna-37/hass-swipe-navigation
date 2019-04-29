@@ -14,4 +14,4 @@ resources:
   - url: /local/lovelace-swipe-navigation/lovelace-swipe-navigation.js?v=1.0.0
     type: js
 ```
-3. That's it, nothing to configure and no cards to add.
+3. That's it, nothing to configure and no card to add.
