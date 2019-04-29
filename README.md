@@ -11,7 +11,7 @@ Original idea & [project](https://github.com/themoffatt/lovelace-swiper) by [@th
 ```yaml
 resources:
   # increase this version number at end of URL after each update
-  - url: /local/lovelace-swipe-navigation/lovelace-swipe-navigation.js?v=1.0.0
+  - url: /local/lovelace-swipe-navigation.js?v=1.0.0
     type: js
 ```
 3. That's it, nothing to configure and no card to add.
