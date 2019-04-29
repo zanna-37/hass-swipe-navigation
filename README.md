@@ -5,7 +5,7 @@ Original idea & [project](https://github.com/themoffatt/lovelace-swiper) by [@th
 
 ## Installation
 
-1. Copy `lovelace-swipe-navigation.js` in to `/www/lovelace-swipe-navigation/`
+1. Copy `lovelace-swipe-navigation.js` into your `/www/` folder.
 
 2. Add the resource in `ui-lovelace.yaml` or by using the "Raw Config Editor".
 ```yaml
