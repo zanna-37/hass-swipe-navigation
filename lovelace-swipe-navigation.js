@@ -5,7 +5,7 @@ document.addEventListener("touchend", handleTouchEnd, false);
 const tabContainer = getTabContainer();
 const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 const touchEnd = new Event("touchend");
-let activeTabIndex, xDown, yDown, xDiff, yDiff;
+let activeTabIndex, xDown, yDown, xDiff, yDiff, swipe;
 
 function handleTouchStart(evt) {
   activeTabIndex = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
