@@ -1,8 +1,6 @@
 // CONFIG START //////////////////////////////////////////////////////////////
-// If you edit these values and don't use custom updater...
-// add to the version number in your lovelace resources after editing.
 
-let swipe_amount = 15 // Percent of screen to swipe.
+let swipe_amount = 15 // Percent of screen to swipe. Default 15.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
@@ -12,7 +10,7 @@ document.addEventListener("touchend", handleTouchEnd, false);
 
 const tabContainer = getTabContainer();
 const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
-let activeTabIndex, xDown, yDown, xDiff, yDiff, swipe;
+let activeTabIndex, xDown, yDown, xDiff, yDiff;
 swipe_amount /= Math.pow(10, 2);
 
 function handleTouchStart(evt) {
