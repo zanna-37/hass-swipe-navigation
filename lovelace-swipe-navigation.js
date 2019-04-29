@@ -1,3 +1,10 @@
+// CONFIG START //////////////////////////////////////////////////////////////
+// If you edit these values be sure to add to the version number in resources.
+
+let swipe_amount = 15 // Percent of screen to swipe.
+
+// CONFIG END ////////////////////////////////////////////////////////////////
+
 document.addEventListener("touchstart", handleTouchStart, false);
 document.addEventListener("touchmove", handleTouchMove, false);
 document.addEventListener("touchend", handleTouchEnd, false);
@@ -5,6 +12,7 @@ document.addEventListener("touchend", handleTouchEnd, false);
 const tabContainer = getTabContainer();
 const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 let activeTabIndex, xDown, yDown, xDiff, yDiff, swipe;
+swipe_amount /= Math.pow(10, 2);
 
 function handleTouchStart(evt) {
   activeTabIndex = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
@@ -15,9 +23,9 @@ function handleTouchStart(evt) {
 }
 
 function handleTouchEnd(evt) {
-  if (xDiff > Math.abs(screen.width / 5)) {
+  if (xDiff > Math.abs(screen.width * swipe_amount)) {
     activeTabIndex == tabs.length - 1 ? click(0) : click(activeTabIndex + 1);
-  } else if (xDiff < -Math.abs(screen.width / 5)) {
+  } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
     activeTabIndex == 0 ? click(tabs.length - 1) : click(activeTabIndex - 1);
   }
 }
