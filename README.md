@@ -36,8 +36,8 @@ resources:
 
 4. Refresh the page.
 
-# Tweaks:
-It's not necessary to adjust any of the settings, but if you'd like to:<br><br>
-* At the top of the `lovelace-swipe-navigation.js` file there is a "config" section where you can play with some of the options (currently there is only one for swipe length).
+# Config:
+It's not necessary to adjust any of the settings, but if you'd like to:<br>
+* At the top of the `lovelace-swipe-navigation.js` file there is a "config" section where you can play with some of the options.
 * If you installed with the manual option you will need to add to the version number in your Lovelace resources after editing the file.
 * Refresh page after editing.
