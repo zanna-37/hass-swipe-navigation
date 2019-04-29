@@ -20,9 +20,6 @@ resources:
 
 3. Refresh the page.
 
-4. That's it, nothing to configure and no card to add.
-
-
 ### Installation and tracking with custom_updater:
 
 1. Make sure the [custom_updater](https://github.com/custom-components/custom_updater) component is installed and working.
@@ -38,8 +35,6 @@ resources:
 3. Run the service `custom_updater.check_all` or click the "CHECK" button if you use the tracker-card.
 
 4. Refresh the page.
-
-5. That's it, nothing to configure and no card to add.
 
 # Tweaks:
 It's not necessary to adjust any of the settings, but if you'd like to:<br><br>
