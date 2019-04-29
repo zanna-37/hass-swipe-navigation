@@ -10,22 +10,22 @@ function handleTouchStart(evt) {
   activeTabIndex = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
   xDown = evt.touches[0].clientX;
   yDown = evt.touches[0].clientY;
-  swipe = false;
+  xDiff = null;
+  yDiff = null;
 }
 
 function handleTouchEnd(evt) {
-  if (xDiff > 5 && swipe) {
+  if (xDiff > Math.abs(screen.width / 5)) {
     activeTabIndex == tabs.length - 1 ? click(0) : click(activeTabIndex + 1);
-  } else if (xDiff < -5 && swipe) {
+  } else if (xDiff < -Math.abs(screen.width / 5)) {
     activeTabIndex == 0 ? click(tabs.length - 1) : click(activeTabIndex - 1);
   }
 }
 
 function handleTouchMove(evt) {
-  if (xDown && yDown && !swipe) {
+  if (xDown && yDown) {
     xDiff = xDown - evt.touches[0].clientX;
     yDiff = yDown - evt.touches[0].clientY;
-    swipe = Math.abs(xDiff) > Math.abs(yDiff) ? true : false;
   }
 }
 
