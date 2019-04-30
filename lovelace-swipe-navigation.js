@@ -9,31 +9,23 @@ document.addEventListener("touchstart", handleTouchStart, false);
 document.addEventListener("touchmove", handleTouchMove, false);
 document.addEventListener("touchend", handleTouchEnd, false);
 
+let activeTab, xDown, yDown, xDiff, yDiff, tabs, firstTab, lastTab;
 const tabContainer = getTabContainer();
-let activeTabIndex, xDown, yDown, xDiff, yDiff, tabs;
 swipe_amount /= Math.pow(10, 2);
 
 function handleTouchStart(evt) {
-  if (!tabs) {
-    // Create array of visible tabs so we don't swipe to one hidden by CCH.
-    tabs = Array.from(
-      tabContainer.querySelectorAll("paper-tab:not([style*='display: none'])")
-    );
-  }
-  activeTabIndex = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
   xDown = evt.touches[0].clientX;
   yDown = evt.touches[0].clientY;
   xDiff = null;
   yDiff = null;
+  getTabs();
 }
 
-function handleTouchEnd(evt) {
+function handleTouchEnd() {
   if (xDiff > Math.abs(screen.width * swipe_amount)) {
-    let wrapAround = wrap ? click(0) : false;
-    activeTabIndex == tabs.length - 1 ? wrapAround : click(activeTabIndex + 1);
+    activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
-    wrapAround = wrap ? click(tabs.length - 1) : false;
-    activeTabIndex == 0 ? wrapAround : click(activeTabIndex - 1);
+    activeTab == 0 ? click(lastTab) : click(activeTab - 1);
   }
 }
 
@@ -66,6 +58,17 @@ function getTabContainer() {
   } catch (e) {
     console.log("Can't find 'paper-tabs' element.");
   }
+}
+
+function getTabs() {
+  if (!tabs) {
+    tabs = Array.from(
+      tabContainer.querySelectorAll("paper-tab:not([style*='display: none'])")
+    );
+    firstTab = wrap ? 0 : null;
+    lastTab = wrap ? tabs.length - 1 : null;
+  }
+  activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
 }
 
 function simulateClick(elem) {
