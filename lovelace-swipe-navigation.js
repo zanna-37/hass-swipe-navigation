@@ -16,11 +16,21 @@ let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
 let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
 function handleTouchStart(evt) {
+  evt.path.forEach(function(element) {
+    if (element.nodeName == "SWIPE-CARD") return;
+  });
   xDown = evt.touches[0].clientX;
   yDown = evt.touches[0].clientY;
   xDiff = null;
   yDiff = null;
   getTabs();
+}
+
+function handleTouchMove(evt) {
+  if (xDown && yDown) {
+    xDiff = xDown - evt.touches[0].clientX;
+    yDiff = yDown - evt.touches[0].clientY;
+  }
 }
 
 function handleTouchEnd() {
@@ -30,13 +40,8 @@ function handleTouchEnd() {
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
     activeTab == 0 ? click(lastTab) : click(activeTab - 1);
   }
-}
-
-function handleTouchMove(evt) {
-  if (xDown && yDown) {
-    xDiff = xDown - evt.touches[0].clientX;
-    yDiff = yDown - evt.touches[0].clientY;
-  }
+  xDown = null;
+  yDown = null;
 }
 
 function getTabContainer() {
