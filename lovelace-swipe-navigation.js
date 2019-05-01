@@ -1,6 +1,7 @@
 // CONFIG START //////////////////////////////////////////////////////////////
 
 let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
+let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
 let wrap = true; // Wrap around first and last tabs. Set as false to disable.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
@@ -9,9 +10,10 @@ document.addEventListener("touchstart", handleTouchStart, false);
 document.addEventListener("touchmove", handleTouchMove, false);
 document.addEventListener("touchend", handleTouchEnd, false);
 
-let activeTab, xDown, yDown, xDiff, yDiff, tabs, firstTab, lastTab;
-const tabContainer = getTabContainer();
 swipe_amount /= Math.pow(10, 2);
+const tabContainer = getTabContainer();
+let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
+let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
 function handleTouchStart(evt) {
   xDown = evt.touches[0].clientX;
@@ -22,6 +24,7 @@ function handleTouchStart(evt) {
 }
 
 function handleTouchEnd() {
+  if (activeTab < 0) return;
   if (xDiff > Math.abs(screen.width * swipe_amount)) {
     activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
@@ -61,10 +64,13 @@ function getTabContainer() {
 }
 
 function getTabs() {
-  if (!tabs) {
-    tabs = Array.from(
-      tabContainer.querySelectorAll("paper-tab:not([style*='display: none'])")
-    );
+  if (!lastTab) {
+    tabs = tabs.filter(el => {
+      return (
+        !skip_tabs.includes(tabs.indexOf(el)) &&
+        getComputedStyle(el, null).display != "none"
+      );
+    });
     firstTab = wrap ? 0 : null;
     lastTab = wrap ? tabs.length - 1 : null;
   }
