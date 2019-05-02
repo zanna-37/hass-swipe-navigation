@@ -37,13 +37,16 @@ function handleTouchMove(evt) {
 }
 
 function handleTouchEnd() {
-  if (activeTab < 0) return;
+  if (activeTab < 0 || Math.abs(xDiff) < Math.abs(yDiff)) {
+    xDiff = yDiff = null;
+    return;
+  }
   if (xDiff > Math.abs(screen.width * swipe_amount)) {
     activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
     activeTab == 0 ? click(lastTab) : click(activeTab - 1);
   }
-  xDown = yDown = xDiff = yDiff = null;
+  xDiff = yDiff = null;
 }
 
 function getAppLayout() {
