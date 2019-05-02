@@ -29,16 +29,18 @@ function handleTouchStart(event) {
 }
 
 function handleTouchMove(event) {
-  xDiff = xDown - event.touches[0].clientX;
-  yDiff = yDown - event.touches[0].clientY;
-  if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) {
-    event.preventDefault();
+  if (xDown && yDown) {
+    xDiff = xDown - event.touches[0].clientX;
+    yDiff = yDown - event.touches[0].clientY;
+    if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) {
+      event.preventDefault();
+    }
   }
 }
 
 function handleTouchEnd() {
   if (activeTab < 0 || Math.abs(xDiff) < Math.abs(yDiff)) {
-    xDiff = yDiff = null;
+    xDown = yDown = xDiff = yDiff = null;
     return;
   }
   if (xDiff > Math.abs(screen.width * swipe_amount)) {
@@ -46,7 +48,7 @@ function handleTouchEnd() {
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
     activeTab == 0 ? click(lastTab) : click(activeTab - 1);
   }
-  xDiff = yDiff = null;
+  xDown = yDown = xDiff = yDiff = null;
 }
 
 function findAppLayout() {
