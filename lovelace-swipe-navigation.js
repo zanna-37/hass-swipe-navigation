@@ -3,7 +3,7 @@
 let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
 let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
 let wrap = true; // Wrap around first and last tabs. Set as false to disable.
-let prevent_default = false // Prevent browsers swipe for back/forward.
+let prevent_default = false // Prevent browsers swipe action for back/forward.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,8 @@ function handleTouchStart(evt) {
   }
   xDown = evt.touches[0].clientX;
   yDown = evt.touches[0].clientY;
-  filterTabs();
+  if (!lastTab) filterTabs();
+  activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
 }
 
 function handleTouchMove(evt) {
@@ -70,17 +71,14 @@ function getAppLayout() {
 }
 
 function filterTabs() {
-  if (!lastTab) {
-    tabs = tabs.filter(el => {
-      return (
-        !skip_tabs.includes(tabs.indexOf(el)) &&
-        getComputedStyle(el, null).display != "none"
-      );
-    });
-    firstTab = wrap ? 0 : null;
-    lastTab = wrap ? tabs.length - 1 : null;
-  }
-  activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+  tabs = tabs.filter(el => {
+    return (
+      !skip_tabs.includes(tabs.indexOf(el)) &&
+      getComputedStyle(el, null).display != "none"
+    );
+  });
+  firstTab = wrap ? 0 : null;
+  lastTab = wrap ? tabs.length - 1 : null;
 }
 
 function simulateClick(elem) {
