@@ -3,6 +3,7 @@
 let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
 let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
 let wrap = true; // Wrap around first and last tabs. Set as false to disable.
+let prevent_default = false // Prevent browsers swipe for back/forward.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
@@ -12,9 +13,9 @@ const tabContainer = appLayout.querySelector("paper-tabs");
 let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
 let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
-appLayout.addEventListener("touchstart", handleTouchStart, false);
-appLayout.addEventListener("touchmove", handleTouchMove, false);
-appLayout.addEventListener("touchend", handleTouchEnd, false);
+appLayout.addEventListener("touchstart", handleTouchStart, {passive: true});
+appLayout.addEventListener("touchmove", handleTouchMove, {passive: false});
+appLayout.addEventListener("touchend", handleTouchEnd, {passive: true});
 
 function handleTouchStart(evt) {
   for (let element of evt.path) {
@@ -27,9 +28,10 @@ function handleTouchStart(evt) {
 }
 
 function handleTouchMove(evt) {
-  if (xDown && yDown) {
-    xDiff = xDown - evt.touches[0].clientX;
-    yDiff = yDown - evt.touches[0].clientY;
+  xDiff = xDown - evt.touches[0].clientX;
+  yDiff = yDown - evt.touches[0].clientY;
+  if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) {
+    evt.preventDefault();
   }
 }
 
