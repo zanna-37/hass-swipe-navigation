@@ -8,7 +8,7 @@ let prevent_default = false // Prevent browsers swipe action for back/forward.
 // CONFIG END ////////////////////////////////////////////////////////////////
 
 swipe_amount /= Math.pow(10, 2);
-const appLayout = getAppLayout();
+const appLayout = findAppLayout();
 const tabContainer = appLayout.querySelector("paper-tabs");
 let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
 let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
@@ -17,22 +17,22 @@ appLayout.addEventListener("touchstart", handleTouchStart, {passive: true});
 appLayout.addEventListener("touchmove", handleTouchMove, {passive: false});
 appLayout.addEventListener("touchend", handleTouchEnd, {passive: true});
 
-function handleTouchStart(evt) {
-  for (let element of evt.path) {
+function handleTouchStart(event) {
+  for (let element of event.path) {
     if (element.nodeName == "SWIPE-CARD") return;
     else if (element.nodeName == "HUI-VIEW") break;
   }
-  xDown = evt.touches[0].clientX;
-  yDown = evt.touches[0].clientY;
+  xDown = event.touches[0].clientX;
+  yDown = event.touches[0].clientY;
   if (!lastTab) filterTabs();
   activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
 }
 
-function handleTouchMove(evt) {
-  xDiff = xDown - evt.touches[0].clientX;
-  yDiff = yDown - evt.touches[0].clientY;
+function handleTouchMove(event) {
+  xDiff = xDown - event.touches[0].clientX;
+  yDiff = yDown - event.touches[0].clientY;
   if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) {
-    evt.preventDefault();
+    event.preventDefault();
   }
 }
 
@@ -49,7 +49,7 @@ function handleTouchEnd() {
   xDiff = yDiff = null;
 }
 
-function getAppLayout() {
+function findAppLayout() {
   try {
     let panelResolver = document
       .querySelector("home-assistant")
@@ -74,21 +74,21 @@ function getAppLayout() {
 }
 
 function filterTabs() {
-  tabs = tabs.filter(el => {
+  tabs = tabs.filter(element => {
     return (
-      !skip_tabs.includes(tabs.indexOf(el)) &&
-      getComputedStyle(el, null).display != "none"
+      !skip_tabs.includes(tabs.indexOf(element)) &&
+      getComputedStyle(element, null).display != "none"
     );
   });
   firstTab = wrap ? 0 : null;
   lastTab = wrap ? tabs.length - 1 : null;
 }
 
-function simulateClick(elem) {
-  const evt = new MouseEvent("click", { bubbles: false, cancelable: true });
-  const canceled = !elem.dispatchEvent(evt);
+function simulateClick(element) {
+  const event = new MouseEvent("click", { bubbles: false, cancelable: true });
+  const canceled = !element.dispatchEvent(event);
 }
 
-function click(tabIndex) {
-  simulateClick(tabs[tabIndex]);
+function click(index) {
+  simulateClick(tabs[index]);
 }
