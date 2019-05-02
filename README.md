@@ -43,7 +43,7 @@ Until I impliment a better solution config is reset after each update.
 * Refresh page after editing.
 
 **Current config options:**<br>
-* swipe_amount: The minimum percent of screen needed to be swiped in order to navigate. Any number between 1-100.
+* swipe_amount: Minimum percent of screen needed to be swiped in order to navigate. Any number between 1-100.
 * skip_tabs: A comma seperated list of views to skip when swiping. Surround in brackets. e.g., `[1,3,5]`.
 * wrap: Wrap from first tab to last tab and vice versa. Can be `true` or `false`.
 * prevent_default: Prevents browsers default horizontal swipe actions. Can be `true` or `false`.
