@@ -6,24 +6,24 @@ let wrap = true; // Wrap around first and last tabs. Set as false to disable.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
-document.addEventListener("touchstart", handleTouchStart, false);
-document.addEventListener("touchmove", handleTouchMove, false);
-document.addEventListener("touchend", handleTouchEnd, false);
-
 swipe_amount /= Math.pow(10, 2);
-const tabContainer = getTabContainer();
+const appLayout = getAppLayout();
+const tabContainer = appLayout.querySelector("paper-tabs");
 let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
 let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
+appLayout.addEventListener("touchstart", handleTouchStart, false);
+appLayout.addEventListener("touchmove", handleTouchMove, false);
+appLayout.addEventListener("touchend", handleTouchEnd, false);
+
 function handleTouchStart(evt) {
-  evt.path.forEach(function(element) {
+  for (let element of evt.path) {
     if (element.nodeName == "SWIPE-CARD") return;
-  });
+    else if (element.nodeName == "HUI-VIEW") break;
+  }
   xDown = evt.touches[0].clientX;
   yDown = evt.touches[0].clientY;
-  xDiff = null;
-  yDiff = null;
-  getTabs();
+  filterTabs();
 }
 
 function handleTouchMove(evt) {
@@ -40,11 +40,10 @@ function handleTouchEnd() {
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
     activeTab == 0 ? click(lastTab) : click(activeTab - 1);
   }
-  xDown = null;
-  yDown = null;
+  xDown = yDown = xDiff = yDiff = null;
 }
 
-function getTabContainer() {
+function getAppLayout() {
   try {
     let panelResolver = document
       .querySelector("home-assistant")
@@ -54,21 +53,21 @@ function getTabContainer() {
       return panelResolver.shadowRoot
         .querySelector("ha-panel-lovelace")
         .shadowRoot.querySelector("hui-root")
-        .shadowRoot.querySelector("ha-app-layout paper-tabs");
+        .shadowRoot.querySelector("ha-app-layout");
     } else {
       return document
         .querySelector("home-assistant")
         .shadowRoot.querySelector("home-assistant-main")
         .shadowRoot.querySelector("ha-panel-lovelace")
         .shadowRoot.querySelector("hui-root")
-        .shadowRoot.querySelector("ha-app-layout paper-tabs");
+        .shadowRoot.querySelector("ha-app-layout");
     }
   } catch (e) {
-    console.log("Can't find 'paper-tabs' element.");
+    console.log("Can't find 'ha-app-layout'.");
   }
 }
 
-function getTabs() {
+function filterTabs() {
   if (!lastTab) {
     tabs = tabs.filter(el => {
       return (
