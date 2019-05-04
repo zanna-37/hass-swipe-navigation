@@ -18,14 +18,16 @@ appLayout.addEventListener("touchmove", handleTouchMove, {passive: false});
 appLayout.addEventListener("touchend", handleTouchEnd, {passive: true});
 
 function handleTouchStart(event) {
-  for (let element of event.path) {
-    if (element.nodeName == "SWIPE-CARD") return;
-    else if (element.nodeName == "HUI-VIEW") break;
+  if (typeof event.path == "object") {
+    for (let element of event.path) {
+      if (element.nodeName == "SWIPE-CARD") return;
+      else if (element.nodeName == "HUI-VIEW") break;
+    }
+    xDown = event.touches[0].clientX;
+    yDown = event.touches[0].clientY;
+    if (!lastTab) filterTabs();
+    activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
-  xDown = event.touches[0].clientX;
-  yDown = event.touches[0].clientY;
-  if (!lastTab) filterTabs();
-  activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
 }
 
 function handleTouchMove(event) {
