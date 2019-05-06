@@ -1,7 +1,7 @@
 {
     "lovelace-swipe-navigation": {
-      "updated_at": "2019-05-02",
-      "version": "1.0.7",
+      "updated_at": "2019-05-06",
+      "version": "1.0.9",
       "remote_location": "https://raw.githubusercontent.com/maykar/lovelace-swipe-navigation/master/lovelace-swipe-navigation.js",
       "visit_repo": "https://github.com/maykar/lovelace-swipe-navigation",
       "changelog": "https://github.com/maykar/lovelace-swipe-navigation/releases/latest"
