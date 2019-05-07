@@ -1,5 +1,6 @@
 // CONFIG START //////////////////////////////////////////////////////////////
 
+let animate = true; // Enable/disable swipe animations.
 let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
 let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
 let wrap = true; // Wrap around first and last tabs. Set as false to disable.
@@ -9,8 +10,9 @@ let prevent_default = false; // Prevent browsers swipe action for back/forward.
 
 swipe_amount /= Math.pow(10, 2);
 const appLayout = findAppLayout();
+const view = appLayout.querySelector('[id="view"]');
 const tabContainer = appLayout.querySelector("paper-tabs");
-let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
+let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
 appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
@@ -46,8 +48,10 @@ function handleTouchEnd() {
     return;
   }
   if (xDiff > Math.abs(screen.width * swipe_amount)) {
+    left = false;
     activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
+    left = true;
     activeTab == 0 ? click(lastTab) : click(activeTab - 1);
   }
   xDown = yDown = xDiff = yDiff = null;
@@ -89,7 +93,25 @@ function filterTabs() {
 }
 
 function click(index) {
-  tabs[index].dispatchEvent(
-    new MouseEvent("click", { bubbles: false, cancelable: true })
-  );
+  if (!animate) {
+    tabs[index].dispatchEvent(
+      new MouseEvent("click", { bubbles: false, cancelable: true })
+    );
+  } else {
+    let _in = left ? `${screen.width}px` : `-${screen.width}px`;
+    let _out = left ? `-${screen.width}px` : `${screen.width}px`;
+    view.style.transitionDuration = "100ms"
+    view.style.transform = `translate3d(${_in}, 0px, 0px)`
+    setTimeout(function(){
+      tabs[index].dispatchEvent(
+        new MouseEvent("click", { bubbles: false, cancelable: true })
+      );
+      view.style.transitionDuration = "0ms";
+      view.style.transform = `translate3d(${_out}, 0px, 0px)`
+    }, 100);
+    setTimeout(function(){
+      view.style.transitionDuration = "100ms"
+      view.style.transform = "translate3d(0px, 0px, 0px)"
+    },150);
+  }
 }
