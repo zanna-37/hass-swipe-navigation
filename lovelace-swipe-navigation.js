@@ -1,6 +1,6 @@
 // CONFIG START //////////////////////////////////////////////////////////////
 
-let animate = true; // Enable/disable swipe animations.
+let animate = false; // Enable/disable swipe animations.
 let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
 let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
 let wrap = true; // Wrap around first and last tabs. Set as false to disable.
