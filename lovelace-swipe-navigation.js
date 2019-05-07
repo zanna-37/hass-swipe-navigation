@@ -3,7 +3,7 @@
 let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
 let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
 let wrap = true; // Wrap around first and last tabs. Set as false to disable.
-let prevent_default = false // Prevent browsers swipe action for back/forward.
+let prevent_default = false; // Prevent browsers swipe action for back/forward.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
@@ -13,9 +13,9 @@ const tabContainer = appLayout.querySelector("paper-tabs");
 let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
 let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
-appLayout.addEventListener("touchstart", handleTouchStart, {passive: true});
-appLayout.addEventListener("touchmove", handleTouchMove, {passive: false});
-appLayout.addEventListener("touchend", handleTouchEnd, {passive: true});
+appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
+appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
+appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
 
 function handleTouchStart(event) {
   if (typeof event.path == "object") {
@@ -88,11 +88,8 @@ function filterTabs() {
   lastTab = wrap ? tabs.length - 1 : null;
 }
 
-function simulateClick(element) {
-  const event = new MouseEvent("click", { bubbles: false, cancelable: true });
-  const canceled = !element.dispatchEvent(event);
-}
-
 function click(index) {
-  simulateClick(tabs[index]);
+  tabs[index].dispatchEvent(
+    new MouseEvent("click", { bubbles: false, cancelable: true })
+  );
 }
