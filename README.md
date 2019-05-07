@@ -4,6 +4,7 @@ Original idea by [@themoffatt](https://github.com/themoffatt) <br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
 
 # Features:
+* Animated swiping through views.
 * Configure views to skip over.
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
@@ -51,6 +52,7 @@ Until I impliment a better solution config is reset after each update.
 * Refresh page after editing.
 
 **Current config options:**<br>
+* animate: Toggle swipe animations. Can be `true` or `false`.
 * swipe_amount: Minimum percent of screen needed to be swiped in order to navigate. Any number between 1-100.
 * skip_tabs: A comma seperated list of views to skip when swiping. Surround in brackets. e.g., `[1,3,5]`.
 * wrap: Wrap from first tab to last tab and vice versa. Can be `true` or `false`.
