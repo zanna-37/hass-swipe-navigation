@@ -9,7 +9,7 @@ let prevent_default = false; // Prevent browsers swipe action for back/forward.
 // These options may not work as expected. ///////////////////////////////////
 
 let animate = "none"; // Can be: none, swipe, fade, or flip. Must be in quotes.
-// In betwen each transition your theme's background-color will be shown.
+// In between each transition your theme's background-color will be shown.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
