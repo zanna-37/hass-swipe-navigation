@@ -8,7 +8,7 @@ let prevent_default = false; // Prevent browsers swipe action for back/forward.
 // EXPERIMENTAL OPTIONS //////////////////////////////////////////////////////
 // These options may not work as expected. ///////////////////////////////////
 
-let animate = "none"; // Can be: none, swipe, fade, or flip. Must be in quotes.
+let animate = "none"; // none, swipe, fade, or flip. Must be in quotes.
 // In between each transition your theme's background-color will be shown.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
@@ -99,59 +99,59 @@ function filterTabs() {
 
 function click(index) {
   if (animate == "swipe") {
-    let _in = left ? `${screen.width/1.5}px` : `-${screen.width/1.5}px`;
-    let _out = left ? `-${screen.width/1.5}px` : `${screen.width/1.5}px`;
-    view.style.transitionDuration = "200ms"
-    view.style.opacity = 0
-    view.style.transform = `translate3d(${_in}, 0px, 0px)`
-    view.style.transition = "transform 0.20s, opacity 0.18s"
-    setTimeout(function(){
+    let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+    let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
+    view.style.transitionDuration = "200ms";
+    view.style.opacity = 0;
+    view.style.transform = `translate3d(${_in}, 0px, 0px)`;
+    view.style.transition = "transform 0.20s, opacity 0.18s";
+    setTimeout(function() {
       tabs[index].dispatchEvent(
         new MouseEvent("click", { bubbles: false, cancelable: true })
       );
       view.style.transitionDuration = "0ms";
-      view.style.transform = `translate3d(${_out}, 0px, 0px)`
-      view.style.transition = "transform 0s"
+      view.style.transform = `translate3d(${_out}, 0px, 0px)`;
+      view.style.transition = "transform 0s";
     }, 210);
-    setTimeout(function(){
-      view.style.transitionDuration = "200ms"
-      view.style.opacity = 1
-      view.style.transform = `translate3d(0px, 0px, 0px)`
-      view.style.transition = "transform 0.20s, opacity 0.18s"
-    },250);
+    setTimeout(function() {
+      view.style.transitionDuration = "200ms";
+      view.style.opacity = 1;
+      view.style.transform = `translate3d(0px, 0px, 0px)`;
+      view.style.transition = "transform 0.20s, opacity 0.18s";
+    }, 250);
   } else if (animate == "fade") {
-    view.style.transitionDuration = "200ms"
-    view.style.transition = "opacity 0.20s"
-    view.style.opacity = 0
-    setTimeout(function(){
+    view.style.transitionDuration = "200ms";
+    view.style.transition = "opacity 0.20s";
+    view.style.opacity = 0;
+    setTimeout(function() {
       tabs[index].dispatchEvent(
         new MouseEvent("click", { bubbles: false, cancelable: true })
       );
       view.style.transitionDuration = "0ms";
-      view.style.opacity = 0
-      view.style.transition = "opacity 0s"
+      view.style.opacity = 0;
+      view.style.transition = "opacity 0s";
     }, 210);
-    setTimeout(function(){
-      view.style.transitionDuration = "200ms"
-      view.style.transition = "opacity 0.20s"
-      view.style.opacity = 1
-    },250);
+    setTimeout(function() {
+      view.style.transitionDuration = "200ms";
+      view.style.transition = "opacity 0.20s";
+      view.style.opacity = 1;
+    }, 250);
   } else if (animate == "flip") {
-    view.style.transitionDuration = "200ms"
-    view.style.transform = "rotatey(90deg)"
-    view.style.transition = "transform 0.20s, opacity 0.20s"
-    view.style.opacity = 0.25
-    setTimeout(function(){
+    view.style.transitionDuration = "200ms";
+    view.style.transform = "rotatey(90deg)";
+    view.style.transition = "transform 0.20s, opacity 0.20s";
+    view.style.opacity = 0.25;
+    setTimeout(function() {
       tabs[index].dispatchEvent(
         new MouseEvent("click", { bubbles: false, cancelable: true })
       );
     }, 210);
-    setTimeout(function(){
-      view.style.transitionDuration = "200ms"
-      view.style.transform = "rotatey(0deg)"
-      view.style.transition = "transform 0.20s, opacity 0.20s"
-      view.style.opacity = 1
-    },250);
+    setTimeout(function() {
+      view.style.transitionDuration = "200ms";
+      view.style.transform = "rotatey(0deg)";
+      view.style.transition = "transform 0.20s, opacity 0.20s";
+      view.style.opacity = 1;
+    }, 250);
   } else {
     tabs[index].dispatchEvent(
       new MouseEvent("click", { bubbles: false, cancelable: true })
