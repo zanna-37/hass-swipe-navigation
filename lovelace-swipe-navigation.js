@@ -28,6 +28,7 @@ function handleTouchStart(event) {
   if (typeof event.path == "object") {
     for (let element of event.path) {
       if (element.nodeName == "SWIPE-CARD") return;
+      else if (element.nodeName == "APP-HEADER") return;
       else if (element.nodeName == "HUI-VIEW") break;
     }
   }
