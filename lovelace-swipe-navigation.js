@@ -9,7 +9,6 @@ let prevent_default = false; // Prevent browsers swipe action for back/forward.
 // These options may not work as expected. ///////////////////////////////////
 
 let animate = "none"; // none, swipe, fade, or flip. Must be in quotes.
-// In between each transition your theme's background-color will be shown.
 
 // CONFIG END ////////////////////////////////////////////////////////////////
 
@@ -99,6 +98,12 @@ function filterTabs() {
 }
 
 function click(index) {
+  if (
+    (activeTab == 0 && !wrap && left) ||
+    (activeTab == tabs.length - 1 && !wrap && !left)
+  ) {
+    return;
+  }
   if (animate == "swipe") {
     let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
     let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
