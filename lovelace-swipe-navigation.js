@@ -24,11 +24,11 @@ appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
 appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
 
 function handleTouchStart(event) {
+  let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD"];
   if (typeof event.path == "object") {
     for (let element of event.path) {
-      if (element.nodeName == "SWIPE-CARD") return;
-      else if (element.nodeName == "APP-HEADER") return;
-      else if (element.nodeName == "HUI-VIEW") break;
+      if (element.nodeName == "HUI-VIEW") break;
+      else if (ignored.indexOf(element.nodeName) > -1) return;
     }
   }
   xDown = event.touches[0].clientX;
@@ -109,20 +109,20 @@ function click(index) {
     let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
     view.style.transitionDuration = "200ms";
     view.style.opacity = 0;
-    view.style.transform = `translate3d(${_in}, 0px, 0px)`;
+    view.style.transform = `translate(${_in}, 0)`;
     view.style.transition = "transform 0.20s, opacity 0.18s";
     setTimeout(function() {
       tabs[index].dispatchEvent(
         new MouseEvent("click", { bubbles: false, cancelable: true })
       );
       view.style.transitionDuration = "0ms";
-      view.style.transform = `translate3d(${_out}, 0px, 0px)`;
+      view.style.transform = `translate(${_out}, 0)`;
       view.style.transition = "transform 0s";
     }, 210);
     setTimeout(function() {
       view.style.transitionDuration = "200ms";
       view.style.opacity = 1;
-      view.style.transform = `translate3d(0px, 0px, 0px)`;
+      view.style.transform = `translate(0px, 0)`;
       view.style.transition = "transform 0.20s, opacity 0.18s";
     }, 250);
   } else if (animate == "fade") {
