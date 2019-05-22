@@ -16,14 +16,14 @@ Original idea by [@themoffatt](https://github.com/themoffatt) <br><br>
 Follow only one of these installation methods.
 
 ### Manual installation:
-1. Copy `lovelace-swipe-navigation.js` into `/www/lovelace-swipe-navigation/`
+1. Copy `swipe-navigation.js` into `/www/lovelace-swipe-navigation/`
 
 2. Add the resource in `ui-lovelace.yaml` or by using the "Raw Config Editor".
 
 ```yaml
 resources:
   # increase this version number at end of URL after each update
-  - url: /local/lovelace-swipe-navigation/lovelace-swipe-navigation.js?v=1.0.0
+  - url: /local/lovelace-swipe-navigation/swipe-navigation.js?v=1.0.0
     type: js
 ```
 
@@ -37,7 +37,7 @@ resources:
 
 ```yaml
 resources:
-  - url: /customcards/github/maykar/lovelace-swipe-navigation.js?track=true
+  - url: /customcards/github/maykar/swipe-navigation.js?track=true
     type: js
 ```
 
