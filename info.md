@@ -1,6 +1,3 @@
-# Lovelace Swipe Navigation
-Swipe through Lovelace views on mobile.<br><br>
-
 <img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="350px">
 
 # Features:
