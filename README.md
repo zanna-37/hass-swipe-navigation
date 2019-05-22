@@ -44,7 +44,7 @@ resources:
 ```yaml
 resources:
   - url: /community_plugin/lovelace-swipe-navigation/swipe-navigation.js
-    type: module
+    type: js
 ```
 
 4. Refresh the Lovelace page.
