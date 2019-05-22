@@ -3,12 +3,13 @@ Swipe through Lovelace views on mobile.<br>
 Original idea by [@themoffatt](https://github.com/themoffatt) <br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
 
+**This is included as a feature in compact-custom-header, there is no need to install this if you already use CCH.**
+
 # Features:
 * Configure views to skip over.
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
-* Skips over views hidden with [compact-custom-header](https://github.com/maykar/compact-custom-header).
 * Compatible with [swipe-card](https://github.com/bramkragten/custom-ui/tree/master/swipe-card).
 
 # Installation:
