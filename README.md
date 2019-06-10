@@ -35,11 +35,9 @@ resources:
 <details>
   <summary><b>Installation and tracking with HACS:</b></summary>
 
-1. Add `https://github.com/maykar/lovelace-swipe-navigation` to your Custom Plugin Repos.
+1. In "store" search for lovelace-swipe-navigation and install.
 
-2. Go to "store", search for compact-custom-header, click "Manage", then install.
-
-3. Configure Lovelace to load the card:
+2. Configure Lovelace to load the card:
 
 ```yaml
 resources:
@@ -47,26 +45,9 @@ resources:
     type: js
 ```
 
-4. Refresh the Lovelace page.
+3. Refresh the Lovelace page.
 </details>
 
-<details>
-  <summary><b>Installation and tracking with custom_updater:</b></summary>
-
-1. Make sure the [custom_updater](https://github.com/custom-components/custom_updater) component is installed and working.
-
-2. Configure Lovelace to load the card.
-
-```yaml
-resources:
-  - url: /customcards/github/maykar/swipe-navigation.js?track=true
-    type: js
-```
-
-3. Run the service `custom_updater.check_all` or click the "CHECK" button if you use the tracker-card.
-
-4. Refresh the page.
-</details>
 
 # Config:
 Until I impliment a better solution config is reset after each update.
