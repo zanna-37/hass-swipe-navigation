@@ -58,9 +58,11 @@ resources:
     type: js
 
 swipe_nav:
-  wrap: true
+  wrap: false
   animate: swipe
   skip_tabs: 5,6,7,8
+  prevent_default: true
+  swipe_amount: 30
   
 views:
 ```
