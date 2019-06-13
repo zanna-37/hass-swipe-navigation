@@ -60,7 +60,7 @@ resources:
 swipe_nav:
   wrap: true
   animate: swipe
-  skip_tabs: '5,6,7,8'
+  skip_tabs: 5,6,7,8
   
 views:
 ```
