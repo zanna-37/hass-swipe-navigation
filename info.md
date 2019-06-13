@@ -1,3 +1,5 @@
+## Breaking Change in v1.2.0:<br>Configuration has changed and can now be done in lovelace config.<br>See repo for more info.<br><br>
+
 <img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="350px">
 
 # Features:
