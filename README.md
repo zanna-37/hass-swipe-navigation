@@ -9,7 +9,6 @@ Swipe through Lovelace views on mobile.<br>
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
-* Compatible with [swipe-card](https://github.com/bramkragten/custom-ui/tree/master/swipe-card).
 
 # Installation:
 Follow only one of these installation methods.
