@@ -5,6 +5,7 @@ Swipe through Lovelace views on mobile.<br><br>
 **This is included as a feature in compact-custom-header, there is no need to install this if you already use CCH.**
 
 # Features:
+* Animated swiping through Lovelace views.
 * Configure views to skip over.
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
