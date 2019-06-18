@@ -7,7 +7,7 @@ root = (root && root.shadowRoot) || root;
 root = root && root.querySelector("ha-panel-lovelace");
 root = root && root.shadowRoot;
 root = root && root.querySelector("hui-root");
-const config = root.lovelace.config.swipe_nav;
+const config = root.lovelace.config.swipe_nav || {};
 
 let animate = config.animate !== undefined ? config.animate : "none";
 let wrap = config.wrap !== undefined ? config.wrap : true;
