@@ -38,7 +38,16 @@ appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
 appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
 
 function handleTouchStart(event) {
-  let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
+  let ignored = [
+    "APP-HEADER",
+    "HA-SLIDER",
+    "SWIPE-CARD",
+    "HUI-MAP-CARD",
+    "ROUND-SLIDER",
+    "HUI-THERMOSTAT-CARD",
+    "CH-HEADER",
+    "CH-HEADER-BOTTOM"
+  ];
   if (typeof event.path == "object") {
     for (let element of event.path) {
       if (element.nodeName == "HUI-VIEW") break;
