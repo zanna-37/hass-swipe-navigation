@@ -46,7 +46,8 @@ function handleTouchStart(event) {
     "ROUND-SLIDER",
     "HUI-THERMOSTAT-CARD",
     "CH-HEADER",
-    "CH-HEADER-BOTTOM"
+    "CH-HEADER-BOTTOM",
+    "XIAOMI-VACUUM-MAP-CARD"
   ];
   if (typeof event.path == "object") {
     for (let element of event.path) {
