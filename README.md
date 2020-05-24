@@ -13,8 +13,6 @@ Swipe through Lovelace views on mobile.
 - :coffee:&nbsp;&nbsp;[Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
 - :1st_place_medal:&nbsp;&nbsp;[Tip some Crypto](https://github.com/sponsors/maykar)
 - :heart:&nbsp;&nbsp;[Sponsor me on GitHub](https://github.com/sponsors/maykar)
-- :busts_in_silhouette:&nbsp;&nbsp;[Support and check out these guys](https://maykar.github.io/custom-header/#support)
-- :keyboard:&nbsp;&nbsp;[Help with development or documentation](https://maykar.github.io/custom-header/#development)
   <br><br>
 
 # Installation:
