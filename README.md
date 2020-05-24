@@ -1,8 +1,5 @@
 # Lovelace Swipe Navigation
-Swipe through Lovelace views on mobile.<br><br>
-<a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
-
-**This is included as a feature in compact-custom-header, there is no need to install this if you already use CCH.**
+Swipe through Lovelace views on mobile.
 
 # Features:
 * Animated swiping through Lovelace views.
@@ -10,6 +7,15 @@ Swipe through Lovelace views on mobile.<br><br>
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
+
+
+## Supporting Development
+- :coffee:&nbsp;&nbsp;[Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
+- :1st_place_medal:&nbsp;&nbsp;[Tip some Crypto](https://github.com/sponsors/maykar)
+- :heart:&nbsp;&nbsp;[Sponsor me on GitHub](https://github.com/sponsors/maykar)
+- :busts_in_silhouette:&nbsp;&nbsp;[Support and check out these guys](https://maykar.github.io/custom-header/#support)
+- :keyboard:&nbsp;&nbsp;[Help with development or documentation](https://maykar.github.io/custom-header/#development)
+  <br><br>
 
 # Installation:
 Follow only one of these installation methods.
