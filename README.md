@@ -7,6 +7,7 @@ Swipe through Lovelace views on mobile.
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
+* Support RTL languages.
 
 
 ## Supporting Development
