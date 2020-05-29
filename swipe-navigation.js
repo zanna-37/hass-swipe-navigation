@@ -10,7 +10,7 @@ root = root && root.querySelector('hui-root');
 const config = root.lovelace.config.swipe_nav || {};
 
 let rtl =
-  root.lovelace.config.custom_header.reverse_tab_direction ||
+  (root.lovelace.config.custom_header && root.lovelace.config.custom_header.reverse_tab_direction) ||
   document.querySelector('home-assistant').style.direction == 'rtl' ||
   document
     .querySelector('home-assistant')
