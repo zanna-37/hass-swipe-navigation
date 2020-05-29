@@ -7,6 +7,8 @@ Swipe through Lovelace views on mobile.
 * Set the swipe length needed.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
+* Support RTL languages.
+
 
 
 ## Supporting Development
@@ -80,6 +82,7 @@ views:
 | wrap | boolean | true | Wrap from first tab to last tab and vice versa.
 | prevent_default | boolean | false | Prevents the browsers default horizontal swipe actions.
 | animate | string | no animation | Swipe animations. Can be: `swipe`, `fade`, `flip`.
+| rtl | boolean | false | Control swipe direction. true - reverse swipe direction for RTL support`.
 
 # Thank you
 Big thanks to:
