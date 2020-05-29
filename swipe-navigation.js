@@ -9,6 +9,7 @@ root = root && root.shadowRoot;
 root = root && root.querySelector("hui-root");
 const config = root.lovelace.config.swipe_nav || {};
 
+let rtl = config.rtl !== undefined ? config.rtl : "none";
 let animate = config.animate !== undefined ? config.animate : "none";
 let wrap = config.wrap !== undefined ? config.wrap : true;
 let prevent_default =
@@ -82,6 +83,9 @@ function handleTouchEnd() {
   } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
     left = true;
     activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+  }
+  if (rtl) {
+    left = !left;
   }
   xDown = yDown = xDiff = yDiff = null;
 }
