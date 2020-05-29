@@ -17,7 +17,7 @@ let rtl =
     .shadowRoot.querySelector('home-assistant-main')
     .shadowRoot.querySelector('ha-panel-lovelace')
     .shadowRoot.querySelector('hui-root')
-    .shadowRoot.querySelector('paper-tabs').dir;
+    .shadowRoot.querySelector('paper-tabs').dir == 'rtl';
 let animate = config.animate !== undefined ? config.animate : 'none';
 let wrap = config.wrap !== undefined ? config.wrap : true;
 let prevent_default = config.prevent_default !== undefined ? config.prevent_default : false;
