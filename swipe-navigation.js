@@ -77,6 +77,9 @@ function handleTouchEnd() {
     xDown = yDown = xDiff = yDiff = null;
     return;
   }
+  if (rtl) {
+    xDiff = -xDiff
+  }
   if (xDiff > Math.abs(screen.width * swipe_amount)) {
     left = false;
     activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
