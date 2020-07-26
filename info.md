@@ -1,5 +1,3 @@
-## Breaking Change in v1.2.0:<br>Configuration has changed and can now be done in lovelace config.<br>See repo for more info.<br><br>
-
 <img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="350px">
 
 # Features:
@@ -11,4 +9,8 @@
 
 <br>
 
-<a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
+## Supporting Development
+- [Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
+- [Tip some Crypto](https://github.com/sponsors/maykar)
+- [Sponsor me on GitHub](https://github.com/sponsors/maykar)
+- [Help with translation, development, or documentation](https://github.com/maykar/plex_assistant)
