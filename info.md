@@ -7,8 +7,6 @@
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
 
-<br>
-
 ## Supporting Development
 - [Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
 - [Tip some Crypto](https://github.com/sponsors/maykar)
