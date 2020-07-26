@@ -8,7 +8,7 @@
 * Wrap from first view to last view and vice versa.
 
 ## Supporting Development
-- [Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
-- [Tip some Crypto](https://github.com/sponsors/maykar)
-- [Sponsor me on GitHub](https://github.com/sponsors/maykar)
-- [Help with translation, development, or documentation](https://github.com/maykar/plex_assistant)
+- :coffee: [Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
+- :red_circle: [Tip with Crypto](https://github.com/sponsors/maykar)
+- :heart: [Sponsor me on GitHub](https://github.com/sponsors/maykar)
+- :keyboard: [Help with translation, development, or documentation](https://github.com/maykar/plex_assistant)
