@@ -1,4 +1,4 @@
-function setupswipe(timeout) {
+function setupswipe() {
   let root = document.querySelector('home-assistant');
   root = root && root.shadowRoot;
   root = root && root.querySelector('home-assistant-main');
@@ -9,8 +9,8 @@ function setupswipe(timeout) {
   root = root && root.shadowRoot;
   root = root && root.querySelector('hui-root');
   if (root == null) {
-    console.warn("Root is null, waiting for " + String(100 + timeout) + "ms until retry");
-    setTimeout(setupswipe, 100 + timeout, 100 + timeout);
+    console.warn("Root is null, trying again in 300 ms");
+    setTimeout(setupswipe, 300);
     return;
   }
   const config = root.lovelace.config.swipe_nav || {};
@@ -168,4 +168,4 @@ function setupswipe(timeout) {
     }
   }
 }
-setTimeout(setupswipe, 10, 0);
+setTimeout(setupswipe, 50);
