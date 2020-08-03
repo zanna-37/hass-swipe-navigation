@@ -33,6 +33,8 @@ function swipeNavigaiton() {
     config.swipe_amount !== undefined
       ? config.swipe_amount / Math.pow(10, 2)
       : 0.15;
+  let skip_hidden =
+    config.skip_hidden !== undefinded ? config.skip_hidden : true;
   let skip_tabs =
     config.skip_tabs !== undefined
       ? String(config.skip_tabs)
@@ -109,12 +111,18 @@ function swipeNavigaiton() {
   }
 
   function filterTabs() {
-    tabs = tabs.filter(element => {
-      return (
-        !skip_tabs.includes(tabs.indexOf(element)) &&
-        getComputedStyle(element, null).display != "none"
-      );
-    });
+    if (skip_hidden) {
+      tabs = tabs.filter(element => {
+        return (
+          !skip_tabs.includes(tabs.indexOf(element)) &&
+          getComputedStyle(element, null).display != "none"
+        );
+      });
+    } else {
+      tabs = tabs.filter(element => {
+        return !skip_tabs.includes(tabs.indexOf(element));
+      });
+    }
     firstTab = wrap ? 0 : null;
     lastTab = wrap ? tabs.length - 1 : null;
   }
