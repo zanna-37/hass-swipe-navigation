@@ -1,4 +1,4 @@
-function setupswipe() {
+function swipeNavigaiton() {
   let root = document.querySelector('home-assistant');
   root = root && root.shadowRoot;
   root = root && root.querySelector('home-assistant-main');
@@ -9,8 +9,8 @@ function setupswipe() {
   root = root && root.shadowRoot;
   root = root && root.querySelector('hui-root');
   if (root == null) {
-    console.warn("Root is null, trying again in 300 ms");
-    setTimeout(setupswipe, 300);
+    console.warn("Swipe Navigation: Root is null, trying again in 300 ms");
+    setTimeout(swipeNavigaiton, 300);
     return;
   }
   const config = root.lovelace.config.swipe_nav || {};
@@ -168,4 +168,18 @@ function setupswipe() {
     }
   }
 }
-setTimeout(setupswipe, 50);
+
+const callback = mutations => {
+  mutations.forEach(({ addedNodes }) => {
+    for (const node of addedNodes) {
+      if (node.nodeName == 'HA-PANEL-LOVELACE') {
+        swipeNavigaiton();
+      }
+    }
+  })
+}
+
+const dashboard_observer = new MutationObserver(callback);
+dashboard_observer.observe(document.querySelector("home-assistant").shadowRoot.querySelector("home-assistant-main").shadowRoot.querySelector('partial-panel-resolver'), { childList: true });
+
+swipeNavigaiton();
