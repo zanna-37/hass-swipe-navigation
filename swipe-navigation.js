@@ -1,4 +1,4 @@
-function swipeNavigaiton() {
+function swipeNavigation() {
   let root = document.querySelector("home-assistant");
   root = root && root.shadowRoot;
   root = root && root.querySelector("home-assistant-main");
@@ -10,7 +10,7 @@ function swipeNavigaiton() {
   root = root && root.querySelector("hui-root");
   if (root == null) {
     console.warn("Swipe Navigation: Root is null, trying again in 300 ms");
-    setTimeout(swipeNavigaiton, 300);
+    setTimeout(swipeNavigation, 300);
     return;
   }
   const config = root.lovelace.config.swipe_nav || {};
@@ -200,7 +200,7 @@ const callback = mutations => {
   mutations.forEach(({ addedNodes }) => {
     for (const node of addedNodes) {
       if (node.nodeName == "HA-PANEL-LOVELACE") {
-        swipeNavigaiton();
+        swipeNavigation();
       }
     }
   });
@@ -215,4 +215,4 @@ dashboard_observer.observe(
   { childList: true }
 );
 
-swipeNavigaiton();
+swipeNavigation();
