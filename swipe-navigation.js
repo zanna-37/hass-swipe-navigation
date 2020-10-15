@@ -17,13 +17,7 @@ function swipeNavigation() {
   let rtl =
     (root.lovelace.config.custom_header &&
       root.lovelace.config.custom_header.reverse_tab_direction) ||
-    document.querySelector("home-assistant").style.direction == "rtl" ||
-    document
-      .querySelector("home-assistant")
-      .shadowRoot.querySelector("home-assistant-main")
-      .shadowRoot.querySelector("ha-panel-lovelace")
-      .shadowRoot.querySelector("hui-root")
-      .shadowRoot.querySelector("paper-tabs").dir == "rtl";
+    document.querySelector("home-assistant").style.direction == "rtl"
   let animate = config.animate !== undefined ? config.animate : "none";
   let wrap = config.wrap !== undefined ? config.wrap : true;
   let prevent_default =
