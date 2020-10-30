@@ -57,7 +57,6 @@ function swipeNavigation() {
       "SWIPE-CARD",
       "HUI-MAP-CARD",
       "ROUND-SLIDER",
-      "HUI-THERMOSTAT-CARD",
       "CH-HEADER",
       "CH-HEADER-BOTTOM",
       "XIAOMI-VACUUM-MAP-CARD"
