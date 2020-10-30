@@ -57,9 +57,8 @@ function swipeNavigation() {
       "SWIPE-CARD",
       "HUI-MAP-CARD",
       "ROUND-SLIDER",
-      "CH-HEADER",
-      "CH-HEADER-BOTTOM",
-      "XIAOMI-VACUUM-MAP-CARD"
+      "XIAOMI-VACUUM-MAP-CARD",
+      "HA-SIDEBAR"
     ];
     if (typeof event.path == "object") {
       for (let element of event.path) {
