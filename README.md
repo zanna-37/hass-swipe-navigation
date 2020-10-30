@@ -75,5 +75,5 @@ views:
 
 # Thank you
 Big thanks to:
-* [@themoffatt](https://github.com/themoffatt) for the original idea
+* [@themoffatt](https://github.com/themoffatt) for beating me to the punch. 
 * [@RomRider](https://github.com/RomRider) and his [decluttering-card](https://github.com/custom-cards/decluttering-card/) for the configuration method.
