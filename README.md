@@ -22,9 +22,9 @@ Follow only one of these installation methods.
 <details>
   <summary><b>Installation and tracking with HACS:</b></summary>
 
-1. In "store" search for lovelace-swipe-navigation and install.
+1. In "Frontend" hit the plus at the bottom right, search for "swipe navigation" and install.
 
-2. Refresh the Lovelace page.
+2. Refresh the Lovelace page, may need to clear cache.
 </details>
 
 <details>
