@@ -40,7 +40,7 @@ function swipeNavigation() {
 
   const appLayout = root.shadowRoot.querySelector("ha-app-layout");
   const view = appLayout.querySelector('[id="view"]');
-  const tabContainer = appLayout.querySelector("ha-tabs");
+  const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
   let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
 
