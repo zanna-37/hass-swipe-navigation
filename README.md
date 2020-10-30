@@ -45,7 +45,9 @@ resources:
 </details>
 
 # Config:
-Configuration is done in the root of your lovelace configuration. If you just want to use the default config values you don't need to add a config at all.
+Configuration is done in the root of your lovelace configuration.
+
+If you just want to use the default config values you don't need to add a config at all.
 
 Example:
 ```yaml
