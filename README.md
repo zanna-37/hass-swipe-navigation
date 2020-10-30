@@ -41,7 +41,7 @@ resources:
     type: module
 ```
 
-3. Refresh the page.
+3. Refresh the page, may need to clear cache.
 </details>
 
 # Config:
