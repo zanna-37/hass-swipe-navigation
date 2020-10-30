@@ -61,7 +61,7 @@ resources:
 | prevent_default | boolean | false | Prevents the browsers default horizontal swipe actions. May require a browser refresh to take effect, if using an HA companion app this can be done by closing the app and reopening.
 | animate | string |  | Swipe animations. Can be: `swipe`, `fade`, `flip`. The swipe animation should be considered experimental and depending on your setup may appear buggy.
 
-Example:
+**Example:**
 ```yaml
 swipe_nav:
   wrap: false
