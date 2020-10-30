@@ -75,5 +75,5 @@ views:
 
 # Thank you
 Big thanks to:
-* [@themoffatt](https://github.com/themoffatt) for beating me to the punch and letting me duplicate and expand on his original project. 
+* [@themoffatt](https://github.com/themoffatt) for beating me to the punch and letting me make a duplicate project.
 * [@RomRider](https://github.com/RomRider) and his [decluttering-card](https://github.com/custom-cards/decluttering-card/) for the configuration method.
