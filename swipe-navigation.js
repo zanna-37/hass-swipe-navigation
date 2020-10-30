@@ -50,6 +50,10 @@ function swipeNavigation() {
     appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
   }
 
+  if (animate == "swipe") {
+    appLayout.style.overflow = "hidden";
+  }
+
   function handleTouchStart(event) {
     let ignored = [
       "APP-HEADER",
