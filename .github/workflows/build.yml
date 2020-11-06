@@ -9,9 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: npm install uglify-js @babel/core @babel/cli @babel/preset-env
-    - run: npx babel swipe-navigation.js --out-file swipe-navigation.js --presets @babel/preset-env
-    - run: npx uglify-js swipe-navigation.js -b beautify=false,max_line_len=150 --compress --mangle toplevel --output swipe-navigation.js
+    - name: Set version number
+      run: |
+        sed -i 's|*DEV|${{ github.ref }}|g' swipe-navigation.js
+        sed -i 's|refs/tags/||' swipe-navigation.js
+    - name: Install deps
+      run: npm install uglify-js @babel/core @babel/cli @babel/preset-env
+    - name: Run Babel
+      run: npx babel swipe-navigation.js --out-file swipe-navigation.js --presets @babel/preset-env
+    - name: Run Uglify
+      run: npx uglify-js swipe-navigation.js -b beautify=false,max_line_len=150 --compress --mangle toplevel --output swipe-navigation.js
     - name: Upload release asset
       uses: actions/upload-release-asset@v1
       env:
