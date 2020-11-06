@@ -1,4 +1,7 @@
 # Lovelace Swipe Navigation
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-yellow.svg)](https://github.com/custom-components/hacs) [![hacs_badge](https://img.shields.io/badge/Buy-Me%20a%20Coffee-critical)](https://www.buymeacoffee.com/FgwNR2l)
+
 Swipe through Lovelace views on mobile.
 
 # Features:
@@ -8,13 +11,6 @@ Swipe through Lovelace views on mobile.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
 * Support RTL languages.
-
-
-## Supporting Development
-- :coffee:&nbsp;&nbsp;[Buy me a coffee](https://www.buymeacoffee.com/FgwNR2l)
-- :1st_place_medal:&nbsp;&nbsp;[Tip some Crypto](https://github.com/sponsors/maykar)
-- :heart:&nbsp;&nbsp;[Sponsor me on GitHub](https://github.com/sponsors/maykar)
-  <br><br>
 
 # Installation:
 Follow only one of these installation methods.
