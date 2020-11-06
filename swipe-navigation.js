@@ -1,69 +1,53 @@
-function swipeNavigation() {
-  let root = document.querySelector("home-assistant");
-  root = root && root.shadowRoot;
-  root = root && root.querySelector("home-assistant-main");
-  root = root && root.shadowRoot;
-  root = root && root.querySelector("app-drawer-layout partial-panel-resolver");
-  root = (root && root.shadowRoot) || root;
-  root = root && root.querySelector("ha-panel-lovelace");
-  root = root && root.shadowRoot;
-  root = root && root.querySelector("hui-root");
-  if (root == null) {
-    setTimeout(swipeNavigation, 300);
-    return;
-  }
-  const config = root.lovelace.config.swipe_nav || {};
+const ha = document.querySelector("home-assistant");
+const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+const panel = main.querySelector("partial-panel-resolver");
 
-  let rtl =
-    (root.lovelace.config.custom_header &&
-      root.lovelace.config.custom_header.reverse_tab_direction) ||
-    document.querySelector("home-assistant").style.direction == "rtl"
-  let animate = config.animate !== undefined ? config.animate : "none";
-  let wrap = config.wrap !== undefined ? config.wrap : true;
-  let prevent_default =
-    config.prevent_default !== undefined ? config.prevent_default : false;
-  let swipe_amount =
-    config.swipe_amount !== undefined
-      ? config.swipe_amount / Math.pow(10, 2)
-      : 0.15;
-  let skip_hidden =
-    config.skip_hidden !== undefined ? config.skip_hidden : true;
-  let skip_tabs =
-    config.skip_tabs !== undefined
+// Ignore swipes when initiated on these elements.
+const ignored = [
+  "APP-HEADER",
+  "HA-SLIDER",
+  "SWIPE-CARD",
+  "HUI-MAP-CARD",
+  "ROUND-SLIDER",
+  "XIAOMI-VACUUM-MAP-CARD",
+  "HA-SIDEBAR",
+];
+
+function swipeNavigation() {
+  const ll = main.querySelector("ha-panel-lovelace");
+  const root = ll.shadowRoot.querySelector("hui-root");
+  const appLayout = root.shadowRoot.querySelector("ha-app-layout");
+  const view = appLayout.querySelector('[id="view"]');
+  const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
+  let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
+  const rtl = ha.style.direction == "rtl";
+  const config = ll.lovelace.config.swipe_nav || {};
+
+  const animate = config.animate != undefined ? config.animate : "none";
+  const wrap = config.wrap != undefined ? config.wrap : true;
+  const prevent_default = config.prevent_default != undefined ? config.prevent_default : false;
+  const swipe_amount = config.swipe_amount != undefined ? config.swipe_amount / Math.pow(10, 2) : 0.15;
+  const skip_hidden = config.skip_hidden != undefined ? config.skip_hidden : true;
+  const skip_tabs =
+    config.skip_tabs != undefined
       ? String(config.skip_tabs)
           .replace(/\s+/g, "")
           .split(",")
-          .map(function(item) {
+          .map(function (item) {
             return parseInt(item, 10);
           })
       : [];
 
-  const appLayout = root.shadowRoot.querySelector("ha-app-layout");
-  const view = appLayout.querySelector('[id="view"]');
-  const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
-  let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
 
   if (tabContainer) {
     appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
     appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
     appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
-  }
-
-  if (animate == "swipe") {
-    appLayout.style.overflow = "hidden";
+    if (animate == "swipe") appLayout.style.overflow = "hidden";
   }
 
   function handleTouchStart(event) {
-    let ignored = [
-      "APP-HEADER",
-      "HA-SLIDER",
-      "SWIPE-CARD",
-      "HUI-MAP-CARD",
-      "ROUND-SLIDER",
-      "XIAOMI-VACUUM-MAP-CARD",
-      "HA-SIDEBAR"
-    ];
     if (typeof event.path == "object") {
       for (let element of event.path) {
         if (element.nodeName == "HUI-VIEW") break;
@@ -80,9 +64,7 @@ function swipeNavigation() {
     if (xDown && yDown) {
       xDiff = xDown - event.touches[0].clientX;
       yDiff = yDown - event.touches[0].clientY;
-      if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) {
-        event.preventDefault();
-      }
+      if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) event.preventDefault();
     }
   }
 
@@ -91,9 +73,7 @@ function swipeNavigation() {
       xDown = yDown = xDiff = yDiff = null;
       return;
     }
-    if (rtl) {
-      xDiff = -xDiff;
-    }
+    if (rtl) xDiff = -xDiff;
     if (xDiff > Math.abs(screen.width * swipe_amount)) {
       left = false;
       activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
@@ -101,22 +81,17 @@ function swipeNavigation() {
       left = true;
       activeTab == 0 ? click(lastTab) : click(activeTab - 1);
     }
-    if (rtl) {
-      left = !left;
-    }
+    if (rtl) left = !left;
     xDown = yDown = xDiff = yDiff = null;
   }
 
   function filterTabs() {
     if (skip_hidden) {
-      tabs = tabs.filter(element => {
-        return (
-          !skip_tabs.includes(tabs.indexOf(element)) &&
-          getComputedStyle(element, null).display != "none"
-        );
+      tabs = tabs.filter((element) => {
+        return !skip_tabs.includes(tabs.indexOf(element)) && getComputedStyle(element, null).display != "none";
       });
     } else {
-      tabs = tabs.filter(element => {
+      tabs = tabs.filter((element) => {
         return !skip_tabs.includes(tabs.indexOf(element));
       });
     }
@@ -125,28 +100,21 @@ function swipeNavigation() {
   }
 
   function click(index) {
-    if (
-      (activeTab == 0 && !wrap && left) ||
-      (activeTab == tabs.length - 1 && !wrap && !left)
-    ) {
-      return;
-    }
+    if ((activeTab == 0 && !wrap && left) || (activeTab == tabs.length - 1 && !wrap && !left)) return;
     if (animate == "swipe") {
-      let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-      let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
+      const _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+      const _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
       view.style.transitionDuration = "200ms";
       view.style.opacity = 0;
       view.style.transform = `translate(${_in}, 0)`;
       view.style.transition = "transform 0.20s, opacity 0.18s";
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
+      setTimeout(function () {
+        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
         view.style.transitionDuration = "0ms";
         view.style.transform = `translate(${_out}, 0)`;
         view.style.transition = "transform 0s";
       }, 210);
-      setTimeout(function() {
+      setTimeout(function () {
         view.style.transitionDuration = "200ms";
         view.style.opacity = 1;
         view.style.transform = `translate(0px, 0)`;
@@ -156,15 +124,13 @@ function swipeNavigation() {
       view.style.transitionDuration = "200ms";
       view.style.transition = "opacity 0.20s";
       view.style.opacity = 0;
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
+      setTimeout(function () {
+        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
         view.style.transitionDuration = "0ms";
         view.style.opacity = 0;
         view.style.transition = "opacity 0s";
       }, 210);
-      setTimeout(function() {
+      setTimeout(function () {
         view.style.transitionDuration = "200ms";
         view.style.transition = "opacity 0.20s";
         view.style.opacity = 1;
@@ -174,42 +140,76 @@ function swipeNavigation() {
       view.style.transform = "rotatey(90deg)";
       view.style.transition = "transform 0.20s, opacity 0.20s";
       view.style.opacity = 0.25;
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
+      setTimeout(function () {
+        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
       }, 210);
-      setTimeout(function() {
+      setTimeout(function () {
         view.style.transitionDuration = "200ms";
         view.style.transform = "rotatey(0deg)";
         view.style.transition = "transform 0.20s, opacity 0.20s";
         view.style.opacity = 1;
       }, 250);
     } else {
-      tabs[index].dispatchEvent(
-        new MouseEvent("click", { bubbles: false, cancelable: true })
-      );
+      tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
     }
   }
 }
 
-const callback = mutations => {
-  mutations.forEach(({ addedNodes }) => {
-    for (const node of addedNodes) {
-      if (node.nodeName == "HA-PANEL-LOVELACE") {
-        swipeNavigation();
+// Initial run
+swipeNavigation();
+
+// Watch for changes in partial-panel-resolver's children.
+new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
+
+// If new lovelace panel was added watch for hui-root to appear.
+function lovelaceWatch(mutations) {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "ha-panel-lovelace") {
+        new MutationObserver(rootWatch).observe(node.shadowRoot, {
+          childList: true,
+        });
+        return;
       }
     }
-  });
-};
+  }
+}
 
-const dashboard_observer = new MutationObserver(callback);
-dashboard_observer.observe(
-  document
-    .querySelector("home-assistant")
-    .shadowRoot.querySelector("home-assistant-main")
-    .shadowRoot.querySelector("partial-panel-resolver"),
-  { childList: true }
-);
+// When hui-root appears watch it's children.
+function rootWatch(mutations) {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "hui-root") {
+        new MutationObserver(appLayoutWatch).observe(node.shadowRoot, {
+          childList: true,
+        });
+        return;
+      }
+    }
+  }
+}
 
-swipeNavigation();
+// When ha-app-layout appears we can run.
+function appLayoutWatch(mutations) {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "ha-app-layout") {
+        swipeNavigation();
+        return;
+      }
+    }
+  }
+}
+
+// Overly complicated console tag.
+const conInfo = { header: "%c≡ swipe-navigation".padEnd(27), ver: "%cversion *DEV " };
+const br = "%c\n";
+const maxLen = Math.max(...Object.values(conInfo).map((el) => el.length));
+for (const [key] of Object.entries(conInfo)) {
+  if (conInfo[key].length <= maxLen) conInfo[key] = conInfo[key].padEnd(maxLen);
+  if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -1)}⋮ `;
+}
+const header =
+  "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
+const info = "border-width:0px 1px 1px 1px;padding:7px;background:white;color:#424242;line-height:0.7;";
+console.info(conInfo.header + br + conInfo.ver, header, "", `${header} ${info}`);
