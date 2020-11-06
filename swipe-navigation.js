@@ -2,6 +2,17 @@ const ha = document.querySelector("home-assistant");
 const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 
+// Ignore swipes when initiated on these elements.
+const ignored = [
+  "APP-HEADER",
+  "HA-SLIDER",
+  "SWIPE-CARD",
+  "HUI-MAP-CARD",
+  "ROUND-SLIDER",
+  "XIAOMI-VACUUM-MAP-CARD",
+  "HA-SIDEBAR",
+];
+
 function swipeNavigation() {
   const ll = main.querySelector("ha-panel-lovelace");
   const root = ll.shadowRoot.querySelector("hui-root");
@@ -37,15 +48,6 @@ function swipeNavigation() {
   }
 
   function handleTouchStart(event) {
-    let ignored = [
-      "APP-HEADER",
-      "HA-SLIDER",
-      "SWIPE-CARD",
-      "HUI-MAP-CARD",
-      "ROUND-SLIDER",
-      "XIAOMI-VACUUM-MAP-CARD",
-      "HA-SIDEBAR",
-    ];
     if (typeof event.path == "object") {
       for (let element of event.path) {
         if (element.nodeName == "HUI-VIEW") break;
