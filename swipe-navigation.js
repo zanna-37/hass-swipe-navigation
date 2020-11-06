@@ -19,7 +19,7 @@ function swipeNavigation() {
   const appLayout = root.shadowRoot.querySelector("ha-app-layout");
   const view = appLayout.querySelector('[id="view"]');
   const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
-  const tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
+  let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
   const rtl = ha.style.direction == "rtl";
   const config = ll.lovelace.config.swipe_nav || {};
 
@@ -102,8 +102,8 @@ function swipeNavigation() {
   function click(index) {
     if ((activeTab == 0 && !wrap && left) || (activeTab == tabs.length - 1 && !wrap && !left)) return;
     if (animate == "swipe") {
-      let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-      let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
+      const _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+      const _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
       view.style.transitionDuration = "200ms";
       view.style.opacity = 0;
       view.style.transform = `translate(${_in}, 0)`;
