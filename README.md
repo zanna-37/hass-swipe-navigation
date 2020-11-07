@@ -26,7 +26,7 @@ Follow only one of these installation methods.
 <details>
   <summary><b>Manual installation:</b></summary>
   
-1. Copy [swipe-navigation.js](https://raw.githubusercontent.com/maykar/lovelace-swipe-navigation/master/swipe-navigation.js) into `/www/lovelace-swipe-navigation/`
+1. Copy [swipe-navigation.js](https://github.com/maykar/lovelace-swipe-navigation/releases/latest) from the latest release into `/www/lovelace-swipe-navigation/`
 
 2. Add the resource in `ui-lovelace.yaml` or in Lovelace Resources.
 
