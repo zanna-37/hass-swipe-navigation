@@ -11,13 +11,13 @@ function getElements() {
       root = ll.shadowRoot.querySelector("hui-root");
       appLayout = root.shadowRoot.querySelector("ha-app-layout");
     } catch {
-      attempts++
-      setTimeout(() => getElements(), 50)
+      attempts++;
+      setTimeout(() => getElements(), 50);
     }
   } else if (ll && !root) {
-    console.log("hui-root not found.")
+    console.log("hui-root not found.");
   } else if (ll && !appLayout) {
-    console.log("ha-app-layout not found.")
+    console.log("ha-app-layout not found.");
   }
 }
 
