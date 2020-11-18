@@ -1,6 +1,25 @@
-const ha = document.querySelector("home-assistant");
-const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-const panel = main.querySelector("partial-panel-resolver");
+let ha, main, panel, ll, root, appLayout;
+let attempts = 0;
+
+function getElements() {
+  if (attempts < 10) {
+    try {
+      ha = document.querySelector("home-assistant");
+      main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+      panel = main.querySelector("partial-panel-resolver");
+      ll = main.querySelector("ha-panel-lovelace");
+      root = ll.shadowRoot.querySelector("hui-root");
+      appLayout = root.shadowRoot.querySelector("ha-app-layout");
+    } catch {
+      attempts++
+      setTimeout(() => getElements(), 50)
+    }
+  } else if (ll && !root) {
+    console.log("hui-root not found.")
+  } else if (ll && !appLayout) {
+    console.log("ha-app-layout not found.")
+  }
+}
 
 // Ignore swipes when initiated on these elements.
 const ignored = [
@@ -13,10 +32,15 @@ const ignored = [
   "HA-SIDEBAR",
 ];
 
+getElements();
+
 function swipeNavigation() {
-  const ll = main.querySelector("ha-panel-lovelace");
-  const root = ll.shadowRoot.querySelector("hui-root");
-  const appLayout = root.shadowRoot.querySelector("ha-app-layout");
+  ll = main.querySelector("ha-panel-lovelace");
+  root = ll.shadowRoot.querySelector("hui-root");
+  if (!ll || !root) return;
+  attempts = 0;
+
+  appLayout = root.shadowRoot.querySelector("ha-app-layout");
   const view = appLayout.querySelector('[id="view"]');
   const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
   let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
