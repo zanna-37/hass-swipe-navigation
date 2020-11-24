@@ -36,8 +36,9 @@ getElements();
 
 function swipeNavigation() {
   ll = main.querySelector("ha-panel-lovelace");
+  if (!ll) return;
   root = ll.shadowRoot.querySelector("hui-root");
-  if (!ll || !root) return;
+  if (!root) return;
   attempts = 0;
 
   appLayout = root.shadowRoot.querySelector("ha-app-layout");
