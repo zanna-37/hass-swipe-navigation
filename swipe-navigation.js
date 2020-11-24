@@ -39,7 +39,6 @@ function swipeNavigation() {
   if (!ll) return;
   root = ll.shadowRoot.querySelector("hui-root");
   if (!root) return;
-  attempts = 0;
 
   appLayout = root.shadowRoot.querySelector("ha-app-layout");
   const view = appLayout.querySelector('[id="view"]');
