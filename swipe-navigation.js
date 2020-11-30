@@ -1,22 +1,22 @@
-let ha, main, panel, ll, root, appLayout;
+let elem = {};
 let attempts = 0;
 
 function getElements() {
   if (attempts < 10) {
     try {
-      ha = document.querySelector("home-assistant");
-      main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-      panel = main.querySelector("partial-panel-resolver");
-      ll = main.querySelector("ha-panel-lovelace");
-      root = ll.shadowRoot.querySelector("hui-root");
-      appLayout = root.shadowRoot.querySelector("ha-app-layout");
+      elem.ha = document.querySelector("home-assistant");
+      elem.main = elem.ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+      elem.panel = elem.main.querySelector("partial-panel-resolver");
+      elem.ll = elem.main.querySelector("ha-panel-lovelace");
+      elem.root = elem.ll.shadowRoot.querySelector("hui-root");
+      elem.appLayout = elem.root.shadowRoot.querySelector("ha-app-layout");
     } catch {
       attempts++;
       setTimeout(() => getElements(), 50);
     }
-  } else if (ll && !root) {
+  } else if (elem.ll && !elem.root) {
     console.log("hui-root not found.");
-  } else if (ll && !appLayout) {
+  } else if (elem.ll && !elem.appLayout) {
     console.log("ha-app-layout not found.");
   }
 }
@@ -33,19 +33,33 @@ const ignored = [
 ];
 
 getElements();
+attempts = 0;
 
 function swipeNavigation() {
-  ll = main.querySelector("ha-panel-lovelace");
-  if (!ll) return;
-  root = ll.shadowRoot.querySelector("hui-root");
-  if (!root) return;
+  if (
+    !document
+      .querySelector("home-assistant")
+      .shadowRoot.querySelector("home-assistant-main")
+      .shadowRoot.querySelector("ha-panel-lovelace")
+  ) {
+    return;
+  }
 
-  appLayout = root.shadowRoot.querySelector("ha-app-layout");
-  const view = appLayout.querySelector('[id="view"]');
-  const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
+  if (!elem.appLayout || !elem.appLayout.isConnected) {
+    if (attempts == 0) {
+      getElements();
+      swipeNavigation();
+      return;
+    } else {
+      return;
+    }
+  }
+
+  const view = elem.appLayout.querySelector('[id="view"]');
+  const tabContainer = elem.appLayout.querySelector("paper-tabs") || elem.appLayout.querySelector("ha-tabs");
   let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
-  const rtl = ha.style.direction == "rtl";
-  const config = ll.lovelace.config.swipe_nav || {};
+  const rtl = elem.ha.style.direction == "rtl";
+  const config = elem.ll.lovelace.config.swipe_nav || {};
 
   const animate = config.animate != undefined ? config.animate : "none";
   const wrap = config.wrap != undefined ? config.wrap : true;
@@ -65,10 +79,10 @@ function swipeNavigation() {
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 
   if (tabContainer) {
-    appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
-    appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
-    appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
-    if (animate == "swipe") appLayout.style.overflow = "hidden";
+    elem.appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
+    elem.appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
+    elem.appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
+    if (animate == "swipe") elem.appLayout.style.overflow = "hidden";
   }
 
   function handleTouchStart(event) {
@@ -183,7 +197,7 @@ function swipeNavigation() {
 swipeNavigation();
 
 // Watch for changes in partial-panel-resolver's children.
-new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
+new MutationObserver(lovelaceWatch).observe(elem.panel, { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
