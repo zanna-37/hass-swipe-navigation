@@ -1,25 +1,9 @@
-let elem = {};
-let attempts = 0;
-
-function getElements() {
-  if (attempts < 10) {
-    try {
-      elem.ha = document.querySelector("home-assistant");
-      elem.main = elem.ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-      elem.panel = elem.main.querySelector("partial-panel-resolver");
-      elem.ll = elem.main.querySelector("ha-panel-lovelace");
-      elem.root = elem.ll.shadowRoot.querySelector("hui-root");
-      elem.appLayout = elem.root.shadowRoot.querySelector("ha-app-layout");
-    } catch {
-      attempts++;
-      setTimeout(() => getElements(), 50);
-    }
-  } else if (elem.ll && !elem.root) {
-    console.log("hui-root not found.");
-  } else if (elem.ll && !elem.appLayout) {
-    console.log("ha-app-layout not found.");
-  }
-}
+const ha = document.querySelector("home-assistant");
+const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+const panel = main.querySelector("partial-panel-resolver");
+let huiRoot, appLayout, view;
+let llAttempts = 0;
+let config = {};
 
 // Ignore swipes when initiated on these elements.
 const ignored = [
@@ -32,35 +16,32 @@ const ignored = [
   "HA-SIDEBAR",
 ];
 
-getElements();
-attempts = 0;
+function run() {
+  const lovelace = main.querySelector("ha-panel-lovelace");
+  if (!lovelace) return;
+  config = {};
+  getConfig(lovelace);
+}
+
+function getConfig(lovelace) {
+  llAttempts++;
+  try {
+    const llConfig = lovelace.lovelace.config;
+    config = llConfig.swipe_nav || {};
+    huiRoot = lovelace.shadowRoot.querySelector("hui-root");
+    appLayout = huiRoot.shadowRoot.querySelector("ha-app-layout");
+    view = appLayout.querySelector('[id="view"]');
+    swipeNavigation();
+  } catch {
+    if (llAttempts < 40) setTimeout(() => getConfig(), 50);
+  }
+}
 
 function swipeNavigation() {
-  if (
-    !document
-      .querySelector("home-assistant")
-      .shadowRoot.querySelector("home-assistant-main")
-      .shadowRoot.querySelector("ha-panel-lovelace")
-  ) {
-    return;
-  }
-
-  if (!elem.appLayout || !elem.appLayout.isConnected) {
-    if (attempts == 0) {
-      getElements();
-      swipeNavigation();
-      return;
-    } else {
-      return;
-    }
-  }
-
-  const view = elem.appLayout.querySelector('[id="view"]');
-  const tabContainer = elem.appLayout.querySelector("paper-tabs") || elem.appLayout.querySelector("ha-tabs");
+  llAttempts = 0;
+  const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
   let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
-  const rtl = elem.ha.style.direction == "rtl";
-  const config = elem.ll.lovelace.config.swipe_nav || {};
-
+  const rtl = ha.style.direction == "rtl";
   const animate = config.animate != undefined ? config.animate : "none";
   const wrap = config.wrap != undefined ? config.wrap : true;
   const prevent_default = config.prevent_default != undefined ? config.prevent_default : false;
@@ -79,10 +60,10 @@ function swipeNavigation() {
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 
   if (tabContainer) {
-    elem.appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
-    elem.appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
-    elem.appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
-    if (animate == "swipe") elem.appLayout.style.overflow = "hidden";
+    appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
+    appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
+    appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
+    if (animate == "swipe") appLayout.style.overflow = "hidden";
   }
 
   function handleTouchStart(event) {
@@ -194,45 +175,37 @@ function swipeNavigation() {
 }
 
 // Initial run
-swipeNavigation();
+run();
 
-// Watch for changes in partial-panel-resolver's children.
-new MutationObserver(lovelaceWatch).observe(elem.panel, { childList: true });
+// Run on element changes.
+new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
-      if (node.localName == "ha-panel-lovelace") {
-        new MutationObserver(rootWatch).observe(node.shadowRoot, {
-          childList: true,
-        });
-        return;
-      }
-    }
-  }
+  mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
 }
 
 // When hui-root appears watch it's children.
 function rootWatch(mutations) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
-      if (node.localName == "hui-root") {
-        new MutationObserver(appLayoutWatch).observe(node.shadowRoot, {
-          childList: true,
-        });
-        return;
-      }
-    }
-  }
+  mutationWatch(mutations, "hui-root", appLayoutWatch);
 }
 
 // When ha-app-layout appears we can run.
 function appLayoutWatch(mutations) {
+  mutationWatch(mutations, "ha-app-layout", null);
+}
+
+function mutationWatch(mutations, nodename, observeElem) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
-      if (node.localName == "ha-app-layout") {
-        swipeNavigation();
+      if (node.localName == nodename) {
+        if (observeElem) {
+          new MutationObserver(observeElem).observe(node.shadowRoot, {
+            childList: true,
+          });
+        } else {
+          run();
+        }
         return;
       }
     }
