@@ -33,7 +33,7 @@ function getConfig(lovelace) {
     view = appLayout.querySelector('[id="view"]');
     swipeNavigation();
   } catch {
-    if (llAttempts < 40) setTimeout(() => getConfig(), 50);
+    if (llAttempts < 40) setTimeout(() => getConfig(lovelace), 50);
   }
 }
 
