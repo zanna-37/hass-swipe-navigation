@@ -10,6 +10,7 @@ const ignored = [
   "APP-HEADER",
   "HA-SLIDER",
   "SWIPE-CARD",
+  "SLIDER-BUTTON-CARD",
   "HUI-MAP-CARD",
   "ROUND-SLIDER",
   "XIAOMI-VACUUM-MAP-CARD",
