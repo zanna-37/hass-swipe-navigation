@@ -42,6 +42,8 @@ resources:
 
 # Config:
 
+Mark Watt does an excellent job covering configuation [in this youtube video](https://www.youtube.com/watch?v=03IPN9lBEfE&t=663s).
+
 * Configuration is done in the root of your lovelace configuration.
 * If you just want to use the default config values you don't need to add a config at all.
 
