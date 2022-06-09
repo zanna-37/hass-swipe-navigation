@@ -68,11 +68,9 @@ function swipeNavigation() {
   }
 
   function handleTouchStart(event) {
-    if (typeof event.path == "object") {
-      for (let element of event.path) {
-        if (element.nodeName == "HUI-VIEW") break;
-        else if (ignored.indexOf(element.nodeName) > -1) return;
-      }
+    for (let element of event.composedPath()) {
+      if (element.nodeName == "HUI-VIEW") break;
+      else if (ignored.indexOf(element.nodeName) > -1) return;
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
