@@ -212,4 +212,4 @@ function mutationWatch(mutations, nodename, observeElem) {
 }
 
 // Console tag
-console.info(`%c↔️ Swipe navigation ↔️ - *DEV`, "color: #2980b9; font-weight: 700;");
+console.info(`%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER`, "color: #2980b9; font-weight: 700;");
