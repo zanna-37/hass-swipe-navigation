@@ -6,15 +6,16 @@ let llAttempts = 0;
 let config = {};
 
 // Ignore swipes when initiated on these elements.
+// Note: ALWAYS USE LOWERCASE
 const ignored = [
-  "APP-HEADER",
-  "HA-SLIDER",
-  "SWIPE-CARD",
-  "SLIDER-BUTTON-CARD",
-  "HUI-MAP-CARD",
-  "ROUND-SLIDER",
-  "XIAOMI-VACUUM-MAP-CARD",
-  "HA-SIDEBAR",
+  "app-header",
+  "ha-slider",
+  "swipe-card",
+  "slider-button-card",
+  "hui-map-card",
+  "round-slider",
+  "xiaomi-vacuum-map-card",
+  "ha-sidebar",
 ];
 
 function run() {
@@ -70,7 +71,7 @@ function swipeNavigation() {
   function handleTouchStart(event) {
     for (let element of event.composedPath()) {
       if (element.nodeName == "HUI-VIEW") break;
-      else if (ignored.indexOf(element.nodeName) > -1) return;
+      else if (ignored.indexOf(element.nodeName.toLowerCase()) > -1) return;
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
