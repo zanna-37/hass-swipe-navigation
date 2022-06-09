@@ -46,10 +46,9 @@ resources:
 </details>
 
 ## Config:
-Mark Watt does an excellent job covering configuration [in this youtube video](https://www.youtube.com/watch?v=03IPN9lBEfE&t=663s).
+**If you just want to use the default config values you don't need to add a config at all.**
 
-* Configuration is done in the root of your lovelace configuration.
-* If you just want to use the default config values you don't need to add a config at all.
+If you want to modify the configuration, place it in the root of your dashboard configuration.
 
 **Config Options:**
 
@@ -77,6 +76,8 @@ swipe_nav:
   
 views:
 ```
+
+If you need help, Mark Watt has an excellent video covering the configuration [in this youtube video](https://www.youtube.com/watch?v=03IPN9lBEfE&t=663s).
 
 ## Thank you
 Big thanks to:
