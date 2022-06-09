@@ -211,15 +211,5 @@ function mutationWatch(mutations, nodename, observeElem) {
   }
 }
 
-// Overly complicated console tag.
-const conInfo = { header: "%c≡ swipe-navigation".padEnd(27), ver: "%cversion *DEV " };
-const br = "%c\n";
-const maxLen = Math.max(...Object.values(conInfo).map((el) => el.length));
-for (const [key] of Object.entries(conInfo)) {
-  if (conInfo[key].length <= maxLen) conInfo[key] = conInfo[key].padEnd(maxLen);
-  if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -1)}⋮ `;
-}
-const header =
-  "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
-const info = "border-width:0px 1px 1px 1px;padding:7px;background:white;color:#424242;line-height:0.7;";
-console.info(conInfo.header + br + conInfo.ver, header, "", `${header} ${info}`);
+// Console tag
+console.info(`%c↔️ Swipe navigation ↔️ - *DEV`, "color: #2980b9; font-weight: 700;");
