@@ -13,6 +13,7 @@ Swipe through Home Assistant Dashboard views on mobile.
 * Option to disable a browsers default swipe actions.
 * Wrap from first view to last view and vice versa.
 * Support RTL languages.
+* Option to ignore swipes over certain elements (e.g. sliders or maps).
 
 ## History
 This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project seems to be currently unmaintained.
