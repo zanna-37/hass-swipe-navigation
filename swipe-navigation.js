@@ -38,7 +38,7 @@ const exceptions = [
   },
   { // round-slider (https://github.com/thomasloven/round-slider)
     tagname: "round-slider",
-  },  
+  },
   { // Slider button card (https://github.com/mattieha/slider-button-card)
     tagname: "slider-button-card",
   },
@@ -52,9 +52,11 @@ const exceptions = [
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
-  if (!lovelace) return;
-  config = {};
-  getConfig(lovelace);
+
+  if (lovelace) {
+    config = {};
+    getConfig(lovelace);
+  }
 }
 
 function getConfig(lovelace) {
@@ -102,7 +104,10 @@ function swipeNavigation() {
 
   function handleTouchStart(event) {
     for (let element of event.composedPath()) {
-      if (element.nodeName == "HUI-VIEW") break;
+      if (element.nodeName == "HUI-VIEW") {
+        // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
+        break;
+      }
       else {
         for (let exception of exceptions) {
           /**
@@ -138,7 +143,6 @@ function swipeNavigation() {
                 ignoreSwipeSoFar = false;
                 break;
               }
-
             }
           }
 
