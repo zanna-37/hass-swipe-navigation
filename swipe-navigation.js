@@ -7,7 +7,7 @@ let config = {};
 
 /**
  * Ignore swipes when initiated on these elements.
- * 
+ *
  * Notes:
  * - tagname must always be lowercase
  * - if more criteria are present (e.g. tagname and classes), they must all match
@@ -35,6 +35,9 @@ const exceptions = [
   { // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
     tagname: "g",
     cssClassList: ["draglayer"]
+  },
+  { // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
+    tagname: "mushroom-slider"
   },
   { // round-slider (https://github.com/thomasloven/round-slider)
     tagname: "round-slider",
@@ -113,7 +116,7 @@ function swipeNavigation() {
           /**
            * Indicates whether the current swipe should be ignored as it is checked against
            * exceptions.
-           * 
+           *
            * When `false` it indicates that the current exception's criteria does not match with the
            * element, so we can avoid to check further criteria, and we can move to look at the next
            * exception.
