@@ -34,6 +34,10 @@ const exceptions = [
   {
     tagname: "ha-sidebar",
   },
+  { // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
+    tagname: "g",
+    cssClassList: ["draglayer"]
+  },
 ];
 
 function run() {
