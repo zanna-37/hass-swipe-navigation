@@ -6,6 +6,10 @@ Swipe through Home Assistant Dashboard views on mobile.
 
 ![preview](./example.gif)
 
+This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project seems to be currently unmaintained.
+
+💡 **Please uninstall [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) before proceeding as they will likely conflict.**
+
 ## Features:
 * Animated swiping through Dashboard views.
 * Configure views to skip over.
@@ -14,9 +18,6 @@ Swipe through Home Assistant Dashboard views on mobile.
 * Wrap from first view to last view and vice versa.
 * Support RTL languages.
 * Option to ignore swipes over certain elements (e.g. sliders or maps).
-
-## History
-This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project seems to be currently unmaintained.
 
 ## Installation:
 **Follow only one of these installation methods.**
@@ -79,6 +80,9 @@ views:
 ```
 
 If you need help, Mark Watt has an excellent video covering the configuration [in this youtube video](https://www.youtube.com/watch?v=03IPN9lBEfE&t=663s).
+
+## Contributions
+If you want to help, put a ⭐ to the repository and open issues or pull requests to contribute to the development.
 
 ## Thank you
 Big thanks to:
