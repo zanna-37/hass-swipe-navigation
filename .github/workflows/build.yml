@@ -11,8 +11,15 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set version number
       run: |
-        sed -i 's|*DEV|${{ github.ref }}|g' swipe-navigation.js
-        sed -i 's|refs/tags/||' swipe-navigation.js
+        case ${GITHUB_REF} in
+          refs/heads/*)
+            GITHUB_REF_CLEAN=${GITHUB_REF#refs/heads/}
+              ;;
+          refs/tags/*)
+            GITHUB_REF_CLEAN=${GITHUB_REF#refs/tags/}
+            ;;
+        esac
+        sed -i "s|VERSION_PLACEHOLDER|${GITHUB_REF_CLEAN}|g" swipe-navigation.js
     - name: Install deps
       run: npm install uglify-js @babel/core @babel/cli @babel/preset-env
     - name: Run Babel

@@ -5,23 +5,61 @@ let huiRoot, appLayout, view;
 let llAttempts = 0;
 let config = {};
 
-// Ignore swipes when initiated on these elements.
-const ignored = [
-  "APP-HEADER",
-  "HA-SLIDER",
-  "SWIPE-CARD",
-  "SLIDER-BUTTON-CARD",
-  "HUI-MAP-CARD",
-  "ROUND-SLIDER",
-  "XIAOMI-VACUUM-MAP-CARD",
-  "HA-SIDEBAR",
+/**
+ * Ignore swipes when initiated on these elements.
+ *
+ * Notes:
+ * - tagname must always be lowercase
+ * - if more criteria are present (e.g. tagname and classes), they must all match
+ */
+const exceptions = [
+
+  // INTERNALS
+
+  { // Header bar (contains tabs)
+    tagname: "app-header",
+  },
+  { // Map
+    tagname: "hui-map-card",
+  },
+  { // Sidebar (contains dashboards)
+    tagname: "ha-sidebar",
+  },
+  { // Slider
+    tagname: "ha-slider",
+  },
+
+
+  // THIRD PARTIES
+
+  { // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
+    tagname: "g",
+    cssClassList: ["draglayer"]
+  },
+  { // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
+    tagname: "mushroom-slider"
+  },
+  { // round-slider (https://github.com/thomasloven/round-slider)
+    tagname: "round-slider",
+  },
+  { // Slider button card (https://github.com/mattieha/slider-button-card)
+    tagname: "slider-button-card",
+  },
+  { // Swipe Card (https://github.com/bramkragten/swipe-card)
+    tagname: "swipe-card",
+  },
+  { // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
+    tagname: "xiaomi-vacuum-map-card",
+  },
 ];
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
-  if (!lovelace) return;
-  config = {};
-  getConfig(lovelace);
+
+  if (lovelace) {
+    config = {};
+    getConfig(lovelace);
+  }
 }
 
 function getConfig(lovelace) {
@@ -51,11 +89,11 @@ function swipeNavigation() {
   const skip_tabs =
     config.skip_tabs != undefined
       ? String(config.skip_tabs)
-          .replace(/\s+/g, "")
-          .split(",")
-          .map(function (item) {
-            return parseInt(item, 10);
-          })
+        .replace(/\s+/g, "")
+        .split(",")
+        .map(function (item) {
+          return parseInt(item, 10);
+        })
       : [];
 
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
@@ -68,9 +106,56 @@ function swipeNavigation() {
   }
 
   function handleTouchStart(event) {
-    for (let element of event.composedPath()) {
-      if (element.nodeName == "HUI-VIEW") break;
-      else if (ignored.indexOf(element.nodeName) > -1) return;
+    if (typeof event.composedPath() == "object") {
+      for (let element of event.composedPath()) {
+        if (element.nodeName == "HUI-VIEW") {
+          // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
+          break;
+        }
+        else {
+          for (let exception of exceptions) {
+            /**
+             * Indicates whether the current swipe should be ignored as it is checked against
+             * exceptions.
+             *
+             * When `false` it indicates that the current exception's criteria does not match with the
+             * element, so we can avoid to check further criteria, and we can move to look at the next
+             * exception.
+             * When `true`, it means that the swipe _might_ be ignored, but more criteria should be
+             * checked. When all the criteria against the current exception have been checked and the
+             * value is still `true`, it means that we should actually ignore this swipe and skip all
+             * other exceptions.
+             */
+            let ignoreSwipeSoFar = true;
+
+            // Check if tagname matches
+            if (ignoreSwipeSoFar && exception.tagname != null) {
+              if (exception.tagname != element.nodeName.toLowerCase()) {
+                ignoreSwipeSoFar = false;
+              }
+            }
+
+            // Check if all css classes match
+            if (ignoreSwipeSoFar
+              && exception.cssClassList != null
+              && Array.isArray(exception.cssClassList)
+              && exception.cssClassList.length > 0
+            ) {
+              for (let ignoredCssClass of exception.cssClassList) {
+                if (element.classList.length == 0
+                  || !element.classList.contains(ignoredCssClass)) {
+                  ignoreSwipeSoFar = false;
+                  break;
+                }
+              }
+            }
+
+            if (ignoreSwipeSoFar) {
+              return;
+            }
+          }
+        }
+      }
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
@@ -212,4 +297,4 @@ function mutationWatch(mutations, nodename, observeElem) {
 }
 
 // Console tag
-console.info(`%c↔️ Swipe navigation ↔️ - *DEV`, "color: #2980b9; font-weight: 700;");
+console.info(`%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER`, "color: #2980b9; font-weight: 700;");
