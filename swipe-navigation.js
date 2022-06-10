@@ -5,38 +5,48 @@ let huiRoot, appLayout, view;
 let llAttempts = 0;
 let config = {};
 
-// Ignore swipes when initiated on these elements.
-// Notes:
-// - tagname must always be lowercase
-// - if more criteria are present (e.g. tagname and classes), they must all match
+/**
+ * Ignore swipes when initiated on these elements.
+ * 
+ * Notes:
+ * - tagname must always be lowercase
+ * - if more criteria are present (e.g. tagname and classes), they must all match
+ */
 const exceptions = [
-  {
+
+  // INTERNALS
+
+  { // Header bar (contains tabs)
     tagname: "app-header",
   },
-  {
-    tagname: "ha-slider",
-  },
-  {
-    tagname: "swipe-card",
-  },
-  {
-    tagname: "slider-button-card",
-  },
-  {
+  { // Map
     tagname: "hui-map-card",
   },
-  {
-    tagname: "round-slider",
-  },
-  {
-    tagname: "xiaomi-vacuum-map-card",
-  },
-  {
+  { // Sidebar (contains dashboards)
     tagname: "ha-sidebar",
   },
+  { // Slider
+    tagname: "ha-slider",
+  },
+
+
+  // THIRD PARTIES
+
   { // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
     tagname: "g",
     cssClassList: ["draglayer"]
+  },
+  { // round-slider (https://github.com/thomasloven/round-slider)
+    tagname: "round-slider",
+  },  
+  { // Slider button card (https://github.com/mattieha/slider-button-card)
+    tagname: "slider-button-card",
+  },
+  { // Swipe Card (https://github.com/bramkragten/swipe-card)
+    tagname: "swipe-card",
+  },
+  { // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
+    tagname: "xiaomi-vacuum-map-card",
   },
 ];
 
