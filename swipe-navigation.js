@@ -51,6 +51,9 @@ const exceptions = [
   { // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
     tagname: "xiaomi-vacuum-map-card",
   },
+  { // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
+    tagname: "my-slider",
+  }
 ];
 
 function run() {
