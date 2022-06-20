@@ -27,7 +27,7 @@ const exceptions = [
   // THIRD PARTIES
 
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
-  "g.draglayer",
+  "#plotly g.draglayer",
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
   "mushroom-slider",
   // round-slider (https://github.com/thomasloven/round-slider)
