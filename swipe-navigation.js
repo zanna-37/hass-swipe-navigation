@@ -14,22 +14,29 @@ let config = {};
 const exceptions = [
 
   // INTERNALS
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
 
   // Header bar (contains tabs)
   "app-header",
-  // Map
-  "hui-map-card",
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
   "ha-slider",
+  // Map
+  "hui-map-card",
+
 
   // THIRD PARTIES
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
 
-  // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
-  "#plotly g.draglayer",
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
   "mushroom-slider",
+  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
+  "my-slider",
+  // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
+  "#plotly g.draglayer",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Slider button card (https://github.com/mattieha/slider-button-card)
@@ -38,8 +45,6 @@ const exceptions = [
   "swipe-card",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
-  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
-  "my-slider",
 ].join(',');
 
 function run() {
