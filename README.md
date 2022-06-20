@@ -1,6 +1,6 @@
 # Home Assistant Swipe Navigation
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 
 Swipe through Home Assistant Dashboard views on mobile.
 
@@ -8,7 +8,7 @@ Swipe through Home Assistant Dashboard views on mobile.
 
 This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project seems to be currently unmaintained.
 
-💡 **Please uninstall [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) before proceeding as they will likely conflict.**
+💡 **Please uninstall [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) before proceeding, as they will likely conflict.**
 
 ## Features:
 * Animated swiping through Dashboard views.
