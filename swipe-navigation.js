@@ -105,42 +105,62 @@ class PageObjects {
   static haAppLayout = null;
   static haAppLayoutView = null;
 
-  static getHa() {
-    if (PageObjects.ha == null) {
-      PageObjects.ha = document.querySelector("home-assistant");
+  static #getObjectX(getObject, setObject, getFreshValue) {
+    if (getObject() == null) {
+      setObject(getFreshValue());
     }
-    return PageObjects.ha;
+    if (!(getObject()?.isConnected ?? false)) {
+      logd("Stale object detected: " + getObject()?.nodeName?.toLowerCase() + ". Refreshing...");
+      setObject(null);
+      PageObjects.#getObjectX(getObject, setObject, getFreshValue);
+    }
+    return getObject();
+  }
+
+  static getHa() {
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.ha; },
+      (x) => { PageObjects.ha = x; },
+      () => { return document.querySelector("home-assistant"); }
+    )
   }
   static getHaMain() {
-    if (PageObjects.haMain == null) {
-      PageObjects.haMain = PageObjects.getHa().shadowRoot.querySelector("home-assistant-main");
-    }
-    return PageObjects.haMain;
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.haMain; },
+      (x) => { PageObjects.haMain = x; },
+      () => { return PageObjects.getHa().shadowRoot.querySelector("home-assistant-main"); }
+    )
   }
   static getPartialPanelResolver() {
-    if (PageObjects.partialPanelResolver == null) {
-      PageObjects.partialPanelResolver = PageObjects.getHaMain().shadowRoot.querySelector("partial-panel-resolver");
-    }
-    return PageObjects.partialPanelResolver;
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.partialPanelResolver; },
+      (x) => { PageObjects.partialPanelResolver = x; },
+      () => { return PageObjects.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
+    )
   }
   static getLovelace() {
-    if (PageObjects.lovelace == null) {
-      PageObjects.lovelace = PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace");
-    }
-    return PageObjects.lovelace;
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.lovelace; },
+      (x) => { PageObjects.lovelace = x; },
+      () => { return PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
+    )
   }
   static getHaAppLayout() {
-    if (PageObjects.haAppLayout == null) {
-      const huiRoot = PageObjects.getLovelace().shadowRoot.querySelector("hui-root");
-      PageObjects.haAppLayout = huiRoot.shadowRoot.querySelector("ha-app-layout");
-    }
-    return PageObjects.haAppLayout;
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.haAppLayout; },
+      (x) => { PageObjects.haAppLayout = x; },
+      () => {
+        const huiRoot = PageObjects.getLovelace().shadowRoot.querySelector("hui-root");
+        return huiRoot.shadowRoot.querySelector("ha-app-layout");
+      }
+    )
   }
   static getHaAppLayoutView() {
-    if (PageObjects.haAppLayoutView == null) {
-      PageObjects.haAppLayoutView = PageObjects.getHaAppLayout().querySelector('[id="view"]');
-    }
-    return PageObjects.haAppLayoutView;
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.haAppLayoutView; },
+      (x) => { PageObjects.haAppLayoutView = x; },
+      () => { return PageObjects.getHaAppLayout().querySelector('[id="view"]'); }
+    )
   }
 }
 
