@@ -1,9 +1,3 @@
-const ha = document.querySelector("home-assistant");
-const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-const panel = main.querySelector("partial-panel-resolver");
-let huiRoot, appLayout, view;
-let llAttempts = 0;
-
 const LOG_TAG = "↔️ Swipe navigation:";
 
 const LOG_LEVELS = {
@@ -14,6 +8,45 @@ const LOG_LEVELS = {
   ERROR: 5,
 }
 
+function logv(msg) { log(msg, LOG_LEVELS.VERBOSE); }
+function logd(msg) { log(msg, LOG_LEVELS.DEBUG); }
+function logi(msg) { log(msg, LOG_LEVELS.INFO); }
+function logw(msg) { log(msg, LOG_LEVELS.WARN); }
+function loge(msg) { log(msg, LOG_LEVELS.ERROR); }
+
+function log(msg, level) {
+  if (level >= Config.logger_level) {
+    let level_tag;
+    switch (level) {
+      case LOG_LEVELS.VERBOSE:
+        level_tag = "[V]";
+        break;
+      case LOG_LEVELS.DEBUG:
+        level_tag = "[D]";
+        break;
+      case LOG_LEVELS.INFO:
+        level_tag = "[I]";
+        break;
+      case LOG_LEVELS.WARN:
+        level_tag = "[W]";
+        break;
+      case LOG_LEVELS.ERROR:
+        level_tag = "[E]";
+        break;
+      default:
+        level_tag = "[ ]";
+        break;
+    }
+    let line = LOG_TAG + " " + level_tag + " " + msg;
+
+    if (level < LOG_LEVELS.ERROR) {
+      console.log(line);
+    }
+    else {
+      console.error(line);
+    }
+  }
+}
 class Config {
   static animate = "none";
   static wrap = true;
@@ -64,6 +97,53 @@ class Config {
   }
 }
 
+class PageObjects {
+  static ha = null;
+  static haMain = null;
+  static partialPanelResolver = null;
+  static lovelace = null;
+  static haAppLayout = null;
+  static haAppLayoutView = null;
+
+  static getHa() {
+    if (PageObjects.ha == null) {
+      PageObjects.ha = document.querySelector("home-assistant");
+    }
+    return PageObjects.ha;
+  }
+  static getHaMain() {
+    if (PageObjects.haMain == null) {
+      PageObjects.haMain = PageObjects.getHa().shadowRoot.querySelector("home-assistant-main");
+    }
+    return PageObjects.haMain;
+  }
+  static getPartialPanelResolver() {
+    if (PageObjects.partialPanelResolver == null) {
+      PageObjects.partialPanelResolver = PageObjects.getHaMain().shadowRoot.querySelector("partial-panel-resolver");
+    }
+    return PageObjects.partialPanelResolver;
+  }
+  static getLovelace() {
+    if (PageObjects.lovelace == null) {
+      PageObjects.lovelace = PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace");
+    }
+    return PageObjects.lovelace;
+  }
+  static getHaAppLayout() {
+    if (PageObjects.haAppLayout == null) {
+      const huiRoot = PageObjects.getLovelace().shadowRoot.querySelector("hui-root");
+      PageObjects.haAppLayout = huiRoot.shadowRoot.querySelector("ha-app-layout");
+    }
+    return PageObjects.haAppLayout;
+  }
+  static getHaAppLayoutView() {
+    if (PageObjects.haAppLayoutView == null) {
+      PageObjects.haAppLayoutView = PageObjects.getHaAppLayout().querySelector('[id="view"]');
+    }
+    return PageObjects.haAppLayoutView;
+  }
+}
+
 /**
  * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
  *
@@ -106,42 +186,47 @@ const exceptions = [
   "xiaomi-vacuum-map-card",
 ].join(',');
 
-function run() {
-  const lovelace = main.querySelector("ha-panel-lovelace");
 
-  if (lovelace) {
-    getConfig(lovelace);
-  }
-}
 
-function getConfig(lovelace) {
-  llAttempts++;
-  try {
-    const llConfig = lovelace.lovelace.config;
-    let config = llConfig.swipe_nav || {};
-    huiRoot = lovelace.shadowRoot.querySelector("hui-root");
-    appLayout = huiRoot.shadowRoot.querySelector("ha-app-layout");
-    view = appLayout.querySelector('[id="view"]');
-    Config.readConfig(config);
-    swipeNavigation();
-  } catch (e) {
-    logw("Error while obtaining config: " + e.message + "\nRetrying...");
-    if (llAttempts < 40) setTimeout(() => getConfig(lovelace), 50);
-  }
+async function run() {
+  if (PageObjects.getLovelace()) {
+    // A dashboard is visible
+
+    let configReadingAttempts = 0;
+    let configRead = false;
+
+    while (!configRead && configReadingAttempts < 300) {
+      configReadingAttempts++;
+      try {
+        const rawConfig = PageObjects.getLovelace().lovelace.config.swipe_nav || {};
+        Config.readConfig(rawConfig);
+        configRead = true;
+      } catch (e) {
+        logw("Error while obtaining config: " + e.message + ". Retrying...");
+        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
+      }
+    }
+
+    if (!configRead) {
+      loge("Can't read configuration, exiting.");
+    } else {
+      logi("Configuration read.");
+      swipeNavigation();
+    }
+  } // else we are in another panel, e.g. Settings
 }
 
 function swipeNavigation() {
-  llAttempts = 0;
-  const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
+  const tabContainer = PageObjects.getHaAppLayout().querySelector("paper-tabs") || PageObjects.getHaAppLayout().querySelector("ha-tabs");
   let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
-  const rtl = ha.style.direction == "rtl";
+  const rtl = PageObjects.getHa().style.direction == "rtl";
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 
   if (tabContainer) {
-    appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
-    appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
-    appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
-    if (Config.animate == "swipe") appLayout.style.overflow = "hidden";
+    PageObjects.getHaAppLayout().addEventListener("touchstart", handleTouchStart, { passive: true });
+    PageObjects.getHaAppLayout().addEventListener("touchmove", handleTouchMove, { passive: false });
+    PageObjects.getHaAppLayout().addEventListener("touchend", handleTouchEnd, { passive: true });
+    if (Config.animate == "swipe") PageObjects.getHaAppLayout().style.overflow = "hidden";
   }
 
   function handleTouchStart(event) {
@@ -222,6 +307,9 @@ function swipeNavigation() {
 
   function click(index) {
     if ((activeTab == 0 && !Config.wrap && left) || (activeTab == tabs.length - 1 && !Config.wrap && !left)) return;
+
+    const view = PageObjects.getHaAppLayoutView();
+
     if (Config.animate == "swipe") {
       const _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
       const _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
@@ -276,53 +364,13 @@ function swipeNavigation() {
   }
 }
 
-function logv(msg) { log(msg, LOG_LEVELS.VERBOSE); }
-function logd(msg) { log(msg, LOG_LEVELS.DEBUG); }
-function logi(msg) { log(msg, LOG_LEVELS.INFO); }
-function logw(msg) { log(msg, LOG_LEVELS.WARN); }
-function loge(msg) { log(msg, LOG_LEVELS.ERROR); }
-
-function log(msg, level) {
-  if (level >= Config.logger_level) {
-    let level_tag;
-    switch (level) {
-      case LOG_LEVELS.VERBOSE:
-        level_tag = "[V]";
-        break;
-      case LOG_LEVELS.DEBUG:
-        level_tag = "[D]";
-        break;
-      case LOG_LEVELS.INFO:
-        level_tag = "[I]";
-        break;
-      case LOG_LEVELS.WARN:
-        level_tag = "[W]";
-        break;
-      case LOG_LEVELS.ERROR:
-        level_tag = "[E]";
-        break;
-      default:
-        level_tag = "[ ]";
-        break;
-    }
-    let line = LOG_TAG + " " + level_tag + " " + msg;
-
-    if (level < LOG_LEVELS.ERROR) {
-      console.log(line);
-    }
-    else {
-      console.error(line);
-    }
-  }
-}
-
 
 
 // Initial run
 run();
 
 // Run on element changes.
-new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
+new MutationObserver(lovelaceWatch).observe(PageObjects.getPartialPanelResolver(), { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
