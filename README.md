@@ -62,6 +62,7 @@ If you want to modify the configuration, place it in the root of your dashboard 
 | wrap            | boolean | true    | Wrap from first tab to last tab and vice versa.                                                                                                                                       |
 | prevent_default | boolean | false   | Prevents the browsers default horizontal swipe actions. May require a browser refresh to take effect, if using an HA companion app this can be done by closing the app and reopening. |
 | animate         | string  |         | Swipe animations. Can be: `swipe`, `fade`, `flip`. The swipe animation should be considered experimental and depending on your setup may appear buggy.                                |
+| logger_level    | string  | warn    | Set logging level. Possible values are: `verbose`, `debug`, `info`, `warn`, `error`.                                                                                                  |
 
 
 **Example:**
