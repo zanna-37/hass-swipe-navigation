@@ -15,31 +15,31 @@ const LOG_LEVELS = {
 }
 
 class Config {
-  static animate;
-  static wrap;
-  static prevent_default;
-  static swipe_amount;
-  static skip_hidden;
-  static skip_tabs;
+  static animate = "none";
+  static wrap = true;
+  static prevent_default = false;
+  static swipe_amount = 0.15;
+  static skip_hidden = true;
+  static skip_tabs = [];
+  static logger_level = LOG_LEVELS.WARN;
 
-  static readConfig(config) {
-    Config.animate = config.animate != undefined ? config.animate : "none";
-    Config.wrap = config.wrap != undefined ? config.wrap : true;
-    Config.prevent_default = config.prevent_default != undefined ? config.prevent_default : false;
-    Config.swipe_amount = config.swipe_amount != undefined ? config.swipe_amount / Math.pow(10, 2) : 0.15;
-    Config.skip_hidden = config.skip_hidden != undefined ? config.skip_hidden : true;
-    Config.skip_tabs =
-      config.skip_tabs != undefined
-        ? String(config.skip_tabs)
+  static readConfig(rawConfig) {
+    if (rawConfig.animate != undefined) Config.animate = rawConfig.animate;
+    if (rawConfig.wrap != undefined) Config.wrap = rawConfig.wrap;
+    if (rawConfig.prevent_default != undefined) Config.prevent_default = rawConfig.prevent_default;
+    if (rawConfig.swipe_amount != undefined) Config.swipe_amount = rawConfig.swipe_amount / 100.0;
+    if (rawConfig.skip_hidden != undefined) Config.skip_hidden = rawConfig.skip_hidden;
+    if (rawConfig.skip_tabs != undefined) {
+      Config.skip_tabs =
+        String(rawConfig.skip_tabs)
           .replace(/\s+/g, "")
           .split(",")
           .map(function (item) {
             return parseInt(item, 10);
-          })
-        : [];
-    Config.logger_level = LOG_LEVELS.WARN;
-    if (config.logger_level != undefined) {
-      switch (config.logger_level) {
+          });
+    }
+    if (rawConfig.logger_level != undefined) {
+      switch (rawConfig.logger_level) {
         case "verbose":
           Config.logger_level = LOG_LEVELS.VERBOSE;
           break;
@@ -57,7 +57,7 @@ class Config {
           break;
         default:
           Config.logger_level = LOG_LEVELS.WARN;
-          loge("Unknown logger_level: \"" + config.logger_level + "\"");
+          loge("Unknown logger_level: \"" + rawConfig.logger_level + "\"");
           break;
       }
     }
