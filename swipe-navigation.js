@@ -175,35 +175,33 @@ function swipeNavigation() {
   }
 
   function handleTouchEnd() {
-    // TODO do not log when any of xDown, yDown, xDiff, yDiff is null
-    if (activeTab < 0) {
-      xDown = yDown = xDiff = yDiff = null;
-      logw("Ignoring swipe, no active tab found.");
-      return;
-    }
+    if (xDiff != null && yDiff != null) {
+      if (activeTab < 0) {
+        logw("Ignoring swipe, no active tab found.");
 
-    if (Math.abs(xDiff) < Math.abs(yDiff)) {
-      xDown = yDown = xDiff = yDiff = null;
-      logd("Swipe ignored, vertical movement.");
-      return;
-    }
+      } else if (Math.abs(xDiff) < Math.abs(yDiff)) {
+        logd("Swipe ignored, vertical movement.");
 
-    if (rtl) xDiff = -xDiff;
-    if (Math.abs(xDiff) > Math.abs(screen.width * Config.swipe_amount)) {
+      } else {  // Horizontal movement
+        if (Math.abs(xDiff) < Math.abs(screen.width * Config.swipe_amount)) {
+          logd("Swipe ignored, too short.");
 
-      logi("Swipe detected, changing tab.");
+        } else {
+          if (xDiff >= 0) {
+            left = false;
+          } else {
+            left = true;
+          }
 
-      if (xDiff > 0) {
-        left = false;
-        activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
-      } else if (xDiff < 0) {
-        left = true;
-        activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+          logi("Swipe detected, changing tab to the " + (left ? "left" : "right") + ".");
+
+          if (rtl ? !left : left) {
+            activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+          } else {
+            activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
+          }
+        }
       }
-
-      if (rtl) left = !left;
-    } else {
-      logd("Swipe ignored, too short.");
     }
     xDown = yDown = xDiff = yDiff = null;
   }
