@@ -4,6 +4,16 @@ const panel = main.querySelector("partial-panel-resolver");
 let huiRoot, appLayout, view;
 let llAttempts = 0;
 
+const LOG_TAG = "↔️ Swipe navigation:";
+
+const LOG_LEVELS = {
+  VERBOSE: 1,
+  DEBUG: 2,
+  INFO: 3,
+  WARN: 4,
+  ERROR: 5,
+}
+
 class Config {
   static animate;
   static wrap;
@@ -27,6 +37,30 @@ class Config {
             return parseInt(item, 10);
           })
         : [];
+    Config.logger_level = LOG_LEVELS.WARN;
+    if (config.logger_level != undefined) {
+      switch (config.logger_level) {
+        case "verbose":
+          Config.logger_level = LOG_LEVELS.VERBOSE;
+          break;
+        case "debug":
+          Config.logger_level = LOG_LEVELS.DEBUG;
+          break;
+        case "info":
+          Config.logger_level = LOG_LEVELS.INFO;
+          break;
+        case "warn":
+          Config.logger_level = LOG_LEVELS.WARN;
+          break;
+        case "error":
+          Config.logger_level = LOG_LEVELS.ERROR;
+          break;
+        default:
+          Config.logger_level = LOG_LEVELS.WARN;
+          loge("Unknown logger_level: \"" + config.logger_level + "\"");
+          break;
+      }
+    }
   }
 }
 
@@ -90,7 +124,8 @@ function getConfig(lovelace) {
     view = appLayout.querySelector('[id="view"]');
     Config.readConfig(config);
     swipeNavigation();
-  } catch {
+  } catch (e) {
+    logw("Error while obtaining config: " + e.message + "\nRetrying...");
     if (llAttempts < 40) setTimeout(() => getConfig(lovelace), 50);
   }
 }
@@ -117,6 +152,9 @@ function swipeNavigation() {
           break;
         } else {
           if (element.matches && element.matches(exceptions)) {
+            logd("Ignoring touch on \""
+              + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
+              + "\".");
             return; // Ignore swipe
           }
         }
@@ -137,19 +175,36 @@ function swipeNavigation() {
   }
 
   function handleTouchEnd() {
-    if (activeTab < 0 || Math.abs(xDiff) < Math.abs(yDiff)) {
+    // TODO do not log when any of xDown, yDown, xDiff, yDiff is null
+    if (activeTab < 0) {
       xDown = yDown = xDiff = yDiff = null;
+      logw("Ignoring swipe, no active tab found.");
       return;
     }
-    if (rtl) xDiff = -xDiff;
-    if (xDiff > Math.abs(screen.width * Config.swipe_amount)) {
-      left = false;
-      activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
-    } else if (xDiff < -Math.abs(screen.width * Config.swipe_amount)) {
-      left = true;
-      activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+
+    if (Math.abs(xDiff) < Math.abs(yDiff)) {
+      xDown = yDown = xDiff = yDiff = null;
+      logd("Swipe ignored, vertical movement.");
+      return;
     }
-    if (rtl) left = !left;
+
+    if (rtl) xDiff = -xDiff;
+    if (Math.abs(xDiff) > Math.abs(screen.width * Config.swipe_amount)) {
+
+      logi("Swipe detected, changing tab.");
+
+      if (xDiff > 0) {
+        left = false;
+        activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
+      } else if (xDiff < 0) {
+        left = true;
+        activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+      }
+
+      if (rtl) left = !left;
+    } else {
+      logd("Swipe ignored, too short.");
+    }
     xDown = yDown = xDiff = yDiff = null;
   }
 
@@ -222,6 +277,48 @@ function swipeNavigation() {
     }
   }
 }
+
+function logv(msg) { log(msg, LOG_LEVELS.VERBOSE); }
+function logd(msg) { log(msg, LOG_LEVELS.DEBUG); }
+function logi(msg) { log(msg, LOG_LEVELS.INFO); }
+function logw(msg) { log(msg, LOG_LEVELS.WARN); }
+function loge(msg) { log(msg, LOG_LEVELS.ERROR); }
+
+function log(msg, level) {
+  if (level >= Config.logger_level) {
+    let level_tag;
+    switch (level) {
+      case LOG_LEVELS.VERBOSE:
+        level_tag = "[V]";
+        break;
+      case LOG_LEVELS.DEBUG:
+        level_tag = "[D]";
+        break;
+      case LOG_LEVELS.INFO:
+        level_tag = "[I]";
+        break;
+      case LOG_LEVELS.WARN:
+        level_tag = "[W]";
+        break;
+      case LOG_LEVELS.ERROR:
+        level_tag = "[E]";
+        break;
+      default:
+        level_tag = "[ ]";
+        break;
+    }
+    let line = LOG_TAG + " " + level_tag + " " + msg;
+
+    if (level < LOG_LEVELS.ERROR) {
+      console.log(line);
+    }
+    else {
+      console.error(line);
+    }
+  }
+}
+
+
 
 // Initial run
 run();
