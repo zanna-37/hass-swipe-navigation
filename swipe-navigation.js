@@ -3,7 +3,32 @@ const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 let huiRoot, appLayout, view;
 let llAttempts = 0;
-let config = {};
+
+class Config {
+  static animate;
+  static wrap;
+  static prevent_default;
+  static swipe_amount;
+  static skip_hidden;
+  static skip_tabs;
+
+  static readConfig(config) {
+    Config.animate = config.animate != undefined ? config.animate : "none";
+    Config.wrap = config.wrap != undefined ? config.wrap : true;
+    Config.prevent_default = config.prevent_default != undefined ? config.prevent_default : false;
+    Config.swipe_amount = config.swipe_amount != undefined ? config.swipe_amount / Math.pow(10, 2) : 0.15;
+    Config.skip_hidden = config.skip_hidden != undefined ? config.skip_hidden : true;
+    Config.skip_tabs =
+      config.skip_tabs != undefined
+        ? String(config.skip_tabs)
+          .replace(/\s+/g, "")
+          .split(",")
+          .map(function (item) {
+            return parseInt(item, 10);
+          })
+        : [];
+  }
+}
 
 /**
  * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
@@ -51,7 +76,6 @@ function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
 
   if (lovelace) {
-    config = {};
     getConfig(lovelace);
   }
 }
@@ -60,10 +84,11 @@ function getConfig(lovelace) {
   llAttempts++;
   try {
     const llConfig = lovelace.lovelace.config;
-    config = llConfig.swipe_nav || {};
+    let config = llConfig.swipe_nav || {};
     huiRoot = lovelace.shadowRoot.querySelector("hui-root");
     appLayout = huiRoot.shadowRoot.querySelector("ha-app-layout");
     view = appLayout.querySelector('[id="view"]');
+    Config.readConfig(config);
     swipeNavigation();
   } catch {
     if (llAttempts < 40) setTimeout(() => getConfig(lovelace), 50);
@@ -75,28 +100,13 @@ function swipeNavigation() {
   const tabContainer = appLayout.querySelector("paper-tabs") || appLayout.querySelector("ha-tabs");
   let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
   const rtl = ha.style.direction == "rtl";
-  const animate = config.animate != undefined ? config.animate : "none";
-  const wrap = config.wrap != undefined ? config.wrap : true;
-  const prevent_default = config.prevent_default != undefined ? config.prevent_default : false;
-  const swipe_amount = config.swipe_amount != undefined ? config.swipe_amount / Math.pow(10, 2) : 0.15;
-  const skip_hidden = config.skip_hidden != undefined ? config.skip_hidden : true;
-  const skip_tabs =
-    config.skip_tabs != undefined
-      ? String(config.skip_tabs)
-        .replace(/\s+/g, "")
-        .split(",")
-        .map(function (item) {
-          return parseInt(item, 10);
-        })
-      : [];
-
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 
   if (tabContainer) {
     appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
     appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
     appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
-    if (animate == "swipe") appLayout.style.overflow = "hidden";
+    if (Config.animate == "swipe") appLayout.style.overflow = "hidden";
   }
 
   function handleTouchStart(event) {
@@ -122,7 +132,7 @@ function swipeNavigation() {
     if (xDown && yDown) {
       xDiff = xDown - event.touches[0].clientX;
       yDiff = yDown - event.touches[0].clientY;
-      if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) event.preventDefault();
+      if (Math.abs(xDiff) > Math.abs(yDiff) && Config.prevent_default) event.preventDefault();
     }
   }
 
@@ -132,10 +142,10 @@ function swipeNavigation() {
       return;
     }
     if (rtl) xDiff = -xDiff;
-    if (xDiff > Math.abs(screen.width * swipe_amount)) {
+    if (xDiff > Math.abs(screen.width * Config.swipe_amount)) {
       left = false;
       activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
-    } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
+    } else if (xDiff < -Math.abs(screen.width * Config.swipe_amount)) {
       left = true;
       activeTab == 0 ? click(lastTab) : click(activeTab - 1);
     }
@@ -144,22 +154,22 @@ function swipeNavigation() {
   }
 
   function filterTabs() {
-    if (skip_hidden) {
+    if (Config.skip_hidden) {
       tabs = tabs.filter((element) => {
-        return !skip_tabs.includes(tabs.indexOf(element)) && getComputedStyle(element, null).display != "none";
+        return !Config.skip_tabs.includes(tabs.indexOf(element)) && getComputedStyle(element, null).display != "none";
       });
     } else {
       tabs = tabs.filter((element) => {
-        return !skip_tabs.includes(tabs.indexOf(element));
+        return !Config.skip_tabs.includes(tabs.indexOf(element));
       });
     }
-    firstTab = wrap ? 0 : null;
-    lastTab = wrap ? tabs.length - 1 : null;
+    firstTab = Config.wrap ? 0 : null;
+    lastTab = Config.wrap ? tabs.length - 1 : null;
   }
 
   function click(index) {
-    if ((activeTab == 0 && !wrap && left) || (activeTab == tabs.length - 1 && !wrap && !left)) return;
-    if (animate == "swipe") {
+    if ((activeTab == 0 && !Config.wrap && left) || (activeTab == tabs.length - 1 && !Config.wrap && !left)) return;
+    if (Config.animate == "swipe") {
       const _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
       const _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
       view.style.transitionDuration = "200ms";
@@ -178,7 +188,7 @@ function swipeNavigation() {
         view.style.transform = `translate(0px, 0)`;
         view.style.transition = "transform 0.20s, opacity 0.18s";
       }, 250);
-    } else if (animate == "fade") {
+    } else if (Config.animate == "fade") {
       view.style.transitionDuration = "200ms";
       view.style.transition = "opacity 0.20s";
       view.style.opacity = 0;
@@ -193,7 +203,7 @@ function swipeNavigation() {
         view.style.transition = "opacity 0.20s";
         view.style.opacity = 1;
       }, 250);
-    } else if (animate == "flip") {
+    } else if (Config.animate == "flip") {
       view.style.transitionDuration = "200ms";
       view.style.transform = "rotatey(90deg)";
       view.style.transition = "transform 0.20s, opacity 0.20s";
