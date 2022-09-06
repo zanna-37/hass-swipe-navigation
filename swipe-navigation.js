@@ -1,6 +1,7 @@
 const LOG_TAG = "↔️ Swipe navigation:";
 
 const LOG_LEVELS = {
+  ALL: 0,
   VERBOSE: 1,
   DEBUG: 2,
   INFO: 3,
@@ -54,7 +55,9 @@ class Config {
   static swipe_amount = 0.15;
   static skip_hidden = true;
   static skip_tabs = [];
-  static logger_level = LOG_LEVELS.WARN;
+  // Print all levels until the config is loaded, otherwise there is no way to see low level logs.
+  // The real default is set below.
+  static logger_level = LOG_LEVELS.ALL;
 
   static readConfig(rawConfig) {
     if (rawConfig.animate != undefined) Config.animate = rawConfig.animate;
@@ -93,6 +96,9 @@ class Config {
           loge("Unknown logger_level: \"" + rawConfig.logger_level + "\"");
           break;
       }
+    } else {
+      // The default value is set here because we want to print everything before reading the config.
+      logger_level = LOG_LEVELS.WARN;
     }
   }
 }
