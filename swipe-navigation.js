@@ -109,6 +109,7 @@ class PageObjects {
   static haMain = null;
   static partialPanelResolver = null;
   static haPanelLovelace = null;
+  static huiRoot = null;
   static haAppLayout = null;
   static haAppLayoutView = null;
   static tabsContainer = null;
@@ -163,13 +164,19 @@ class PageObjects {
       () => { return PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
     )
   }
+  static getHuiRoot() {
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.huiRoot; },
+      (x) => { PageObjects.huiRoot = x; },
+      () => { return PageObjects.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
+    )
+  }
   static getHaAppLayout() {
     return PageObjects.#getObjectX(
       () => { return PageObjects.haAppLayout; },
       (x) => { PageObjects.haAppLayout = x; },
       () => {
-        const huiRoot = PageObjects.getHaPanelLovelace().shadowRoot.querySelector("hui-root");
-        return huiRoot.shadowRoot.querySelector("ha-app-layout");
+        return PageObjects.getHuiRoot().shadowRoot.querySelector("ha-app-layout");
       }
     )
   }
