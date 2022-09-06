@@ -48,6 +48,7 @@ function log(msg, level) {
     }
   }
 }
+
 class Config {
   static animate = "none";
   static wrap = true;
@@ -59,7 +60,7 @@ class Config {
   // The real default is set below.
   static logger_level = LOG_LEVELS.ALL;
 
-  static readConfig(rawConfig) {
+  static parseConfig(rawConfig) {
     if (rawConfig.animate != undefined) Config.animate = rawConfig.animate;
     if (rawConfig.wrap != undefined) Config.wrap = rawConfig.wrap;
     if (rawConfig.prevent_default != undefined) Config.prevent_default = rawConfig.prevent_default;
@@ -200,6 +201,25 @@ class PageObjects {
   }
 }
 
+async function getConfiguration() {
+  let configReadingAttempts = 0;
+  let configRead = false;
+
+  while (!configRead && configReadingAttempts < 300) {
+    configReadingAttempts++;
+    try {
+      const rawConfig = PageObjects.getLovelace().lovelace.config.swipe_nav || {};
+      Config.parseConfig(rawConfig);
+      configRead = true;
+    } catch (e) {
+      logw("Error while obtaining config: " + e.message + ". Retrying...");
+      await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
+    }
+  }
+
+  return configRead;
+}
+
 /**
  * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
  *
@@ -244,31 +264,20 @@ const exceptions = [
 
 
 
-async function run() {
+function run() {
   if (PageObjects.getLovelace()) {
     // A dashboard is visible
 
-    let configReadingAttempts = 0;
-    let configRead = false;
-
-    while (!configRead && configReadingAttempts < 300) {
-      configReadingAttempts++;
-      try {
-        const rawConfig = PageObjects.getLovelace().lovelace.config.swipe_nav || {};
-        Config.readConfig(rawConfig);
-        configRead = true;
-      } catch (e) {
-        logw("Error while obtaining config: " + e.message + ". Retrying...");
-        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
+    let configurationLoading = getConfiguration();
+    configurationLoading.then((configRead) => {
+      if (!configRead) {
+        loge("Can't read configuration, exiting.");
+      } else {
+        logi("Configuration read.");
+        swipeNavigation();
       }
-    }
+    });
 
-    if (!configRead) {
-      loge("Can't read configuration, exiting.");
-    } else {
-      logi("Configuration read.");
-      swipeNavigation();
-    }
   } // else we are in another panel, e.g. Settings
 }
 
