@@ -110,16 +110,27 @@ class PageObjects {
   static lovelace = null;
   static haAppLayout = null;
   static haAppLayoutView = null;
+  static tabsContainer = null;
+  static tabsArray = null;
 
   static #getObjectX(getObject, setObject, getFreshValue) {
+
+    // Refresh if object is not in cache
     if (getObject() == null) {
       setObject(getFreshValue());
     }
-    if (!(getObject()?.isConnected ?? false)) {
-      logd("Stale object detected: " + getObject()?.nodeName?.toLowerCase() + ". Refreshing...");
-      setObject(null);
-      PageObjects.#getObjectX(getObject, setObject, getFreshValue);
+
+    // Stale detection
+    let objects = Array.isArray(getObject()) ? getObject() : [getObject()];
+    for (let i = 0, found = false; i < objects.length && !found; i++) {
+      if (!(objects[i]?.isConnected ?? false)) {
+        found = true;
+        logd("Stale object detected: \"" + objects[i]?.nodeName?.toLowerCase() ?? "unknown" + "\". Refreshing...");
+        setObject(null);
+        PageObjects.#getObjectX(getObject, setObject, getFreshValue);
+      }
     }
+
     return getObject();
   }
 
@@ -166,6 +177,25 @@ class PageObjects {
       () => { return PageObjects.haAppLayoutView; },
       (x) => { PageObjects.haAppLayoutView = x; },
       () => { return PageObjects.getHaAppLayout().querySelector('[id="view"]'); }
+    )
+  }
+  static getTabsContainer() {
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.tabsContainer; },
+      (x) => { PageObjects.tabsContainer = x; },
+      () => {
+        return PageObjects.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
+          || PageObjects.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
+      }
+    )
+  }
+  static getTabsArray() {
+    return PageObjects.#getObjectX(
+      () => { return PageObjects.tabsArray; },
+      (x) => { PageObjects.tabsArray = x; },
+      () => {
+        return PageObjects.tabsArray = Array.from(PageObjects.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
+      }
     )
   }
 }
@@ -243,12 +273,9 @@ async function run() {
 }
 
 function swipeNavigation() {
-  const tabContainer = PageObjects.getHaAppLayout().querySelector("paper-tabs") || PageObjects.getHaAppLayout().querySelector("ha-tabs");
-  let tabs = tabContainer ? Array.from(tabContainer.querySelectorAll("paper-tab")) : [];
-  const rtl = PageObjects.getHa().style.direction == "rtl";
-  let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
+  let xDown, yDown, xDiff, yDiff;
 
-  if (tabContainer) {
+  if (PageObjects.getTabsContainer()) {
     PageObjects.getHaAppLayout().addEventListener("touchstart", handleTouchStart, { passive: true });
     PageObjects.getHaAppLayout().addEventListener("touchmove", handleTouchMove, { passive: false });
     PageObjects.getHaAppLayout().addEventListener("touchend", handleTouchEnd, { passive: true });
@@ -273,8 +300,6 @@ function swipeNavigation() {
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
-    if (!lastTab) filterTabs();
-    activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
   function handleTouchMove(event) {
@@ -287,10 +312,7 @@ function swipeNavigation() {
 
   function handleTouchEnd() {
     if (xDiff != null && yDiff != null) {
-      if (activeTab < 0) {
-        logw("Ignoring swipe, no active tab found.");
-
-      } else if (Math.abs(xDiff) < Math.abs(yDiff)) {
+      if (Math.abs(xDiff) < Math.abs(yDiff)) {
         logd("Swipe ignored, vertical movement.");
 
       } else {  // Horizontal movement
@@ -298,94 +320,122 @@ function swipeNavigation() {
           logd("Swipe ignored, too short.");
 
         } else {
-          if (xDiff >= 0) {
-            left = false;
-          } else {
-            left = true;
-          }
+          let directionLeft = xDiff < 0;
 
-          logi("Swipe detected, changing tab to the " + (left ? "left" : "right") + ".");
+          logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          if (rtl ? !left : left) {
-            activeTab == 0 ? click(lastTab) : click(activeTab - 1);
-          } else {
-            activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
-          }
+          const rtl = PageObjects.getHa().style.direction == "rtl";
+          let nextTabIndex = getNextTabIndex(rtl ? !directionLeft : directionLeft);
+          click(nextTabIndex, directionLeft);
         }
       }
     }
     xDown = yDown = xDiff = yDiff = null;
   }
 
-  function filterTabs() {
-    if (Config.skip_hidden) {
-      tabs = tabs.filter((element) => {
-        return !Config.skip_tabs.includes(tabs.indexOf(element)) && getComputedStyle(element, null).display != "none";
-      });
+  function getNextTabIndex(directionLeft) {
+    let tabs = PageObjects.getTabsArray();
+    let activeTabIndex = tabs.indexOf(PageObjects.getTabsContainer().querySelector(".iron-selected"));
+    let nextTabIndex = activeTabIndex;
+    let stopReason = null;
+
+    if (activeTabIndex == -1) {
+      stopReason = "Can't determine the active tab";
+
     } else {
-      tabs = tabs.filter((element) => {
-        return !Config.skip_tabs.includes(tabs.indexOf(element));
-      });
+      let increment = directionLeft ? -1 : 1;
+      do {
+        nextTabIndex += increment;
+
+        if (nextTabIndex == -1) {
+          nextTabIndex = Config.wrap ? tabs.length - 1 : -1;
+        } else if (nextTabIndex == tabs.length) {
+          nextTabIndex = Config.wrap ? 0 : -1;
+        }
+
+        if (nextTabIndex == activeTabIndex) {
+          // A complete cycle has been done. Stop to avoid infinite loop.
+          stopReason = "Error, no viable tabs found for swiping.";
+        } else if (nextTabIndex == -1) {
+          stopReason = "Edge has been reached and wrap is disabled.";
+        }
+
+      } while (
+        // Cycle if...
+        (
+          Config.skip_tabs.includes(nextTabIndex)  // ...the tab should be skipped or...
+          || (
+            Config.skip_hidden  // ...if skip hidden is enabled and...
+            && getComputedStyle(tabs[nextTabIndex], null).display == "none"  // ...the tab is hidden...
+          )
+        ) && stopReason == null  // ...and the is no reason to stop
+      )
     }
-    firstTab = Config.wrap ? 0 : null;
-    lastTab = Config.wrap ? tabs.length - 1 : null;
+
+    if (stopReason != null) {
+      logw(stopReason);
+      return -1;
+    } else {
+      return nextTabIndex;
+    }
   }
 
-  function click(index) {
-    if ((activeTab == 0 && !Config.wrap && left) || (activeTab == tabs.length - 1 && !Config.wrap && !left)) return;
+  function click(index, directionLeft) {
+    if (index != -1) {
+      const view = PageObjects.getHaAppLayoutView();
+      const tabs = PageObjects.getTabsArray();
 
-    const view = PageObjects.getHaAppLayoutView();
-
-    if (Config.animate == "swipe") {
-      const _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-      const _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
-      view.style.transitionDuration = "200ms";
-      view.style.opacity = 0;
-      view.style.transform = `translate(${_in}, 0)`;
-      view.style.transition = "transform 0.20s, opacity 0.18s";
-      setTimeout(function () {
-        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-        view.style.transitionDuration = "0ms";
-        view.style.transform = `translate(${_out}, 0)`;
-        view.style.transition = "transform 0s";
-      }, 210);
-      setTimeout(function () {
+      if (Config.animate == "swipe") {
+        const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+        const _out = directionLeft ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
         view.style.transitionDuration = "200ms";
-        view.style.opacity = 1;
-        view.style.transform = `translate(0px, 0)`;
-        view.style.transition = "transform 0.20s, opacity 0.18s";
-      }, 250);
-    } else if (Config.animate == "fade") {
-      view.style.transitionDuration = "200ms";
-      view.style.transition = "opacity 0.20s";
-      view.style.opacity = 0;
-      setTimeout(function () {
-        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-        view.style.transitionDuration = "0ms";
         view.style.opacity = 0;
-        view.style.transition = "opacity 0s";
-      }, 210);
-      setTimeout(function () {
+        view.style.transform = `translate(${_in}, 0)`;
+        view.style.transition = "transform 0.20s, opacity 0.18s";
+        setTimeout(function () {
+          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+          view.style.transitionDuration = "0ms";
+          view.style.transform = `translate(${_out}, 0)`;
+          view.style.transition = "transform 0s";
+        }, 210);
+        setTimeout(function () {
+          view.style.transitionDuration = "200ms";
+          view.style.opacity = 1;
+          view.style.transform = `translate(0px, 0)`;
+          view.style.transition = "transform 0.20s, opacity 0.18s";
+        }, 250);
+      } else if (Config.animate == "fade") {
         view.style.transitionDuration = "200ms";
         view.style.transition = "opacity 0.20s";
-        view.style.opacity = 1;
-      }, 250);
-    } else if (Config.animate == "flip") {
-      view.style.transitionDuration = "200ms";
-      view.style.transform = "rotatey(90deg)";
-      view.style.transition = "transform 0.20s, opacity 0.20s";
-      view.style.opacity = 0.25;
-      setTimeout(function () {
-        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-      }, 210);
-      setTimeout(function () {
+        view.style.opacity = 0;
+        setTimeout(function () {
+          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+          view.style.transitionDuration = "0ms";
+          view.style.opacity = 0;
+          view.style.transition = "opacity 0s";
+        }, 210);
+        setTimeout(function () {
+          view.style.transitionDuration = "200ms";
+          view.style.transition = "opacity 0.20s";
+          view.style.opacity = 1;
+        }, 250);
+      } else if (Config.animate == "flip") {
         view.style.transitionDuration = "200ms";
-        view.style.transform = "rotatey(0deg)";
+        view.style.transform = "rotatey(90deg)";
         view.style.transition = "transform 0.20s, opacity 0.20s";
-        view.style.opacity = 1;
-      }, 250);
-    } else {
-      tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+        view.style.opacity = 0.25;
+        setTimeout(function () {
+          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+        }, 210);
+        setTimeout(function () {
+          view.style.transitionDuration = "200ms";
+          view.style.transform = "rotatey(0deg)";
+          view.style.transition = "transform 0.20s, opacity 0.20s";
+          view.style.opacity = 1;
+        }, 250);
+      } else {
+        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+      }
     }
   }
 }
