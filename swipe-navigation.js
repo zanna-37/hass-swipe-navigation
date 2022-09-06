@@ -108,7 +108,7 @@ class PageObjects {
   static ha = null;
   static haMain = null;
   static partialPanelResolver = null;
-  static lovelace = null;
+  static haPanelLovelace = null;
   static haAppLayout = null;
   static haAppLayoutView = null;
   static tabsContainer = null;
@@ -156,10 +156,10 @@ class PageObjects {
       () => { return PageObjects.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
     )
   }
-  static getLovelace() {
+  static getHaPanelLovelace() {
     return PageObjects.#getObjectX(
-      () => { return PageObjects.lovelace; },
-      (x) => { PageObjects.lovelace = x; },
+      () => { return PageObjects.haPanelLovelace; },
+      (x) => { PageObjects.haPanelLovelace = x; },
       () => { return PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
     )
   }
@@ -168,7 +168,7 @@ class PageObjects {
       () => { return PageObjects.haAppLayout; },
       (x) => { PageObjects.haAppLayout = x; },
       () => {
-        const huiRoot = PageObjects.getLovelace().shadowRoot.querySelector("hui-root");
+        const huiRoot = PageObjects.getHaPanelLovelace().shadowRoot.querySelector("hui-root");
         return huiRoot.shadowRoot.querySelector("ha-app-layout");
       }
     )
@@ -208,7 +208,7 @@ async function getConfiguration() {
   while (!configRead && configReadingAttempts < 300) {
     configReadingAttempts++;
     try {
-      const rawConfig = PageObjects.getLovelace().lovelace.config.swipe_nav || {};
+      const rawConfig = PageObjects.getHaPanelLovelace().lovelace.config.swipe_nav || {};
       Config.parseConfig(rawConfig);
       configRead = true;
     } catch (e) {
@@ -265,7 +265,7 @@ const exceptions = [
 
 
 function run() {
-  if (PageObjects.getLovelace()) {
+  if (PageObjects.getHaPanelLovelace()) {
     // A dashboard is visible
 
     let configurationLoading = getConfiguration();
