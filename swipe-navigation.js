@@ -104,107 +104,111 @@ class Config {
   }
 }
 
-class PageObjectManager {
-  static ha = null;
-  static haMain = null;
-  static partialPanelResolver = null;
-  static haPanelLovelace = null;
-  static huiRoot = null;
-  static haAppLayout = null;
-  static haAppLayoutView = null;
-  static tabsContainer = null;
-  static tabsArray = null;
+class PageObject {
+  #domNode = null;
+  getFreshDomNode = null
 
-  static #getObjectX(getObject, setObject, getFreshValue) {
+  constructor(getFreshDomNode) {
+    this.getFreshDomNode = getFreshDomNode;
+  }
 
+  invalidateDomNode() {
+    this.#domNode = null;
+  }
+
+  getDomNode() {
     // Refresh if object is not in cache
-    if (getObject() == null) {
-      setObject(getFreshValue());
+    if (this.#domNode == null) {
+      this.#domNode = this.getFreshDomNode();
     }
 
     // Stale detection
-    let objects = Array.isArray(getObject()) ? getObject() : [getObject()];
-    for (let i = 0, found = false; i < objects.length && !found; i++) {
-      if (!(objects[i]?.isConnected ?? false)) {
-        found = true;
-        logd("Stale object detected: \"" + objects[i]?.nodeName?.toLowerCase() ?? "unknown" + "\". Refreshing...");
-        setObject(null);
-        PageObjectManager.#getObjectX(getObject, setObject, getFreshValue);
+    if (this.#isStale(this.#domNode)) {
+      if (Array.isArray(this.#domNode)) {
+        logd("Stale objects detected (" + this.#domNode.length + "). The first is: \"" + (this.#domNode[0]?.nodeName?.toLowerCase() ?? "unknown") + "\". Refreshing...");
+      } else {
+        logd("Stale object detected: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Refreshing...");
       }
+      this.invalidateDomNode();
+      this.getDomNode();
     }
 
-    return getObject();
+    return this.#domNode
   }
 
+  #isStale() {
+    let objects = Array.isArray(this.#domNode) ? this.#domNode : [this.#domNode];
+    let isStale = false;
+
+    for (let i = 0; i < objects.length && !isStale; i++) {
+      if (!(objects[i]?.isConnected ?? false)) {
+        isStale = true;
+      }
+    }
+    return isStale;
+  }
+}
+
+class PageObjectManager {
+  static ha = new PageObject(
+    () => { return document.querySelector("home-assistant"); }
+  );
+  static haMain = new PageObject(
+    () => { return PageObjectManager.getHa().shadowRoot.querySelector("home-assistant-main"); }
+  );
+  static partialPanelResolver = new PageObject(
+    () => { return PageObjectManager.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
+  );
+  static haPanelLovelace = new PageObject(
+    () => { return PageObjectManager.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
+  );
+  static huiRoot = new PageObject(
+    () => { return PageObjectManager.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
+  );
+  static haAppLayout = new PageObject(
+    () => { return PageObjectManager.getHuiRoot().shadowRoot.querySelector("ha-app-layout"); }
+  );
+  static haAppLayoutView = new PageObject(
+    () => { return PageObjectManager.getHaAppLayout().querySelector('[id="view"]'); }
+  );
+  static tabsContainer = new PageObject(
+    () => {
+      return PageObjectManager.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
+        || PageObjectManager.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
+    }
+  );
+  static tabsArray = new PageObject(
+    () => {
+      return Array.from(PageObjectManager.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
+    }
+  );
+
   static getHa() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.ha; },
-      (x) => { PageObjectManager.ha = x; },
-      () => { return document.querySelector("home-assistant"); }
-    )
+    return PageObjectManager.ha.getDomNode();
   }
   static getHaMain() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.haMain; },
-      (x) => { PageObjectManager.haMain = x; },
-      () => { return PageObjectManager.getHa().shadowRoot.querySelector("home-assistant-main"); }
-    )
+    return PageObjectManager.haMain.getDomNode();
   }
   static getPartialPanelResolver() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.partialPanelResolver; },
-      (x) => { PageObjectManager.partialPanelResolver = x; },
-      () => { return PageObjectManager.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
-    )
+    return PageObjectManager.partialPanelResolver.getDomNode();
   }
   static getHaPanelLovelace() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.haPanelLovelace; },
-      (x) => { PageObjectManager.haPanelLovelace = x; },
-      () => { return PageObjectManager.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
-    )
+    return PageObjectManager.haPanelLovelace.getDomNode();
   }
   static getHuiRoot() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.huiRoot; },
-      (x) => { PageObjectManager.huiRoot = x; },
-      () => { return PageObjectManager.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
-    )
+    return PageObjectManager.huiRoot.getDomNode();
   }
   static getHaAppLayout() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.haAppLayout; },
-      (x) => { PageObjectManager.haAppLayout = x; },
-      () => {
-        return PageObjectManager.getHuiRoot().shadowRoot.querySelector("ha-app-layout");
-      }
-    )
+    return PageObjectManager.haAppLayout.getDomNode();
   }
   static getHaAppLayoutView() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.haAppLayoutView; },
-      (x) => { PageObjectManager.haAppLayoutView = x; },
-      () => { return PageObjectManager.getHaAppLayout().querySelector('[id="view"]'); }
-    )
+    return PageObjectManager.haAppLayoutView.getDomNode();
   }
   static getTabsContainer() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.tabsContainer; },
-      (x) => { PageObjectManager.tabsContainer = x; },
-      () => {
-        return PageObjectManager.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
-          || PageObjectManager.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
-      }
-    )
+    return PageObjectManager.tabsContainer.getDomNode();
   }
   static getTabsArray() {
-    return PageObjectManager.#getObjectX(
-      () => { return PageObjectManager.tabsArray; },
-      (x) => { PageObjectManager.tabsArray = x; },
-      () => {
-        return PageObjectManager.tabsArray = Array.from(PageObjectManager.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
-      }
-    )
+    return PageObjectManager.tabsArray.getDomNode();
   }
 }
 
