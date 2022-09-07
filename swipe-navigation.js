@@ -104,7 +104,7 @@ class Config {
   }
 }
 
-class PageObjects {
+class PageObjectManager {
   static ha = null;
   static haMain = null;
   static partialPanelResolver = null;
@@ -129,7 +129,7 @@ class PageObjects {
         found = true;
         logd("Stale object detected: \"" + objects[i]?.nodeName?.toLowerCase() ?? "unknown" + "\". Refreshing...");
         setObject(null);
-        PageObjects.#getObjectX(getObject, setObject, getFreshValue);
+        PageObjectManager.#getObjectX(getObject, setObject, getFreshValue);
       }
     }
 
@@ -137,72 +137,72 @@ class PageObjects {
   }
 
   static getHa() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.ha; },
-      (x) => { PageObjects.ha = x; },
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.ha; },
+      (x) => { PageObjectManager.ha = x; },
       () => { return document.querySelector("home-assistant"); }
     )
   }
   static getHaMain() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haMain; },
-      (x) => { PageObjects.haMain = x; },
-      () => { return PageObjects.getHa().shadowRoot.querySelector("home-assistant-main"); }
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.haMain; },
+      (x) => { PageObjectManager.haMain = x; },
+      () => { return PageObjectManager.getHa().shadowRoot.querySelector("home-assistant-main"); }
     )
   }
   static getPartialPanelResolver() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.partialPanelResolver; },
-      (x) => { PageObjects.partialPanelResolver = x; },
-      () => { return PageObjects.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.partialPanelResolver; },
+      (x) => { PageObjectManager.partialPanelResolver = x; },
+      () => { return PageObjectManager.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
     )
   }
   static getHaPanelLovelace() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haPanelLovelace; },
-      (x) => { PageObjects.haPanelLovelace = x; },
-      () => { return PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.haPanelLovelace; },
+      (x) => { PageObjectManager.haPanelLovelace = x; },
+      () => { return PageObjectManager.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
     )
   }
   static getHuiRoot() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.huiRoot; },
-      (x) => { PageObjects.huiRoot = x; },
-      () => { return PageObjects.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.huiRoot; },
+      (x) => { PageObjectManager.huiRoot = x; },
+      () => { return PageObjectManager.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
     )
   }
   static getHaAppLayout() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haAppLayout; },
-      (x) => { PageObjects.haAppLayout = x; },
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.haAppLayout; },
+      (x) => { PageObjectManager.haAppLayout = x; },
       () => {
-        return PageObjects.getHuiRoot().shadowRoot.querySelector("ha-app-layout");
+        return PageObjectManager.getHuiRoot().shadowRoot.querySelector("ha-app-layout");
       }
     )
   }
   static getHaAppLayoutView() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haAppLayoutView; },
-      (x) => { PageObjects.haAppLayoutView = x; },
-      () => { return PageObjects.getHaAppLayout().querySelector('[id="view"]'); }
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.haAppLayoutView; },
+      (x) => { PageObjectManager.haAppLayoutView = x; },
+      () => { return PageObjectManager.getHaAppLayout().querySelector('[id="view"]'); }
     )
   }
   static getTabsContainer() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.tabsContainer; },
-      (x) => { PageObjects.tabsContainer = x; },
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.tabsContainer; },
+      (x) => { PageObjectManager.tabsContainer = x; },
       () => {
-        return PageObjects.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
-          || PageObjects.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
+        return PageObjectManager.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
+          || PageObjectManager.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
       }
     )
   }
   static getTabsArray() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.tabsArray; },
-      (x) => { PageObjects.tabsArray = x; },
+    return PageObjectManager.#getObjectX(
+      () => { return PageObjectManager.tabsArray; },
+      (x) => { PageObjectManager.tabsArray = x; },
       () => {
-        return PageObjects.tabsArray = Array.from(PageObjects.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
+        return PageObjectManager.tabsArray = Array.from(PageObjectManager.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
       }
     )
   }
@@ -215,7 +215,7 @@ async function getConfiguration() {
   while (!configRead && configReadingAttempts < 300) {
     configReadingAttempts++;
     try {
-      const rawConfig = PageObjects.getHaPanelLovelace().lovelace.config.swipe_nav || {};
+      const rawConfig = PageObjectManager.getHaPanelLovelace().lovelace.config.swipe_nav || {};
       Config.parseConfig(rawConfig);
       configRead = true;
     } catch (e) {
@@ -272,7 +272,7 @@ const exceptions = [
 
 
 function run() {
-  if (PageObjects.getHaPanelLovelace()) {
+  if (PageObjectManager.getHaPanelLovelace()) {
     // A dashboard is visible
 
     let configurationLoading = getConfiguration();
@@ -306,25 +306,25 @@ class swipeManager {
     this.#touchMoveController = new AbortController();
     this.#touchEndController = new AbortController();
 
-    if (PageObjects.getTabsContainer()) {
+    if (PageObjectManager.getTabsContainer()) {
       logd("Initializing SwipeManger...");
 
-      PageObjects.getHaAppLayout().addEventListener(
+      PageObjectManager.getHaAppLayout().addEventListener(
         "touchstart",
         (event) => { this.#handleTouchStart(event); },
         { signal: this.#touchStartController.signal, passive: true }
       );
-      PageObjects.getHaAppLayout().addEventListener(
+      PageObjectManager.getHaAppLayout().addEventListener(
         "touchmove",
         (event) => { this.#handleTouchMove(event); },
         { signal: this.#touchMoveController.signal, passive: false }
       );
-      PageObjects.getHaAppLayout().addEventListener(
+      PageObjectManager.getHaAppLayout().addEventListener(
         "touchend",
         (event) => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.animate == "swipe") PageObjects.getHaAppLayout().style.overflow = "hidden";
+      if (Config.animate == "swipe") PageObjectManager.getHaAppLayout().style.overflow = "hidden";
     }
   }
 
@@ -370,7 +370,7 @@ class swipeManager {
 
           logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          const rtl = PageObjects.getHa().style.direction == "rtl";
+          const rtl = PageObjectManager.getHa().style.direction == "rtl";
           let nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
           this.#click(nextTabIndex, directionLeft);
         }
@@ -380,8 +380,8 @@ class swipeManager {
   }
 
   static #getNextTabIndex(directionLeft) {
-    let tabs = PageObjects.getTabsArray();
-    let activeTabIndex = tabs.indexOf(PageObjects.getTabsContainer().querySelector(".iron-selected"));
+    let tabs = PageObjectManager.getTabsArray();
+    let activeTabIndex = tabs.indexOf(PageObjectManager.getTabsContainer().querySelector(".iron-selected"));
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
 
@@ -435,8 +435,8 @@ class swipeManager {
 
   static #click(index, directionLeft) {
     if (index != -1) {
-      const view = PageObjects.getHaAppLayoutView();
-      const tabs = PageObjects.getTabsArray();
+      const view = PageObjectManager.getHaAppLayoutView();
+      const tabs = PageObjectManager.getTabsArray();
 
       if (Config.animate == "swipe") {
         const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
@@ -499,7 +499,7 @@ class swipeManager {
 run();
 
 // Run on element changes.
-new MutationObserver(lovelaceWatch).observe(PageObjects.getPartialPanelResolver(), { childList: true });
+new MutationObserver(lovelaceWatch).observe(PageObjectManager.getPartialPanelResolver(), { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
