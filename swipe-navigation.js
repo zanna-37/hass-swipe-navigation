@@ -377,14 +377,21 @@ function swipeNavigation() {
         }
 
       } while (
+        // Note: stopReason must be the first condition to short circuit the rest that will probably
+        // raise exception due to they dirty state.
+
         // Cycle if...
-        (
-          Config.skip_tabs.includes(nextTabIndex)  // ...the tab should be skipped or...
+        // ...the is no reason to stop and...
+        stopReason == null
+        && (
+          // ...the current tab should be skipped or...
+          Config.skip_tabs.includes(nextTabIndex)
           || (
-            Config.skip_hidden  // ...if skip hidden is enabled and...
-            && getComputedStyle(tabs[nextTabIndex], null).display == "none"  // ...the tab is hidden...
+            // ...if skip hidden is enabled and the tab is hidden
+            Config.skip_hidden
+            && getComputedStyle(tabs[nextTabIndex], null).display == "none"
           )
-        ) && stopReason == null  // ...and the is no reason to stop
+        )
       )
     }
 
