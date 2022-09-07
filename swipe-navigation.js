@@ -124,11 +124,7 @@ class PageObject {
 
     // Stale detection
     if (this.#isStale(this.#domNode)) {
-      if (Array.isArray(this.#domNode)) {
-        logd("Stale objects detected (" + this.#domNode.length + "). The first is: \"" + (this.#domNode[0]?.nodeName?.toLowerCase() ?? "unknown") + "\". Refreshing...");
-      } else {
-        logd("Stale object detected: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Refreshing...");
-      }
+      logd("Stale object detected: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Refreshing...");
       this.invalidateDomNode();
       this.getDomNode();
     }
@@ -137,15 +133,7 @@ class PageObject {
   }
 
   #isStale() {
-    let objects = Array.isArray(this.#domNode) ? this.#domNode : [this.#domNode];
-    let isStale = false;
-
-    for (let i = 0; i < objects.length && !isStale; i++) {
-      if (!(objects[i]?.isConnected ?? false)) {
-        isStale = true;
-      }
-    }
-    return isStale;
+    return !(this.#domNode?.isConnected ?? false);
   }
 }
 
@@ -177,11 +165,6 @@ class PageObjectManager {
         || PageObjectManager.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
     }
   );
-  static tabsArray = new PageObject(
-    () => {
-      return Array.from(PageObjectManager.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
-    }
-  );
 
   static getHa() {
     return PageObjectManager.ha.getDomNode();
@@ -206,9 +189,6 @@ class PageObjectManager {
   }
   static getTabsContainer() {
     return PageObjectManager.tabsContainer.getDomNode();
-  }
-  static getTabsArray() {
-    return PageObjectManager.tabsArray.getDomNode();
   }
 }
 
@@ -383,8 +363,12 @@ class swipeManager {
     this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
   }
 
+  static #getTabsArray() {
+    return Array.from(PageObjectManager.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
+  }
+
   static #getNextTabIndex(directionLeft) {
-    let tabs = PageObjectManager.getTabsArray();
+    let tabs = this.#getTabsArray();
     let activeTabIndex = tabs.indexOf(PageObjectManager.getTabsContainer().querySelector(".iron-selected"));
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
@@ -440,7 +424,7 @@ class swipeManager {
   static #click(index, directionLeft) {
     if (index != -1) {
       const view = PageObjectManager.getHaAppLayoutView();
-      const tabs = PageObjectManager.getTabsArray();
+      const tabs = this.#getTabsArray();
 
       if (Config.animate == "swipe") {
         const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
