@@ -281,24 +281,54 @@ function run() {
         loge("Can't read configuration, exiting.");
       } else {
         logi("Configuration read.");
-        swipeNavigation();
+        swipeManager.init();
       }
     });
 
   } // else we are in another panel, e.g. Settings
 }
 
-function swipeNavigation() {
-  let xDown, yDown, xDiff, yDiff;
+class swipeManager {
+  static #xDown;
+  static #yDown;
+  static #xDiff;
+  static #yDiff;
 
-  if (PageObjects.getTabsContainer()) {
-    PageObjects.getHaAppLayout().addEventListener("touchstart", handleTouchStart, { passive: true });
-    PageObjects.getHaAppLayout().addEventListener("touchmove", handleTouchMove, { passive: false });
-    PageObjects.getHaAppLayout().addEventListener("touchend", handleTouchEnd, { passive: true });
-    if (Config.animate == "swipe") PageObjects.getHaAppLayout().style.overflow = "hidden";
+  static #touchStartController = null;
+  static #touchMoveController = null;
+  static #touchEndController = null;
+
+  static init() {
+    this.#touchStartController?.abort();
+    this.#touchMoveController?.abort();
+    this.#touchEndController?.abort();
+    this.#touchStartController = new AbortController();
+    this.#touchMoveController = new AbortController();
+    this.#touchEndController = new AbortController();
+
+    if (PageObjects.getTabsContainer()) {
+      logd("Initializing SwipeManger...");
+
+      PageObjects.getHaAppLayout().addEventListener(
+        "touchstart",
+        (event) => { this.#handleTouchStart(event); },
+        { signal: this.#touchStartController.signal, passive: true }
+      );
+      PageObjects.getHaAppLayout().addEventListener(
+        "touchmove",
+        (event) => { this.#handleTouchMove(event); },
+        { signal: this.#touchMoveController.signal, passive: false }
+      );
+      PageObjects.getHaAppLayout().addEventListener(
+        "touchend",
+        (event) => { this.#handleTouchEnd(); },
+        { signal: this.#touchEndController.signal, passive: true }
+      );
+      if (Config.animate == "swipe") PageObjects.getHaAppLayout().style.overflow = "hidden";
+    }
   }
 
-  function handleTouchStart(event) {
+  static #handleTouchStart(event) {
     if (typeof event.composedPath() == "object") {
       for (let element of event.composedPath()) {
         if (element.nodeName == "HUI-VIEW") {
@@ -314,42 +344,42 @@ function swipeNavigation() {
         }
       }
     }
-    xDown = event.touches[0].clientX;
-    yDown = event.touches[0].clientY;
+    this.#xDown = event.touches[0].clientX;
+    this.#yDown = event.touches[0].clientY;
   }
 
-  function handleTouchMove(event) {
-    if (xDown && yDown) {
-      xDiff = xDown - event.touches[0].clientX;
-      yDiff = yDown - event.touches[0].clientY;
-      if (Math.abs(xDiff) > Math.abs(yDiff) && Config.prevent_default) event.preventDefault();
+  static #handleTouchMove(event) {
+    if (this.#xDown && this.#yDown) {
+      this.#xDiff = this.#xDown - event.touches[0].clientX;
+      this.#yDiff = this.#yDown - event.touches[0].clientY;
+      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.prevent_default) event.preventDefault();
     }
   }
 
-  function handleTouchEnd() {
-    if (xDiff != null && yDiff != null) {
-      if (Math.abs(xDiff) < Math.abs(yDiff)) {
+  static #handleTouchEnd() {
+    if (this.#xDiff != null && this.#yDiff != null) {
+      if (Math.abs(this.#xDiff) < Math.abs(this.#yDiff)) {
         logd("Swipe ignored, vertical movement.");
 
       } else {  // Horizontal movement
-        if (Math.abs(xDiff) < Math.abs(screen.width * Config.swipe_amount)) {
+        if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.swipe_amount)) {
           logd("Swipe ignored, too short.");
 
         } else {
-          let directionLeft = xDiff < 0;
+          let directionLeft = this.#xDiff < 0;
 
           logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
           const rtl = PageObjects.getHa().style.direction == "rtl";
-          let nextTabIndex = getNextTabIndex(rtl ? !directionLeft : directionLeft);
-          click(nextTabIndex, directionLeft);
+          let nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
+          this.#click(nextTabIndex, directionLeft);
         }
       }
     }
-    xDown = yDown = xDiff = yDiff = null;
+    this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
   }
 
-  function getNextTabIndex(directionLeft) {
+  static #getNextTabIndex(directionLeft) {
     let tabs = PageObjects.getTabsArray();
     let activeTabIndex = tabs.indexOf(PageObjects.getTabsContainer().querySelector(".iron-selected"));
     let nextTabIndex = activeTabIndex;
@@ -403,7 +433,7 @@ function swipeNavigation() {
     }
   }
 
-  function click(index, directionLeft) {
+  static #click(index, directionLeft) {
     if (index != -1) {
       const view = PageObjects.getHaAppLayoutView();
       const tabs = PageObjects.getTabsArray();
