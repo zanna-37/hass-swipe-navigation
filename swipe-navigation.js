@@ -106,64 +106,211 @@ class Config {
 
 class PageObject {
   #domNode = null;
-  getFreshDomNode = null
+  #parent = null;
+  #selectors = null;
+  #isSelectorsRootedInShadow = null;
+  #keepAlive = false
+  #onDomNodeRefreshedCallback = null;
+  #onDomNodeRemovedCallback = null;
 
-  constructor(getFreshDomNode) {
-    this.getFreshDomNode = getFreshDomNode;
+  #keepAliveChildren = new Map();
+
+  constructor(parent, selectors, isSelectorsRootedInShadow,) {
+    this.#parent = parent;
+    this.#selectors = selectors;
+    this.#isSelectorsRootedInShadow = isSelectorsRootedInShadow;
   }
 
   invalidateDomNode() {
+    this.#disconnectAllChildrenObservers();
+    if (this.#onDomNodeRemovedCallback != null) {
+      this.#onDomNodeRemovedCallback();
+    }
     this.#domNode = null;
+  }
+
+  watchChanges(callbacks) {
+    this.#setKeepAlive();
+    this.#onDomNodeRefreshedCallback = callbacks.onDomNodeRefreshedCallback;
+    this.#onDomNodeRemovedCallback = callbacks.onDomNodeRemovedCallback;
+  }
+
+  #setKeepAlive() {
+    if (!this.#keepAlive) {
+      this.#keepAlive = true;
+      this.#ensureKeepAliveWhenNeeded();
+    }
+  }
+
+  #ensureKeepAliveWhenNeeded() {
+    if (this.#keepAlive && this.#parent != null && this.#parent instanceof PageObject) {
+      this.#parent.#addPageObjectToKeepAlive(this);
+    }
+  }
+
+  #addPageObjectToKeepAlive(pageObject) {
+    if (!(this.#keepAliveChildren.has(pageObject))) {
+      this.#keepAliveChildren.set(
+        pageObject,
+        new MutationObserver((mutations) => {
+          for (let mutation of mutations) {
+            if (mutation.addedNodes.length > 0) {
+              logv(
+                mutation.addedNodes.length + " new element(s) appeared under \""
+                + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Checking..."
+              );
+              pageObject.getDomNode();
+            }
+          }
+        })
+      );
+
+      // Keep alive self since it must be alive to revive its children
+      this.#setKeepAlive();
+
+      // Connect child if possible, otherwise it should be reconnected when refreshed.
+      this.#connectChildObserver(pageObject);
+    }
   }
 
   getDomNode() {
     // Refresh if object is not in cache
     if (this.#domNode == null) {
-      this.#domNode = this.getFreshDomNode();
-    }
-
-    // Stale detection
-    if (this.#isStale(this.#domNode)) {
-      logd("Stale object detected: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Refreshing...");
-      this.invalidateDomNode();
-      this.getDomNode();
+      this.#refreshDomNode();
+    } else {
+      // Stale detection
+      if (this.#isStale(this.#domNode)) {
+        logd("Stale object in cache: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Invalidating...");
+        this.invalidateDomNode();
+        this.getDomNode();
+      }
     }
 
     return this.#domNode
   }
 
+  getParentNode() {
+    let parentNode = (this.#parent instanceof PageObject) ? this.#parent.getDomNode() : this.#parent;
+
+    if (parentNode != null && this.#isSelectorsRootedInShadow) {
+      parentNode = parentNode.shadowRoot;
+    }
+
+    return parentNode;
+  }
+
   #isStale() {
     return !(this.#domNode?.isConnected ?? false);
+  }
+
+  #refreshDomNode() {
+    let parentNode = this.getParentNode();
+
+    this.#domNode = (parentNode == null) ?
+      null
+      : (() => {
+        for (const selector of this.#selectors) {
+          let node = parentNode.querySelector(selector);
+          if (node != null) {
+            return node;
+          }
+        }
+        return null;
+      })()
+      ;
+
+    if (this.#domNode != null) {
+      logd("Object refreshed: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\".");
+
+      this.#ensureKeepAliveWhenNeeded();
+      this.#connectAllChildrenObservers();
+
+      if (this.#onDomNodeRefreshedCallback != null) {
+        this.#onDomNodeRefreshedCallback();
+      }
+    }
+  }
+
+  #connectAllChildrenObservers() {
+    if (this.#domNode != null && this.#keepAliveChildren.size > 0) {
+      logv("Reconnecting " + this.#keepAliveChildren.size + " observers to " + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown"));
+
+      this.#keepAliveChildren.forEach((value, key) => {
+        this.#connectChildObserver(key);
+      });
+    }
+  }
+
+  #connectChildObserver(pageObject) {
+    if (this.#domNode != null) {
+      let observer = this.#keepAliveChildren.get(pageObject);
+
+      // Note: pageObject is a child of this object, so parentNode is this object (with or without
+      // the shadowRoot depending on where the child is placed)
+      let parentNode = pageObject.getParentNode();
+      observer.observe(parentNode, { childList: true });
+
+      pageObject.getDomNode();
+    }
+  }
+
+  #disconnectAllChildrenObservers() {
+    if (this.#keepAliveChildren.size > 0) {
+      logv(
+        "Disconnecting " + this.#keepAliveChildren.size + " observers from \""
+        + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\""
+      );
+
+      this.#keepAliveChildren.forEach((value, key) => {
+        value.disconnect();
+      });
+    }
   }
 }
 
 class PageObjectManager {
   static ha = new PageObject(
-    () => { return document.querySelector("home-assistant"); }
+    document,
+    ["home-assistant"],
+    false,
   );
   static haMain = new PageObject(
-    () => { return PageObjectManager.getHa().shadowRoot.querySelector("home-assistant-main"); }
+    PageObjectManager.ha,
+    ["home-assistant-main"],
+    true,
   );
   static partialPanelResolver = new PageObject(
-    () => { return PageObjectManager.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
+    PageObjectManager.haMain,
+    ["partial-panel-resolver"],
+    true,
   );
   static haPanelLovelace = new PageObject(
-    () => { return PageObjectManager.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
+    PageObjectManager.partialPanelResolver,
+    ["ha-panel-lovelace"],
+    false,
   );
   static huiRoot = new PageObject(
-    () => { return PageObjectManager.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
+    PageObjectManager.haPanelLovelace,
+    ["hui-root"],
+    true,
   );
   static haAppLayout = new PageObject(
-    () => { return PageObjectManager.getHuiRoot().shadowRoot.querySelector("ha-app-layout"); }
+    PageObjectManager.huiRoot,
+    ["ha-app-layout"],
+    true,
   );
   static haAppLayoutView = new PageObject(
-    () => { return PageObjectManager.getHaAppLayout().querySelector('[id="view"]'); }
+    PageObjectManager.haAppLayout,
+    ['[id="view"]'],
+    false,
   );
   static tabsContainer = new PageObject(
-    () => {
-      return PageObjectManager.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
-        || PageObjectManager.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
-    }
+    PageObjectManager.haAppLayout,
+    [
+      "paper-tabs",  // When in edit mode
+      "ha-tabs"  // When in standard mode
+    ],
+    false,
   );
 
   static getHa() {
@@ -193,22 +340,31 @@ class PageObjectManager {
 }
 
 async function getConfiguration() {
-  let configReadingAttempts = 0;
   let configRead = false;
 
-  while (!configRead && configReadingAttempts < 300) {
-    configReadingAttempts++;
-    try {
-      const rawConfig = PageObjectManager.getHaPanelLovelace().lovelace.config.swipe_nav || {};
-      Config.parseConfig(rawConfig);
-      configRead = true;
-    } catch (e) {
-      logw("Error while obtaining config: " + e.message + ". Retrying...");
-      await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
+  if (PageObjectManager.getHaPanelLovelace() != null) {
+    let configReadingAttempts = 0;
+
+    while (!configRead && configReadingAttempts < 300) {
+      configReadingAttempts++;
+      try {
+        const rawConfig = PageObjectManager.getHaPanelLovelace().lovelace.config.swipe_nav || {};
+        Config.parseConfig(rawConfig);
+        configRead = true;
+      } catch (e) {
+        logw("Error while obtaining config: " + e.message + ". Retrying...");
+        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
+      }
     }
   }
 
-  return configRead;
+  if (configRead) {
+    logd("Configuration read.");
+    return true;
+  } else {
+    loge("Can't read configuration.");
+    return false;
+  }
 }
 
 /**
@@ -256,20 +412,32 @@ const exceptions = [
 
 
 function run() {
-  if (PageObjectManager.getHaPanelLovelace()) {
-    // A dashboard is visible
+  PageObjectManager.haPanelLovelace.watchChanges({
+    onDomNodeRefreshedCallback: () => {
+      let configurationLoading = getConfiguration();
+      configurationLoading.then((configRead) => {
+        if (configRead) {
+          // Re-init swipeManager to load new config
+          swipeManager.init();
+        }
+      });
+    },
+    onDomNodeRemovedCallback: null  // TODO
+  });
 
-    let configurationLoading = getConfiguration();
-    configurationLoading.then((configRead) => {
-      if (!configRead) {
-        loge("Can't read configuration, exiting.");
-      } else {
-        logi("Configuration read.");
+  let configurationLoading = getConfiguration();
+  configurationLoading.then((configRead) => {
+    PageObjectManager.haAppLayout.watchChanges({
+      onDomNodeRefreshedCallback: () => {
         swipeManager.init();
-      }
+      },
+      onDomNodeRemovedCallback: null  // TODO
     });
 
-  } // else we are in another panel, e.g. Settings
+    if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
+      swipeManager.init();
+    }
+  });
 }
 
 class swipeManager {
@@ -485,41 +653,6 @@ class swipeManager {
 
 // Initial run
 run();
-
-// Run on element changes.
-new MutationObserver(lovelaceWatch).observe(PageObjectManager.getPartialPanelResolver(), { childList: true });
-
-// If new lovelace panel was added watch for hui-root to appear.
-function lovelaceWatch(mutations) {
-  mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
-}
-
-// When hui-root appears watch it's children.
-function rootWatch(mutations) {
-  mutationWatch(mutations, "hui-root", appLayoutWatch);
-}
-
-// When ha-app-layout appears we can run.
-function appLayoutWatch(mutations) {
-  mutationWatch(mutations, "ha-app-layout", null);
-}
-
-function mutationWatch(mutations, nodename, observeElem) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
-      if (node.localName == nodename) {
-        if (observeElem) {
-          new MutationObserver(observeElem).observe(node.shadowRoot, {
-            childList: true,
-          });
-        } else {
-          run();
-        }
-        return;
-      }
-    }
-  }
-}
 
 // Console tag
 console.info(`%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER`, "color: #2980b9; font-weight: 700;");
