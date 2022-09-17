@@ -44,7 +44,7 @@ const exceptions = [
 const LOG_TAG = "↔️ Swipe navigation:";
 
 const LOG_LEVELS = {
-  ALL: 0,
+  _ALL: 0,
   VERBOSE: 1,
   DEBUG: 2,
   INFO: 3,
@@ -101,7 +101,7 @@ class Config {
   static skip_tabs = [];
   // Print all levels until the config is loaded, otherwise there is no way to see low level logs.
   // The real default is set below.
-  static logger_level = LOG_LEVELS.ALL;
+  static logger_level = LOG_LEVELS._ALL;
 
   static parseConfig(rawConfig) {
     if (rawConfig.animate != undefined) Config.animate = rawConfig.animate;
