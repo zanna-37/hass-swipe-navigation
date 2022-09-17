@@ -1,3 +1,46 @@
+/**
+ * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
+ *
+ * Learn more on CSS selectors
+ * [here](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors).
+ */
+const exceptions = [
+
+  // INTERNALS
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
+
+  // Header bar (contains tabs)
+  "app-header",
+  // Sidebar (contains dashboards)
+  "ha-sidebar",
+  // Slider
+  "ha-slider",
+  // Map
+  "hui-map-card",
+
+
+  // THIRD PARTIES
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
+
+  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
+  "mushroom-slider",
+  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
+  "my-slider",
+  // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
+  "#plotly g.draglayer",
+  // round-slider (https://github.com/thomasloven/round-slider)
+  "round-slider",
+  // Slider button card (https://github.com/mattieha/slider-button-card)
+  "slider-button-card",
+  // Swipe Card (https://github.com/bramkragten/swipe-card)
+  "swipe-card",
+  // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
+  "xiaomi-vacuum-map-card",
+].join(',');
+
+
 const LOG_TAG = "↔️ Swipe navigation:";
 
 const LOG_LEVELS = {
@@ -339,107 +382,6 @@ class PageObjectManager {
   }
 }
 
-async function getConfiguration() {
-  let configRead = false;
-
-  if (PageObjectManager.getHaPanelLovelace() != null) {
-    let configReadingAttempts = 0;
-
-    while (!configRead && configReadingAttempts < 300) {
-      configReadingAttempts++;
-      try {
-        const rawConfig = PageObjectManager.getHaPanelLovelace().lovelace.config.swipe_nav || {};
-        Config.parseConfig(rawConfig);
-        configRead = true;
-      } catch (e) {
-        logw("Error while obtaining config: " + e.message + ". Retrying...");
-        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
-      }
-    }
-  }
-
-  if (configRead) {
-    logd("Configuration read.");
-    return true;
-  } else {
-    loge("Can't read configuration.");
-    return false;
-  }
-}
-
-/**
- * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
- *
- * Learn more on CSS selectors
- * [here](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors).
- */
-const exceptions = [
-
-  // INTERNALS
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
-
-  // Header bar (contains tabs)
-  "app-header",
-  // Sidebar (contains dashboards)
-  "ha-sidebar",
-  // Slider
-  "ha-slider",
-  // Map
-  "hui-map-card",
-
-
-  // THIRD PARTIES
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
-
-  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
-  "mushroom-slider",
-  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
-  "my-slider",
-  // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
-  "#plotly g.draglayer",
-  // round-slider (https://github.com/thomasloven/round-slider)
-  "round-slider",
-  // Slider button card (https://github.com/mattieha/slider-button-card)
-  "slider-button-card",
-  // Swipe Card (https://github.com/bramkragten/swipe-card)
-  "swipe-card",
-  // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
-  "xiaomi-vacuum-map-card",
-].join(',');
-
-
-
-function run() {
-  PageObjectManager.haPanelLovelace.watchChanges({
-    onDomNodeRefreshedCallback: () => {
-      let configurationLoading = getConfiguration();
-      configurationLoading.then((configRead) => {
-        if (configRead) {
-          // Re-init swipeManager to load new config
-          swipeManager.init();
-        }
-      });
-    },
-    onDomNodeRemovedCallback: null  // TODO
-  });
-
-  let configurationLoading = getConfiguration();
-  configurationLoading.then((configRead) => {
-    PageObjectManager.haAppLayout.watchChanges({
-      onDomNodeRefreshedCallback: () => {
-        swipeManager.init();
-      },
-      onDomNodeRemovedCallback: null  // TODO
-    });
-
-    if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
-      swipeManager.init();
-    }
-  });
-}
-
 class swipeManager {
   static #xDown;
   static #yDown;
@@ -647,6 +589,66 @@ class swipeManager {
       }
     }
   }
+}
+
+
+
+async function getConfiguration() {
+  let configRead = false;
+
+  if (PageObjectManager.getHaPanelLovelace() != null) {
+    let configReadingAttempts = 0;
+
+    while (!configRead && configReadingAttempts < 300) {
+      configReadingAttempts++;
+      try {
+        const rawConfig = PageObjectManager.getHaPanelLovelace().lovelace.config.swipe_nav || {};
+        Config.parseConfig(rawConfig);
+        configRead = true;
+      } catch (e) {
+        logw("Error while obtaining config: " + e.message + ". Retrying...");
+        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
+      }
+    }
+  }
+
+  if (configRead) {
+    logd("Configuration read.");
+    return true;
+  } else {
+    loge("Can't read configuration.");
+    return false;
+  }
+}
+
+
+function run() {
+  PageObjectManager.haPanelLovelace.watchChanges({
+    onDomNodeRefreshedCallback: () => {
+      let configurationLoading = getConfiguration();
+      configurationLoading.then((configRead) => {
+        if (configRead) {
+          // Re-init swipeManager to load new config
+          swipeManager.init();
+        }
+      });
+    },
+    onDomNodeRemovedCallback: null  // TODO
+  });
+
+  let configurationLoading = getConfiguration();
+  configurationLoading.then((configRead) => {
+    PageObjectManager.haAppLayout.watchChanges({
+      onDomNodeRefreshedCallback: () => {
+        swipeManager.init();
+      },
+      onDomNodeRemovedCallback: null  // TODO
+    });
+
+    if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
+      swipeManager.init();
+    }
+  });
 }
 
 
