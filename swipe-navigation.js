@@ -142,7 +142,7 @@ class Config {
       }
     } else {
       // The default value is set here because we want to print everything before reading the config.
-      logger_level = LOG_LEVELS.WARN;
+      Config.logger_level = LOG_LEVELS.WARN;
     }
   }
 }
