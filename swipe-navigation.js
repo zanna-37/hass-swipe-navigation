@@ -355,31 +355,6 @@ class PageObjectManager {
     ],
     false,
   );
-
-  static getHa() {
-    return PageObjectManager.ha.getDomNode();
-  }
-  static getHaMain() {
-    return PageObjectManager.haMain.getDomNode();
-  }
-  static getPartialPanelResolver() {
-    return PageObjectManager.partialPanelResolver.getDomNode();
-  }
-  static getHaPanelLovelace() {
-    return PageObjectManager.haPanelLovelace.getDomNode();
-  }
-  static getHuiRoot() {
-    return PageObjectManager.huiRoot.getDomNode();
-  }
-  static getHaAppLayout() {
-    return PageObjectManager.haAppLayout.getDomNode();
-  }
-  static getHaAppLayoutView() {
-    return PageObjectManager.haAppLayoutView.getDomNode();
-  }
-  static getTabsContainer() {
-    return PageObjectManager.tabsContainer.getDomNode();
-  }
 }
 
 class swipeManager {
@@ -400,25 +375,25 @@ class swipeManager {
     this.#touchMoveController = new AbortController();
     this.#touchEndController = new AbortController();
 
-    if (PageObjectManager.getTabsContainer()) {
+    if (PageObjectManager.tabsContainer.getDomNode()) {
       logd("Initializing SwipeManger...");
 
-      PageObjectManager.getHaAppLayout().addEventListener(
+      PageObjectManager.haAppLayout.getDomNode().addEventListener(
         "touchstart",
         (event) => { this.#handleTouchStart(event); },
         { signal: this.#touchStartController.signal, passive: true }
       );
-      PageObjectManager.getHaAppLayout().addEventListener(
+      PageObjectManager.haAppLayout.getDomNode().addEventListener(
         "touchmove",
         (event) => { this.#handleTouchMove(event); },
         { signal: this.#touchMoveController.signal, passive: false }
       );
-      PageObjectManager.getHaAppLayout().addEventListener(
+      PageObjectManager.haAppLayout.getDomNode().addEventListener(
         "touchend",
         (event) => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.animate == "swipe") PageObjectManager.getHaAppLayout().style.overflow = "hidden";
+      if (Config.animate == "swipe") PageObjectManager.haAppLayout.getDomNode().style.overflow = "hidden";
     }
   }
 
@@ -464,7 +439,7 @@ class swipeManager {
 
           logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          const rtl = PageObjectManager.getHa().style.direction == "rtl";
+          const rtl = PageObjectManager.ha.getDomNode().style.direction == "rtl";
           let nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
           this.#click(nextTabIndex, directionLeft);
         }
@@ -474,12 +449,12 @@ class swipeManager {
   }
 
   static #getTabsArray() {
-    return Array.from(PageObjectManager.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
+    return Array.from(PageObjectManager.tabsContainer.getDomNode()?.querySelectorAll("paper-tab") ?? []);
   }
 
   static #getNextTabIndex(directionLeft) {
     let tabs = this.#getTabsArray();
-    let activeTabIndex = tabs.indexOf(PageObjectManager.getTabsContainer().querySelector(".iron-selected"));
+    let activeTabIndex = tabs.indexOf(PageObjectManager.tabsContainer.getDomNode().querySelector(".iron-selected"));
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
 
@@ -533,7 +508,7 @@ class swipeManager {
 
   static #click(index, directionLeft) {
     if (index != -1) {
-      const view = PageObjectManager.getHaAppLayoutView();
+      const view = PageObjectManager.haAppLayoutView.getDomNode();
       const tabs = this.#getTabsArray();
 
       if (Config.animate == "swipe") {
@@ -596,13 +571,13 @@ class swipeManager {
 async function getConfiguration() {
   let configRead = false;
 
-  if (PageObjectManager.getHaPanelLovelace() != null) {
+  if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
     let configReadingAttempts = 0;
 
     while (!configRead && configReadingAttempts < 300) {
       configReadingAttempts++;
       try {
-        const rawConfig = PageObjectManager.getHaPanelLovelace().lovelace.config.swipe_nav || {};
+        const rawConfig = PageObjectManager.haPanelLovelace.getDomNode().lovelace.config.swipe_nav || {};
         Config.parseConfig(rawConfig);
         configRead = true;
       } catch (e) {
