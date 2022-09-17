@@ -1,0 +1,47 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+-----
+
+## 🏷️ [v1.5.0] - 2022-06-20
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.4.1...v1.5.0)
+
+### Added 🎉
+- CSS selectors are now the default method to add swipe exceptions ([`49f8d76`](https://github.com/zanna-37/hass-swipe-navigation/commit/49f8d763d712dab6f10d9bed01372ff07e861f23))
+
+### Changed 📝
+- Increased specificity for plotly selector ([`c3e7fd4`](https://github.com/zanna-37/hass-swipe-navigation/commit/c3e7fd419466c63825c1d25f2f0f4e3ca70205b7))
+
+
+## 🏷️ [v1.4.1] - 2022-06-20
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.4.0...v1.4.1)
+
+### Added 🎉
+- The repo is now part of HACS default! ([`37a2bde`](https://github.com/zanna-37/hass-swipe-navigation/commit/37a2bde7378d8029d1918ae5bcd123d2a7f3a78c))
+- Add my-slider to the list of 3rd party exceptions (by [@usernein](https://github.com/usernein) in [`#3`](https://github.com/zanna-37/hass-swipe-navigation/pull/3))
+
+
+## 🏷️ [v1.4.0] - 2022-06-10
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.3.7...v1.4.0)
+
+### Added 🎉
+- Ignore-swipe exceptions can now be specified using a combination of HTML tag name and css classes for an improved detection ([`5cddcea`](https://github.com/zanna-37/hass-swipe-navigation/commit/5cddcea923ba75f60b0117def5630b371818f2f3))
+- Plotly Graph Card has been added to swipe exceptions ([`3d5ab78`](https://github.com/zanna-37/hass-swipe-navigation/commit/3d5ab78f1910f1c4550278638049842f08897177))
+- Mushroom slider has been added to swipe exceptions ([`9136076`](https://github.com/zanna-37/hass-swipe-navigation/commit/9136076a2a7323cb6139110f4acd8c9f3ef61f4b))
+
+
+## 🏷️ [v1.3.7] - 2022-06-09
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/1.3.6...v1.3.7)
+
+### News 📰
+**The owner of this project has changed! 🎉
+[Zanna_37](https://github.com/zanna-37) 🎩 will maintain it from now on.** 👀
+
+### Fixed 🐛
+- Better compatibility by using the standard `event.composedPath()` instead of `event.path` ([`5bc0555`](https://github.com/zanna-37/hass-swipe-navigation/commit/5bc0555d111bd20a9ab1756051fb42ac1f915ee0))
+
+
+## 🏷️ Older releases >= [1.3.6] - 2021-06-29
+For older releases see the [old repository](https://github.com/maykar/lovelace-swipe-navigation/releases).
