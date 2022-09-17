@@ -1,3 +1,46 @@
+/**
+ * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
+ *
+ * Learn more on CSS selectors
+ * [here](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors).
+ */
+const exceptions = [
+
+  // INTERNALS
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
+
+  // Header bar (contains tabs)
+  "app-header",
+  // Sidebar (contains dashboards)
+  "ha-sidebar",
+  // Slider
+  "ha-slider",
+  // Map
+  "hui-map-card",
+
+
+  // THIRD PARTIES
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
+
+  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
+  "mushroom-slider",
+  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
+  "my-slider",
+  // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
+  "#plotly g.draglayer",
+  // round-slider (https://github.com/thomasloven/round-slider)
+  "round-slider",
+  // Slider button card (https://github.com/mattieha/slider-button-card)
+  "slider-button-card",
+  // Swipe Card (https://github.com/bramkragten/swipe-card)
+  "swipe-card",
+  // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
+  "xiaomi-vacuum-map-card",
+].join(',');
+
+
 const LOG_TAG = "↔️ Swipe navigation:";
 
 const LOG_LEVELS = {
@@ -104,188 +147,214 @@ class Config {
   }
 }
 
-class PageObjects {
-  static ha = null;
-  static haMain = null;
-  static partialPanelResolver = null;
-  static haPanelLovelace = null;
-  static huiRoot = null;
-  static haAppLayout = null;
-  static haAppLayoutView = null;
-  static tabsContainer = null;
-  static tabsArray = null;
+class PageObject {
+  #domNode = null;
+  #parent = null;
+  #selectors = null;
+  #isSelectorsRootedInShadow = null;
+  #keepAlive = false
+  #onDomNodeRefreshedCallback = null;
+  #onDomNodeRemovedCallback = null;
 
-  static #getObjectX(getObject, setObject, getFreshValue) {
+  #keepAliveChildren = new Map();
 
+  constructor(parent, selectors, isSelectorsRootedInShadow,) {
+    this.#parent = parent;
+    this.#selectors = selectors;
+    this.#isSelectorsRootedInShadow = isSelectorsRootedInShadow;
+  }
+
+  invalidateDomNode() {
+    this.#disconnectAllChildrenObservers();
+    if (this.#onDomNodeRemovedCallback != null) {
+      this.#onDomNodeRemovedCallback();
+    }
+    this.#domNode = null;
+  }
+
+  watchChanges(callbacks) {
+    this.#setKeepAlive();
+    this.#onDomNodeRefreshedCallback = callbacks.onDomNodeRefreshedCallback;
+    this.#onDomNodeRemovedCallback = callbacks.onDomNodeRemovedCallback;
+  }
+
+  #setKeepAlive() {
+    if (!this.#keepAlive) {
+      this.#keepAlive = true;
+      this.#ensureKeepAliveWhenNeeded();
+    }
+  }
+
+  #ensureKeepAliveWhenNeeded() {
+    if (this.#keepAlive && this.#parent != null && this.#parent instanceof PageObject) {
+      this.#parent.#addPageObjectToKeepAlive(this);
+    }
+  }
+
+  #addPageObjectToKeepAlive(pageObject) {
+    if (!(this.#keepAliveChildren.has(pageObject))) {
+      this.#keepAliveChildren.set(
+        pageObject,
+        new MutationObserver((mutations) => {
+          for (let mutation of mutations) {
+            if (mutation.addedNodes.length > 0) {
+              logv(
+                mutation.addedNodes.length + " new element(s) appeared under \""
+                + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Checking..."
+              );
+              pageObject.getDomNode();
+            }
+          }
+        })
+      );
+
+      // Keep alive self since it must be alive to revive its children
+      this.#setKeepAlive();
+
+      // Connect child if possible, otherwise it should be reconnected when refreshed.
+      this.#connectChildObserver(pageObject);
+    }
+  }
+
+  getDomNode() {
     // Refresh if object is not in cache
-    if (getObject() == null) {
-      setObject(getFreshValue());
-    }
-
-    // Stale detection
-    let objects = Array.isArray(getObject()) ? getObject() : [getObject()];
-    for (let i = 0, found = false; i < objects.length && !found; i++) {
-      if (!(objects[i]?.isConnected ?? false)) {
-        found = true;
-        logd("Stale object detected: \"" + objects[i]?.nodeName?.toLowerCase() ?? "unknown" + "\". Refreshing...");
-        setObject(null);
-        PageObjects.#getObjectX(getObject, setObject, getFreshValue);
+    if (this.#domNode == null) {
+      this.#refreshDomNode();
+    } else {
+      // Stale detection
+      if (this.#isStale(this.#domNode)) {
+        logd("Stale object in cache: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Invalidating...");
+        this.invalidateDomNode();
+        this.getDomNode();
       }
     }
 
-    return getObject();
+    return this.#domNode
   }
 
-  static getHa() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.ha; },
-      (x) => { PageObjects.ha = x; },
-      () => { return document.querySelector("home-assistant"); }
-    )
+  getParentNode() {
+    let parentNode = (this.#parent instanceof PageObject) ? this.#parent.getDomNode() : this.#parent;
+
+    if (parentNode != null && this.#isSelectorsRootedInShadow) {
+      parentNode = parentNode.shadowRoot;
+    }
+
+    return parentNode;
   }
-  static getHaMain() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haMain; },
-      (x) => { PageObjects.haMain = x; },
-      () => { return PageObjects.getHa().shadowRoot.querySelector("home-assistant-main"); }
-    )
+
+  #isStale() {
+    return !(this.#domNode?.isConnected ?? false);
   }
-  static getPartialPanelResolver() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.partialPanelResolver; },
-      (x) => { PageObjects.partialPanelResolver = x; },
-      () => { return PageObjects.getHaMain().shadowRoot.querySelector("partial-panel-resolver"); }
-    )
-  }
-  static getHaPanelLovelace() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haPanelLovelace; },
-      (x) => { PageObjects.haPanelLovelace = x; },
-      () => { return PageObjects.getPartialPanelResolver().querySelector("ha-panel-lovelace"); }
-    )
-  }
-  static getHuiRoot() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.huiRoot; },
-      (x) => { PageObjects.huiRoot = x; },
-      () => { return PageObjects.getHaPanelLovelace().shadowRoot.querySelector("hui-root"); }
-    )
-  }
-  static getHaAppLayout() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haAppLayout; },
-      (x) => { PageObjects.haAppLayout = x; },
-      () => {
-        return PageObjects.getHuiRoot().shadowRoot.querySelector("ha-app-layout");
+
+  #refreshDomNode() {
+    let parentNode = this.getParentNode();
+
+    this.#domNode = (parentNode == null) ?
+      null
+      : (() => {
+        for (const selector of this.#selectors) {
+          let node = parentNode.querySelector(selector);
+          if (node != null) {
+            return node;
+          }
+        }
+        return null;
+      })()
+      ;
+
+    if (this.#domNode != null) {
+      logd("Object refreshed: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\".");
+
+      this.#ensureKeepAliveWhenNeeded();
+      this.#connectAllChildrenObservers();
+
+      if (this.#onDomNodeRefreshedCallback != null) {
+        this.#onDomNodeRefreshedCallback();
       }
-    )
+    }
   }
-  static getHaAppLayoutView() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.haAppLayoutView; },
-      (x) => { PageObjects.haAppLayoutView = x; },
-      () => { return PageObjects.getHaAppLayout().querySelector('[id="view"]'); }
-    )
+
+  #connectAllChildrenObservers() {
+    if (this.#domNode != null && this.#keepAliveChildren.size > 0) {
+      logv("Reconnecting " + this.#keepAliveChildren.size + " observers to " + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown"));
+
+      this.#keepAliveChildren.forEach((value, key) => {
+        this.#connectChildObserver(key);
+      });
+    }
   }
-  static getTabsContainer() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.tabsContainer; },
-      (x) => { PageObjects.tabsContainer = x; },
-      () => {
-        return PageObjects.getHaAppLayout().querySelector("paper-tabs")  // When in edit mode
-          || PageObjects.getHaAppLayout().querySelector("ha-tabs");  // When in standard mode
-      }
-    )
+
+  #connectChildObserver(pageObject) {
+    if (this.#domNode != null) {
+      let observer = this.#keepAliveChildren.get(pageObject);
+
+      // Note: pageObject is a child of this object, so parentNode is this object (with or without
+      // the shadowRoot depending on where the child is placed)
+      let parentNode = pageObject.getParentNode();
+      observer.observe(parentNode, { childList: true });
+
+      pageObject.getDomNode();
+    }
   }
-  static getTabsArray() {
-    return PageObjects.#getObjectX(
-      () => { return PageObjects.tabsArray; },
-      (x) => { PageObjects.tabsArray = x; },
-      () => {
-        return PageObjects.tabsArray = Array.from(PageObjects.getTabsContainer()?.querySelectorAll("paper-tab") ?? []);
-      }
-    )
+
+  #disconnectAllChildrenObservers() {
+    if (this.#keepAliveChildren.size > 0) {
+      logv(
+        "Disconnecting " + this.#keepAliveChildren.size + " observers from \""
+        + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\""
+      );
+
+      this.#keepAliveChildren.forEach((value, key) => {
+        value.disconnect();
+      });
+    }
   }
 }
 
-async function getConfiguration() {
-  let configReadingAttempts = 0;
-  let configRead = false;
-
-  while (!configRead && configReadingAttempts < 300) {
-    configReadingAttempts++;
-    try {
-      const rawConfig = PageObjects.getHaPanelLovelace().lovelace.config.swipe_nav || {};
-      Config.parseConfig(rawConfig);
-      configRead = true;
-    } catch (e) {
-      logw("Error while obtaining config: " + e.message + ". Retrying...");
-      await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
-    }
-  }
-
-  return configRead;
-}
-
-/**
- * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
- *
- * Learn more on CSS selectors
- * [here](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors).
- */
-const exceptions = [
-
-  // INTERNALS
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
-
-  // Header bar (contains tabs)
-  "app-header",
-  // Sidebar (contains dashboards)
-  "ha-sidebar",
-  // Slider
-  "ha-slider",
-  // Map
-  "hui-map-card",
-
-
-  // THIRD PARTIES
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
-
-  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
-  "mushroom-slider",
-  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
-  "my-slider",
-  // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
-  "#plotly g.draglayer",
-  // round-slider (https://github.com/thomasloven/round-slider)
-  "round-slider",
-  // Slider button card (https://github.com/mattieha/slider-button-card)
-  "slider-button-card",
-  // Swipe Card (https://github.com/bramkragten/swipe-card)
-  "swipe-card",
-  // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
-  "xiaomi-vacuum-map-card",
-].join(',');
-
-
-
-function run() {
-  if (PageObjects.getHaPanelLovelace()) {
-    // A dashboard is visible
-
-    let configurationLoading = getConfiguration();
-    configurationLoading.then((configRead) => {
-      if (!configRead) {
-        loge("Can't read configuration, exiting.");
-      } else {
-        logi("Configuration read.");
-        swipeManager.init();
-      }
-    });
-
-  } // else we are in another panel, e.g. Settings
+class PageObjectManager {
+  static ha = new PageObject(
+    document,
+    ["home-assistant"],
+    false,
+  );
+  static haMain = new PageObject(
+    PageObjectManager.ha,
+    ["home-assistant-main"],
+    true,
+  );
+  static partialPanelResolver = new PageObject(
+    PageObjectManager.haMain,
+    ["partial-panel-resolver"],
+    true,
+  );
+  static haPanelLovelace = new PageObject(
+    PageObjectManager.partialPanelResolver,
+    ["ha-panel-lovelace"],
+    false,
+  );
+  static huiRoot = new PageObject(
+    PageObjectManager.haPanelLovelace,
+    ["hui-root"],
+    true,
+  );
+  static haAppLayout = new PageObject(
+    PageObjectManager.huiRoot,
+    ["ha-app-layout"],
+    true,
+  );
+  static haAppLayoutView = new PageObject(
+    PageObjectManager.haAppLayout,
+    ['[id="view"]'],
+    false,
+  );
+  static tabsContainer = new PageObject(
+    PageObjectManager.haAppLayout,
+    [
+      "paper-tabs",  // When in edit mode
+      "ha-tabs"  // When in standard mode
+    ],
+    false,
+  );
 }
 
 class swipeManager {
@@ -306,25 +375,25 @@ class swipeManager {
     this.#touchMoveController = new AbortController();
     this.#touchEndController = new AbortController();
 
-    if (PageObjects.getTabsContainer()) {
+    if (PageObjectManager.tabsContainer.getDomNode()) {
       logd("Initializing SwipeManger...");
 
-      PageObjects.getHaAppLayout().addEventListener(
+      PageObjectManager.haAppLayout.getDomNode().addEventListener(
         "touchstart",
         (event) => { this.#handleTouchStart(event); },
         { signal: this.#touchStartController.signal, passive: true }
       );
-      PageObjects.getHaAppLayout().addEventListener(
+      PageObjectManager.haAppLayout.getDomNode().addEventListener(
         "touchmove",
         (event) => { this.#handleTouchMove(event); },
         { signal: this.#touchMoveController.signal, passive: false }
       );
-      PageObjects.getHaAppLayout().addEventListener(
+      PageObjectManager.haAppLayout.getDomNode().addEventListener(
         "touchend",
         (event) => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.animate == "swipe") PageObjects.getHaAppLayout().style.overflow = "hidden";
+      if (Config.animate == "swipe") PageObjectManager.haAppLayout.getDomNode().style.overflow = "hidden";
     }
   }
 
@@ -370,7 +439,7 @@ class swipeManager {
 
           logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          const rtl = PageObjects.getHa().style.direction == "rtl";
+          const rtl = PageObjectManager.ha.getDomNode().style.direction == "rtl";
           let nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
           this.#click(nextTabIndex, directionLeft);
         }
@@ -379,9 +448,13 @@ class swipeManager {
     this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
   }
 
+  static #getTabsArray() {
+    return Array.from(PageObjectManager.tabsContainer.getDomNode()?.querySelectorAll("paper-tab") ?? []);
+  }
+
   static #getNextTabIndex(directionLeft) {
-    let tabs = PageObjects.getTabsArray();
-    let activeTabIndex = tabs.indexOf(PageObjects.getTabsContainer().querySelector(".iron-selected"));
+    let tabs = this.#getTabsArray();
+    let activeTabIndex = tabs.indexOf(PageObjectManager.tabsContainer.getDomNode().querySelector(".iron-selected"));
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
 
@@ -435,8 +508,8 @@ class swipeManager {
 
   static #click(index, directionLeft) {
     if (index != -1) {
-      const view = PageObjects.getHaAppLayoutView();
-      const tabs = PageObjects.getTabsArray();
+      const view = PageObjectManager.haAppLayoutView.getDomNode();
+      const tabs = this.#getTabsArray();
 
       if (Config.animate == "swipe") {
         const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
@@ -495,43 +568,68 @@ class swipeManager {
 
 
 
-// Initial run
-run();
+async function getConfiguration() {
+  let configRead = false;
 
-// Run on element changes.
-new MutationObserver(lovelaceWatch).observe(PageObjects.getPartialPanelResolver(), { childList: true });
+  if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
+    let configReadingAttempts = 0;
 
-// If new lovelace panel was added watch for hui-root to appear.
-function lovelaceWatch(mutations) {
-  mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
-}
-
-// When hui-root appears watch it's children.
-function rootWatch(mutations) {
-  mutationWatch(mutations, "hui-root", appLayoutWatch);
-}
-
-// When ha-app-layout appears we can run.
-function appLayoutWatch(mutations) {
-  mutationWatch(mutations, "ha-app-layout", null);
-}
-
-function mutationWatch(mutations, nodename, observeElem) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
-      if (node.localName == nodename) {
-        if (observeElem) {
-          new MutationObserver(observeElem).observe(node.shadowRoot, {
-            childList: true,
-          });
-        } else {
-          run();
-        }
-        return;
+    while (!configRead && configReadingAttempts < 300) {
+      configReadingAttempts++;
+      try {
+        const rawConfig = PageObjectManager.haPanelLovelace.getDomNode().lovelace.config.swipe_nav || {};
+        Config.parseConfig(rawConfig);
+        configRead = true;
+      } catch (e) {
+        logw("Error while obtaining config: " + e.message + ". Retrying...");
+        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
       }
     }
   }
+
+  if (configRead) {
+    logd("Configuration read.");
+    return true;
+  } else {
+    loge("Can't read configuration.");
+    return false;
+  }
 }
+
+
+function run() {
+  PageObjectManager.haPanelLovelace.watchChanges({
+    onDomNodeRefreshedCallback: () => {
+      let configurationLoading = getConfiguration();
+      configurationLoading.then((configRead) => {
+        if (configRead) {
+          // Re-init swipeManager to load new config
+          swipeManager.init();
+        }
+      });
+    },
+    onDomNodeRemovedCallback: null  // TODO
+  });
+
+  let configurationLoading = getConfiguration();
+  configurationLoading.then((configRead) => {
+    PageObjectManager.haAppLayout.watchChanges({
+      onDomNodeRefreshedCallback: () => {
+        swipeManager.init();
+      },
+      onDomNodeRemovedCallback: null  // TODO
+    });
+
+    if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
+      swipeManager.init();
+    }
+  });
+}
+
+
+
+// Initial run
+run();
 
 // Console tag
 console.info(`%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER`, "color: #2980b9; font-weight: 700;");
