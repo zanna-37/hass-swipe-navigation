@@ -1,0 +1,27 @@
+---
+version: "2.4"
+services:
+
+  builder:
+    build:
+      context: ./docker
+
+    ports:
+      - 3000:3000
+
+    volumes:
+      - .:/project
+
+      # Keep node_modules only inside a volume (for decluttering and performance)
+      - nodemodules:/project/node_modules
+
+      # Sync time with host
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
+    working_dir: /project
+
+    command: ./scripts/build.sh
+
+volumes:
+  nodemodules:

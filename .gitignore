@@ -20,3 +20,7 @@ npm-debug.log*
 /.idea
 /.versions
 /.vscode
+
+/node_modules
+/dist
+/.rollup.cache

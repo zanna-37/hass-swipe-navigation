@@ -1,0 +1,10 @@
+{
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
+  "service": "builder",
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+  "workspaceFolder": "/project",
+  "shutdownAction": "stopCompose"
+}
