@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.6.0] - 2022-09-17
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.5.0...v1.6.0)
+
+### Added 🎉
+- Logging can be enabled via the `logger_level` setting ([`4f1f09c`](https://github.com/zanna-37/hass-swipe-navigation/commit/4f1f09c5a716c0bd83fe52673816f24118cfedf5))
+
+### Fixed 🐛
+- The entire code is now much more reliable and can auto heal even when the page change considerably ([`71d3230`](https://github.com/zanna-37/hass-swipe-navigation/commit/71d3230e3fb92eb298310a0982f3eeeee7a35b7d) [`3076951`](https://github.com/zanna-37/hass-swipe-navigation/commit/30769514eaf52f69da9cbf116132b52d90490497) Closes [`#6`](https://github.com/zanna-37/hass-swipe-navigation/issues/6))
+
+
 ## 🏷️ [v1.5.0] - 2022-06-20
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.4.1...v1.5.0)
 
