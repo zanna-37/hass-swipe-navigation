@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 /**
  * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
  *
@@ -38,52 +40,54 @@ const exceptions = [
   "swipe-card",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
-].join(',');
+].join(",");
 
 
 const LOG_TAG = "↔️ Swipe navigation:";
 
-const LOG_LEVELS = {
-  _ALL: 0,
-  VERBOSE: 1,
-  DEBUG: 2,
-  INFO: 3,
-  WARN: 4,
-  ERROR: 5,
+enum LogLevel {
+  _ALL = 0,
+  VERBOSE = 1,
+  DEBUG = 2,
+  INFO = 3,
+  WARN = 4,
+  ERROR = 5,
 }
 
-function logv(msg) { log(msg, LOG_LEVELS.VERBOSE); }
-function logd(msg) { log(msg, LOG_LEVELS.DEBUG); }
-function logi(msg) { log(msg, LOG_LEVELS.INFO); }
-function logw(msg) { log(msg, LOG_LEVELS.WARN); }
-function loge(msg) { log(msg, LOG_LEVELS.ERROR); }
+function logv(msg: string) { log(msg, LogLevel.VERBOSE); }
+function logd(msg: string) { log(msg, LogLevel.DEBUG); }
+function logi(msg: string) { log(msg, LogLevel.INFO); }
+function logw(msg: string) { log(msg, LogLevel.WARN); }
+function loge(msg: string) { log(msg, LogLevel.ERROR); }
 
-function log(msg, level) {
+function log(msg: string, level: Exclude<LogLevel, LogLevel._ALL>) {
   if (level >= Config.logger_level) {
     let level_tag;
     switch (level) {
-      case LOG_LEVELS.VERBOSE:
+      case LogLevel.VERBOSE:
         level_tag = "[V]";
         break;
-      case LOG_LEVELS.DEBUG:
+      case LogLevel.DEBUG:
         level_tag = "[D]";
         break;
-      case LOG_LEVELS.INFO:
+      case LogLevel.INFO:
         level_tag = "[I]";
         break;
-      case LOG_LEVELS.WARN:
+      case LogLevel.WARN:
         level_tag = "[W]";
         break;
-      case LOG_LEVELS.ERROR:
+      case LogLevel.ERROR:
         level_tag = "[E]";
         break;
-      default:
-        level_tag = "[ ]";
+      default: {
+        const exhaustiveCheck: never = level;
+        throw new Error(`Unhandled case: ${exhaustiveCheck}`);
         break;
+      }
     }
-    let line = LOG_TAG + " " + level_tag + " " + msg;
+    const line = LOG_TAG + " " + level_tag + " " + msg;
 
-    if (level < LOG_LEVELS.ERROR) {
+    if (level < LogLevel.ERROR) {
       console.log(line);
     }
     else {
@@ -92,73 +96,103 @@ function log(msg, level) {
   }
 }
 
+const SwipeNavigationConfigSchema = z.object({
+  animate: z.string().optional(),
+  logger_level: z
+    .union([
+      z.literal("verbose"),
+      z.literal("debug"),
+      z.literal("info"),
+      z.literal("warn"),
+      z.literal("error")
+    ])
+    .optional(),
+  prevent_default: z.boolean().optional(),
+  skip_hidden: z.boolean().optional(),
+  skip_tabs: z.string().optional(),
+  swipe_amount: z.number().optional(),
+  wrap: z.boolean().optional()
+});
+type SwipeNavigationConfig = z.infer<typeof SwipeNavigationConfigSchema>;
+function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationConfig {
+  return SwipeNavigationConfigSchema.safeParse(obj).success;
+}
+
+
 class Config {
   static animate = "none";
-  static wrap = true;
-  static prevent_default = false;
-  static swipe_amount = 0.15;
-  static skip_hidden = true;
-  static skip_tabs = [];
   // Print all levels until the config is loaded, otherwise there is no way to see low level logs.
   // The real default is set below.
-  static logger_level = LOG_LEVELS._ALL;
+  static logger_level = LogLevel._ALL;
+  static prevent_default = false;
+  static skip_hidden = true;
+  static skip_tabs: number[] = [];
+  static swipe_amount = 0.15;
+  static wrap = true;
 
-  static parseConfig(rawConfig) {
-    if (rawConfig.animate != undefined) Config.animate = rawConfig.animate;
-    if (rawConfig.wrap != undefined) Config.wrap = rawConfig.wrap;
-    if (rawConfig.prevent_default != undefined) Config.prevent_default = rawConfig.prevent_default;
-    if (rawConfig.swipe_amount != undefined) Config.swipe_amount = rawConfig.swipe_amount / 100.0;
-    if (rawConfig.skip_hidden != undefined) Config.skip_hidden = rawConfig.skip_hidden;
-    if (rawConfig.skip_tabs != undefined) {
-      Config.skip_tabs =
-        String(rawConfig.skip_tabs)
-          .replace(/\s+/g, "")
-          .split(",")
-          .map(function (item) {
-            return parseInt(item, 10);
-          });
-    }
-    if (rawConfig.logger_level != undefined) {
-      switch (rawConfig.logger_level) {
-        case "verbose":
-          Config.logger_level = LOG_LEVELS.VERBOSE;
-          break;
-        case "debug":
-          Config.logger_level = LOG_LEVELS.DEBUG;
-          break;
-        case "info":
-          Config.logger_level = LOG_LEVELS.INFO;
-          break;
-        case "warn":
-          Config.logger_level = LOG_LEVELS.WARN;
-          break;
-        case "error":
-          Config.logger_level = LOG_LEVELS.ERROR;
-          break;
-        default:
-          Config.logger_level = LOG_LEVELS.WARN;
-          loge("Unknown logger_level: \"" + rawConfig.logger_level + "\"");
-          break;
+  static parseConfig(rawConfig: unknown) {
+    if (instanceOfSwipeNavigationConfig(rawConfig)) {
+      if (rawConfig?.animate != undefined) Config.animate = rawConfig.animate;
+      if (rawConfig.logger_level != undefined) {
+        switch (rawConfig.logger_level) {
+          case "verbose":
+            Config.logger_level = LogLevel.VERBOSE;
+            break;
+          case "debug":
+            Config.logger_level = LogLevel.DEBUG;
+            break;
+          case "info":
+            Config.logger_level = LogLevel.INFO;
+            break;
+          case "warn":
+            Config.logger_level = LogLevel.WARN;
+            break;
+          case "error":
+            Config.logger_level = LogLevel.ERROR;
+            break;
+          default: {
+            const exhaustiveCheck: never = rawConfig.logger_level;
+            throw new Error(`Unhandled case: ${exhaustiveCheck}`);
+            break;
+          }
+        }
+      } else {
+        // The default value is set here because we want to print everything before reading the config.
+        Config.logger_level = LogLevel.WARN;
       }
+      if (rawConfig?.prevent_default != undefined) Config.prevent_default = rawConfig.prevent_default;
+      if (rawConfig?.skip_hidden != undefined) Config.skip_hidden = rawConfig.skip_hidden;
+      if (rawConfig?.skip_tabs != undefined) {
+        Config.skip_tabs =
+          String(rawConfig.skip_tabs)
+            .replace(/\s+/g, "")
+            .split(",")
+            .map((item) => { return parseInt(item); });
+      }
+      if (rawConfig?.swipe_amount != undefined) Config.swipe_amount = rawConfig.swipe_amount / 100.0;
+      if (rawConfig?.wrap != undefined) Config.wrap = rawConfig.wrap;
+
+      return true;
     } else {
-      // The default value is set here because we want to print everything before reading the config.
-      Config.logger_level = LOG_LEVELS.WARN;
+      loge("Found invalid configuration.");
+      // TODO log why the config is wrong
+      return false;
     }
   }
 }
 
 class PageObject {
-  #domNode = null;
-  #parent = null;
-  #selectors = null;
-  #isSelectorsRootedInShadow = null;
-  #keepAlive = false
-  #onDomNodeRefreshedCallback = null;
-  #onDomNodeRemovedCallback = null;
+  #domNode: HTMLElement | null = null;
+  #parent: PageObject | HTMLElement | Document;
+  #selectors: string[];
+  #isSelectorsRootedInShadow: boolean;
+  #keepAlive = false;
+  #onDomNodeRefreshedCallback: (() => void) | null = null;
+  #onDomNodeRemovedCallback: (() => void) | null = null;
 
-  #keepAliveChildren = new Map();
+  #keepAliveChildren = new Map<PageObject, MutationObserver>();
 
-  constructor(parent, selectors, isSelectorsRootedInShadow,) {
+  constructor(parent: PageObject | HTMLElement | Document, selectors: string[], isSelectorsRootedInShadow: boolean) {
     this.#parent = parent;
     this.#selectors = selectors;
     this.#isSelectorsRootedInShadow = isSelectorsRootedInShadow;
@@ -172,7 +206,7 @@ class PageObject {
     this.#domNode = null;
   }
 
-  watchChanges(callbacks) {
+  watchChanges(callbacks: { onDomNodeRefreshedCallback: (() => void), onDomNodeRemovedCallback: (() => void) | null }) {
     this.#setKeepAlive();
     this.#onDomNodeRefreshedCallback = callbacks.onDomNodeRefreshedCallback;
     this.#onDomNodeRemovedCallback = callbacks.onDomNodeRemovedCallback;
@@ -191,12 +225,12 @@ class PageObject {
     }
   }
 
-  #addPageObjectToKeepAlive(pageObject) {
+  #addPageObjectToKeepAlive(pageObject: PageObject) {
     if (!(this.#keepAliveChildren.has(pageObject))) {
       this.#keepAliveChildren.set(
         pageObject,
         new MutationObserver((mutations) => {
-          for (let mutation of mutations) {
+          for (const mutation of mutations) {
             if (mutation.addedNodes.length > 0) {
               logv(
                 mutation.addedNodes.length + " new element(s) appeared under \""
@@ -222,21 +256,29 @@ class PageObject {
       this.#refreshDomNode();
     } else {
       // Stale detection
-      if (this.#isStale(this.#domNode)) {
-        logd("Stale object in cache: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Invalidating...");
+      if (this.#isStale()) {
+        logd("Stale object in cache: \"" + this.#domNode.nodeName.toLowerCase() + "\". Invalidating...");
         this.invalidateDomNode();
         this.getDomNode();
       }
     }
 
-    return this.#domNode
+    return this.#domNode;
   }
 
   getParentNode() {
-    let parentNode = (this.#parent instanceof PageObject) ? this.#parent.getDomNode() : this.#parent;
+    let parentNode: HTMLElement | Document | ShadowRoot | null =
+      (this.#parent instanceof PageObject) ?
+        this.#parent.getDomNode()
+        : this.#parent;
 
     if (parentNode != null && this.#isSelectorsRootedInShadow) {
-      parentNode = parentNode.shadowRoot;
+      if ("shadowRoot" in parentNode) {
+        parentNode = parentNode.shadowRoot;
+      } else {
+        loge(parentNode.nodeName + " is expected to have a shadowRoot, but it is missing.");
+        parentNode = null;
+      }
     }
 
     return parentNode;
@@ -247,20 +289,19 @@ class PageObject {
   }
 
   #refreshDomNode() {
-    let parentNode = this.getParentNode();
+    const parentNode = this.getParentNode();
 
     this.#domNode = (parentNode == null) ?
       null
       : (() => {
         for (const selector of this.#selectors) {
-          let node = parentNode.querySelector(selector);
-          if (node != null) {
+          const node = parentNode.querySelector(selector);
+          if (node != null && node instanceof HTMLElement) {
             return node;
           }
         }
         return null;
-      })()
-      ;
+      })();
 
     if (this.#domNode != null) {
       logd("Object refreshed: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\".");
@@ -284,14 +325,21 @@ class PageObject {
     }
   }
 
-  #connectChildObserver(pageObject) {
+  #connectChildObserver(pageObject: PageObject) {
     if (this.#domNode != null) {
-      let observer = this.#keepAliveChildren.get(pageObject);
+      const observer = this.#keepAliveChildren.get(pageObject);
 
       // Note: pageObject is a child of this object, so parentNode is this object (with or without
       // the shadowRoot depending on where the child is placed)
-      let parentNode = pageObject.getParentNode();
-      observer.observe(parentNode, { childList: true });
+      const parentNode = pageObject.getParentNode();
+
+      if (observer == null) {
+        loge("Illegal state: observer is not defined when connecting a child observer.");
+      } else if (parentNode == null) {
+        loge("Illegal state: parent is not defined when connecting a child observer.");
+      } else {
+        observer.observe(parentNode, { childList: true });
+      }
 
       pageObject.getDomNode();
     }
@@ -304,7 +352,7 @@ class PageObject {
         + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\""
       );
 
-      this.#keepAliveChildren.forEach((value, key) => {
+      this.#keepAliveChildren.forEach((value) => {
         value.disconnect();
       });
     }
@@ -344,7 +392,7 @@ class PageObjectManager {
   );
   static haAppLayoutView = new PageObject(
     PageObjectManager.haAppLayout,
-    ['[id="view"]'],
+    ["[id=\"view\"]"],
     false,
   );
   static tabsContainer = new PageObject(
@@ -358,14 +406,14 @@ class PageObjectManager {
 }
 
 class swipeManager {
-  static #xDown;
-  static #yDown;
-  static #xDiff;
-  static #yDiff;
+  static #xDown: number | null;
+  static #yDown: number | null;
+  static #xDiff: number | null;
+  static #yDiff: number | null;
 
-  static #touchStartController = null;
-  static #touchMoveController = null;
-  static #touchEndController = null;
+  static #touchStartController: AbortController | null = null;
+  static #touchMoveController: AbortController | null = null;
+  static #touchEndController: AbortController | null = null;
 
   static init() {
     this.#touchStartController?.abort();
@@ -375,40 +423,43 @@ class swipeManager {
     this.#touchMoveController = new AbortController();
     this.#touchEndController = new AbortController();
 
-    if (PageObjectManager.tabsContainer.getDomNode()) {
+    const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
+    if (haAppLayoutDomNode != null) {
       logd("Initializing SwipeManger...");
 
-      PageObjectManager.haAppLayout.getDomNode().addEventListener(
+      haAppLayoutDomNode.addEventListener(
         "touchstart",
         (event) => { this.#handleTouchStart(event); },
         { signal: this.#touchStartController.signal, passive: true }
       );
-      PageObjectManager.haAppLayout.getDomNode().addEventListener(
+      haAppLayoutDomNode.addEventListener(
         "touchmove",
         (event) => { this.#handleTouchMove(event); },
         { signal: this.#touchMoveController.signal, passive: false }
       );
-      PageObjectManager.haAppLayout.getDomNode().addEventListener(
+      haAppLayoutDomNode.addEventListener(
         "touchend",
-        (event) => { this.#handleTouchEnd(); },
+        () => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.animate == "swipe") PageObjectManager.haAppLayout.getDomNode().style.overflow = "hidden";
+      if (Config.animate == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
     }
   }
 
-  static #handleTouchStart(event) {
+  static #handleTouchStart(event: TouchEvent) {
     if (typeof event.composedPath() == "object") {
-      for (let element of event.composedPath()) {
-        if (element.nodeName == "HUI-VIEW") {
-          // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
-          break;
-        } else {
-          if (element.matches && element.matches(exceptions)) {
-            logd("Ignoring touch on \""
-              + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
-              + "\".");
-            return; // Ignore swipe
+      for (const element of event.composedPath()) {
+        if (element instanceof HTMLElement) {
+          if (element.nodeName == "HUI-VIEW") {
+            // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
+            break;
+          } else {
+            if (element.matches && element.matches(exceptions)) {
+              logd("Ignoring touch on \""
+                + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
+                + "\".");
+              return; // Ignore swipe
+            }
           }
         }
       }
@@ -417,7 +468,7 @@ class swipeManager {
     this.#yDown = event.touches[0].clientY;
   }
 
-  static #handleTouchMove(event) {
+  static #handleTouchMove(event: TouchEvent) {
     if (this.#xDown && this.#yDown) {
       this.#xDiff = this.#xDown - event.touches[0].clientX;
       this.#yDiff = this.#yDown - event.touches[0].clientY;
@@ -435,12 +486,12 @@ class swipeManager {
           logd("Swipe ignored, too short.");
 
         } else {
-          let directionLeft = this.#xDiff < 0;
+          const directionLeft = this.#xDiff < 0;
 
           logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          const rtl = PageObjectManager.ha.getDomNode().style.direction == "rtl";
-          let nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
+          const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
+          const nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
           this.#click(nextTabIndex, directionLeft);
         }
       }
@@ -452,9 +503,10 @@ class swipeManager {
     return Array.from(PageObjectManager.tabsContainer.getDomNode()?.querySelectorAll("paper-tab") ?? []);
   }
 
-  static #getNextTabIndex(directionLeft) {
-    let tabs = this.#getTabsArray();
-    let activeTabIndex = tabs.indexOf(PageObjectManager.tabsContainer.getDomNode().querySelector(".iron-selected"));
+  static #getNextTabIndex(directionLeft: boolean) {
+    const tabs = this.#getTabsArray();
+    const activeTab = PageObjectManager.tabsContainer.getDomNode()?.querySelector(".iron-selected");
+    const activeTabIndex = activeTab != null ? tabs.indexOf(activeTab) : -1;
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
 
@@ -462,7 +514,7 @@ class swipeManager {
       stopReason = "Can't determine the active tab";
 
     } else {
-      let increment = directionLeft ? -1 : 1;
+      const increment = directionLeft ? -1 : 1;
       do {
         nextTabIndex += increment;
 
@@ -482,7 +534,7 @@ class swipeManager {
       } while (
         // Note: stopReason must be the first condition to short circuit the rest that will probably
         // raise exception due to they dirty state.
-
+        //
         // Cycle if...
         // ...the is no reason to stop and...
         stopReason == null
@@ -495,7 +547,7 @@ class swipeManager {
             && getComputedStyle(tabs[nextTabIndex], null).display == "none"
           )
         )
-      )
+      );
     }
 
     if (stopReason != null) {
@@ -506,61 +558,63 @@ class swipeManager {
     }
   }
 
-  static #click(index, directionLeft) {
+  static #click(index: number, directionLeft: boolean) {
     if (index != -1) {
       const view = PageObjectManager.haAppLayoutView.getDomNode();
       const tabs = this.#getTabsArray();
 
-      if (Config.animate == "swipe") {
-        const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-        const _out = directionLeft ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
-        view.style.transitionDuration = "200ms";
-        view.style.opacity = 0;
-        view.style.transform = `translate(${_in}, 0)`;
-        view.style.transition = "transform 0.20s, opacity 0.18s";
-        setTimeout(function () {
-          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-          view.style.transitionDuration = "0ms";
-          view.style.transform = `translate(${_out}, 0)`;
-          view.style.transition = "transform 0s";
-        }, 210);
-        setTimeout(function () {
+      if (view != null) {
+        if (Config.animate == "swipe") {
+          const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+          const _out = directionLeft ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
           view.style.transitionDuration = "200ms";
-          view.style.opacity = 1;
-          view.style.transform = `translate(0px, 0)`;
+          view.style.opacity = "0";
+          view.style.transform = `translate(${_in}, 0)`;
           view.style.transition = "transform 0.20s, opacity 0.18s";
-        }, 250);
-      } else if (Config.animate == "fade") {
-        view.style.transitionDuration = "200ms";
-        view.style.transition = "opacity 0.20s";
-        view.style.opacity = 0;
-        setTimeout(function () {
-          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-          view.style.transitionDuration = "0ms";
-          view.style.opacity = 0;
-          view.style.transition = "opacity 0s";
-        }, 210);
-        setTimeout(function () {
+          setTimeout(function () {
+            tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+            view.style.transitionDuration = "0ms";
+            view.style.transform = `translate(${_out}, 0)`;
+            view.style.transition = "transform 0s";
+          }, 210);
+          setTimeout(function () {
+            view.style.transitionDuration = "200ms";
+            view.style.opacity = "1";
+            view.style.transform = "translate(0px, 0)";
+            view.style.transition = "transform 0.20s, opacity 0.18s";
+          }, 250);
+        } else if (Config.animate == "fade") {
           view.style.transitionDuration = "200ms";
           view.style.transition = "opacity 0.20s";
-          view.style.opacity = 1;
-        }, 250);
-      } else if (Config.animate == "flip") {
-        view.style.transitionDuration = "200ms";
-        view.style.transform = "rotatey(90deg)";
-        view.style.transition = "transform 0.20s, opacity 0.20s";
-        view.style.opacity = 0.25;
-        setTimeout(function () {
-          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-        }, 210);
-        setTimeout(function () {
+          view.style.opacity = "0";
+          setTimeout(function () {
+            tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+            view.style.transitionDuration = "0ms";
+            view.style.opacity = "0";
+            view.style.transition = "opacity 0s";
+          }, 210);
+          setTimeout(function () {
+            view.style.transitionDuration = "200ms";
+            view.style.transition = "opacity 0.20s";
+            view.style.opacity = "1";
+          }, 250);
+        } else if (Config.animate == "flip") {
           view.style.transitionDuration = "200ms";
-          view.style.transform = "rotatey(0deg)";
+          view.style.transform = "rotatey(90deg)";
           view.style.transition = "transform 0.20s, opacity 0.20s";
-          view.style.opacity = 1;
-        }, 250);
-      } else {
-        tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+          view.style.opacity = "0.25";
+          setTimeout(function () {
+            tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+          }, 210);
+          setTimeout(function () {
+            view.style.transitionDuration = "200ms";
+            view.style.transform = "rotatey(0deg)";
+            view.style.transition = "transform 0.20s, opacity 0.20s";
+            view.style.opacity = "1";
+          }, 250);
+        } else {
+          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+        }
       }
     }
   }
@@ -577,11 +631,17 @@ async function getConfiguration() {
     while (!configRead && configReadingAttempts < 300) {
       configReadingAttempts++;
       try {
-        const rawConfig = PageObjectManager.haPanelLovelace.getDomNode().lovelace.config.swipe_nav || {};
+        const rawConfig = (
+          (
+            PageObjectManager.haPanelLovelace.getDomNode() as (
+              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
+            )
+          )?.lovelace?.config?.swipe_nav
+        ) ?? {};
         Config.parseConfig(rawConfig);
         configRead = true;
       } catch (e) {
-        logw("Error while obtaining config: " + e.message + ". Retrying...");
+        logw("Error while obtaining config: " + (e instanceof Error ? e.message : e) + ". Retrying...");
         await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
       }
     }
@@ -600,7 +660,7 @@ async function getConfiguration() {
 function run() {
   PageObjectManager.haPanelLovelace.watchChanges({
     onDomNodeRefreshedCallback: () => {
-      let configurationLoading = getConfiguration();
+      const configurationLoading = getConfiguration();
       configurationLoading.then((configRead) => {
         if (configRead) {
           // Re-init swipeManager to load new config
@@ -611,7 +671,7 @@ function run() {
     onDomNodeRemovedCallback: null  // TODO
   });
 
-  let configurationLoading = getConfiguration();
+  const configurationLoading = getConfiguration();
   configurationLoading.then((configRead) => {
     PageObjectManager.haAppLayout.watchChanges({
       onDomNodeRefreshedCallback: () => {
@@ -632,4 +692,4 @@ function run() {
 run();
 
 // Console tag
-console.info(`%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER`, "color: #2980b9; font-weight: 700;");
+console.info("%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER", "color: #2980b9; font-weight: 700;");

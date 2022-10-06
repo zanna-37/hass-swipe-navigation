@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## [Unreleased]
+### News 📰
+- The project has been migrated to use TypeScript
+
+### Fixed 🐛
+- Fixed minor bugs
+
+
 ## 🏷️ [v1.6.1] - 2022-09-17
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.0...v1.6.1)
 
