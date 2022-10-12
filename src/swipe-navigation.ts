@@ -449,7 +449,7 @@ class swipeManager {
   static #handleTouchStart(event: TouchEvent) {
     if (typeof event.composedPath() == "object") {
       for (const element of event.composedPath()) {
-        if (element instanceof HTMLElement) {
+        if (element instanceof Element) {
           if (element.nodeName == "HUI-VIEW") {
             // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
             break;

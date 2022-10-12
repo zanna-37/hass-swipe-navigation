@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.6.3] - 2022-10-12
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.2...v1.6.3)
+
+### Fixed 🐛
+- Ignore-swipe exception list was not working when the swipe was initialized inside certain type of tags, e.g. `<svg>`.
+
+
 ## 🏷️ [v1.6.2] - 2022-10-06
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.1...v1.6.2)
 
