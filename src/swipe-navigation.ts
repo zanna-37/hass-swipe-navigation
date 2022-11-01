@@ -447,6 +447,13 @@ class swipeManager {
   }
 
   static #handleTouchStart(event: TouchEvent) {
+    if (event.touches.length > 1) {
+      this.#xDown = null;
+      this.#yDown = null;
+      logd("Ignoring touch: multiple touchpoints detected.");
+      return; // Ignore swipe: Multitouch detected
+    }
+    
     if (typeof event.composedPath() == "object") {
       for (const element of event.composedPath()) {
         if (element instanceof Element) {
