@@ -577,54 +577,36 @@ class swipeManager {
       const tabs = this.#getTabsArray();
 
       if (view != null) {
-        if (Config.animate == "swipe") {
-          const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-          const _out = directionLeft ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
-          view.style.transitionDuration = "200ms";
-          view.style.opacity = "0";
-          view.style.transform = `translate(${_in}, 0)`;
-          view.style.transition = "transform 0.20s, opacity 0.18s";
-          setTimeout(function () {
-            tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-            view.style.transitionDuration = "0ms";
-            view.style.transform = `translate(${_out}, 0)`;
-            view.style.transition = "transform 0s";
-          }, 210);
-          setTimeout(function () {
-            view.style.transitionDuration = "200ms";
-            view.style.opacity = "1";
-            view.style.transform = "translate(0px, 0)";
-            view.style.transition = "transform 0.20s, opacity 0.18s";
-          }, 250);
-        } else if (Config.animate == "fade") {
-          view.style.transitionDuration = "200ms";
-          view.style.transition = "opacity 0.20s";
-          view.style.opacity = "0";
-          setTimeout(function () {
-            tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-            view.style.transitionDuration = "0ms";
+        const duration = 200;
+        if (Config.animate) {
+          view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
+          if (Config.animate == "swipe") {
+            const _in = directionLeft ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+            const _out = directionLeft ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
             view.style.opacity = "0";
-            view.style.transition = "opacity 0s";
-          }, 210);
+            view.style.transform = `translate(${_in}, 0)`;
+            setTimeout(function () {
+              tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+              view.style.transform = `translate(${_out}, 0)`;
+            }, duration + 10);
+          } else if (Config.animate == "fade") {
+            view.style.opacity = "0";
+            setTimeout(function () {
+              tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+              view.style.opacity = "0";
+            }, duration + 10);
+          } else if (Config.animate == "flip") {
+            view.style.transform = "rotatey(90deg)";
+            view.style.opacity = "0.25";
+            setTimeout(function () {
+              tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+            }, duration + 10);
+          }
           setTimeout(function () {
-            view.style.transitionDuration = "200ms";
-            view.style.transition = "opacity 0.20s";
+            view.style.transition = `transform ${duration}ms ease-out, opacity ${duration}ms ease-out`;
             view.style.opacity = "1";
-          }, 250);
-        } else if (Config.animate == "flip") {
-          view.style.transitionDuration = "200ms";
-          view.style.transform = "rotatey(90deg)";
-          view.style.transition = "transform 0.20s, opacity 0.20s";
-          view.style.opacity = "0.25";
-          setTimeout(function () {
-            tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
-          }, 210);
-          setTimeout(function () {
-            view.style.transitionDuration = "200ms";
-            view.style.transform = "rotatey(0deg)";
-            view.style.transition = "transform 0.20s, opacity 0.20s";
-            view.style.opacity = "1";
-          }, 250);
+            view.style.transform = "";
+          }, duration + 50);
         } else {
           tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
         }
