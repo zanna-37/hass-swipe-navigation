@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.6.4] - 2022-11-02
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.3...v1.6.4)
+
+### Fixed 🐛
+- Ignore swipe when multitouch is detected, for example, when pinching to zoom (by [@MasterTim17](https://github.com/MasterTim17) in [`#17`](https://github.com/zanna-37/hass-swipe-navigation/pull/17). Closes [`#16`](https://github.com/zanna-37/hass-swipe-navigation/issues/16))
+
+
 ## 🏷️ [v1.6.3] - 2022-10-12
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.2...v1.6.3)
 
