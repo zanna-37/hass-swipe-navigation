@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.6.5] - 2022-11-07
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.4...v1.6.5)
+
+### Fixed 🐛
+- Animations are now snappier (by [@dbuezas](https://github.com/dbuezas) in [`#19`](https://github.com/zanna-37/hass-swipe-navigation/pull/19). Closes [`#18`](https://github.com/zanna-37/hass-swipe-navigation/issues/18))
+
+
 ## 🏷️ [v1.6.4] - 2022-11-02
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.3...v1.6.4)
 
