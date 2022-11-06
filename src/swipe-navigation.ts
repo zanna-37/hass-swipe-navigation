@@ -459,7 +459,7 @@ class swipeManager {
       logd("Ignoring touch: multiple touchpoints detected.");
       return; // Ignore swipe: Multitouch detected
     }
-    
+
     if (typeof event.composedPath() == "object") {
       for (const element of event.composedPath()) {
         if (element instanceof Element) {
@@ -577,39 +577,44 @@ class swipeManager {
       const tabs = this.#getTabsArray();
 
       if (view != null) {
-        const duration = 200;
         if (Config.animate) {
+          const duration = 200;
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
+
           if (Config.animate == "swipe") {
             const _in = directionLeft ? `${screen.width / 2}px` : `-${screen.width / 2}px`;
             const _out = directionLeft ? `-${screen.width / 2}px` : `${screen.width / 2}px`;
             view.style.opacity = "0";
             view.style.transform = `translate(${_in}, 0)`;
             setTimeout(function () {
-              view.style.transition = ""
+              view.style.transition = "";
               view.style.transform = `translate(${_out}, 0)`;
               tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
             }, duration + 10);
+
           } else if (Config.animate == "fade") {
             view.style.opacity = "0";
             setTimeout(function () {
-              view.style.transition = ""
+              view.style.transition = "";
               tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
               view.style.opacity = "0";
             }, duration + 10);
+
           } else if (Config.animate == "flip") {
             view.style.transform = "rotatey(90deg)";
             view.style.opacity = "0.25";
             setTimeout(function () {
-              view.style.transition = ""
+              view.style.transition = "";
               tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
             }, duration + 10);
           }
+
           setTimeout(function () {
             view.style.transition = `transform ${duration}ms ease-out, opacity ${duration}ms ease-out`;
             view.style.opacity = "1";
             view.style.transform = "";
           }, duration + 50);
+
         } else {
           tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
         }
