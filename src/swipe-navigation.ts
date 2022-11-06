@@ -577,7 +577,11 @@ class swipeManager {
       const tabs = this.#getTabsArray();
 
       if (view != null) {
-        if (Config.animate) {
+
+        if (Config.animate == "none") {
+          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
+
+        } else {
           const duration = 200;
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
 
@@ -607,6 +611,10 @@ class swipeManager {
               view.style.transition = "";
               tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
             }, duration + 10);
+
+          } else {
+            const exhaustiveCheck: never = Config.animate;
+            throw new Error(`Unhandled case: ${exhaustiveCheck}`);
           }
 
           setTimeout(function () {
@@ -614,9 +622,6 @@ class swipeManager {
             view.style.opacity = "1";
             view.style.transform = "";
           }, duration + 50);
-
-        } else {
-          tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
         }
       }
     }
