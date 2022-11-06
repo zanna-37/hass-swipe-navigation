@@ -97,7 +97,13 @@ function log(msg: string, level: Exclude<LogLevel, LogLevel._ALL>) {
 }
 
 const SwipeNavigationConfigSchema = z.object({
-  animate: z.string().optional(),
+  animate: z
+    .union([
+      z.literal("none"),
+      z.literal("swipe"),
+      z.literal("fade"),
+      z.literal("flip"),
+    ]).optional(),
   logger_level: z
     .union([
       z.literal("verbose"),
@@ -120,10 +126,10 @@ function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationCo
 
 
 class Config {
-  static animate = "none";
+  static animate: "none" | "swipe" | "fade" | "flip" = "none";
   // Print all levels until the config is loaded, otherwise there is no way to see low level logs.
   // The real default is set below.
-  static logger_level = LogLevel._ALL;
+  static logger_level: LogLevel = LogLevel._ALL;
   static prevent_default = false;
   static skip_hidden = true;
   static skip_tabs: number[] = [];
