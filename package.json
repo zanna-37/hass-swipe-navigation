@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@playwright/test": "^1.27.1",
     "@rollup/plugin-node-resolve": "^14.1.0",
     "@rollup/plugin-typescript": "^8.5.0",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
