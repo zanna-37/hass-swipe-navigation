@@ -2,6 +2,8 @@
   resources:
   - type: module
     url: http://localhost:3000/swipe-navigation.js
+  - type: module
+    url: /local/touchpoints-visualizer.js
 
   dashboards:
     # config/ui-lovelace.yaml is included by default

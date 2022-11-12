@@ -37,6 +37,7 @@ services:
       - .hass/config/ui-lovelace.yaml:/config/ui-lovelace.yaml:ro
       - .hass/config/dashboards/:/config/dashboards
       - .hass/config/packages:/config/packages
+      - .hass/config/www/touchpoints-visualizer.js:/config/www/touchpoints-visualizer.js:ro
 
       # Sync time with host
       - "/etc/timezone:/etc/timezone:ro"
