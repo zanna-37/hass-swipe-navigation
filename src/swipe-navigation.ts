@@ -574,12 +574,17 @@ class swipeManager {
   }
 
   static #click(index: number, directionLeft: boolean) {
-    if (index != -1) {
+    if (index < 0) {
+      loge("Invalid tab index: " + index + ".");
+
+    } else {
       const view = PageObjectManager.haAppLayoutView.getDomNode();
       const tabs = this.#getTabsArray();
 
-      if (view != null) {
+      if (view == null) {
+        loge("view is null when attempting to change tab.");
 
+      } else {
         if (Config.animate == "none") {
           tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
 
