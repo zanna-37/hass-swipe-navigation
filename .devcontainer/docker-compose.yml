@@ -6,3 +6,7 @@ services:
 
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
+
+  hass:
+    environment:
+      - SWIPE_NAVIGATION_JS_URL=http://localhost:3000/swipe-navigation.js

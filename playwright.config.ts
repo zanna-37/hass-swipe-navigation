@@ -41,7 +41,7 @@ const config: PlaywrightTestConfig = {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://hass:8123/",
+    baseURL: process.env.HOMEASSISTANT_URL,
     // Tell all tests to load signed-in state from 'storageState.json'.
     storageState: "storageState.json",
 

@@ -1,7 +1,7 @@
   mode: yaml
   resources:
   - type: module
-    url: http://localhost:3000/swipe-navigation.js
+    url: !env_var SWIPE_NAVIGATION_JS_URL http://localhost:3000/swipe-navigation.js
   - type: module
     url: /local/touchpoints-visualizer.js
 

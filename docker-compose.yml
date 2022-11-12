@@ -27,6 +27,9 @@ services:
   hass:
     image: homeassistant/home-assistant:beta
 
+    environment:
+      - SWIPE_NAVIGATION_JS_URL=http://builder:3000/swipe-navigation.js
+
     ports:
       - 8123:8123
 
@@ -42,6 +45,36 @@ services:
       # Sync time with host
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
+
+
+  tester:
+    image: mcr.microsoft.com/playwright
+
+    environment:
+      - CI
+      - HOMEASSISTANT_URL=http://hass:8123
+      - SWIPE_NAVIGATION_JS_URL=http://builder:3000/swipe-navigation.js
+
+    volumes:
+      - .:/project
+
+      # Keep node_modules only inside a volume (for decluttering and performance)
+      - nodemodules:/project/node_modules
+
+      # Sync time with host
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
+    working_dir: /project
+
+    depends_on:
+      - builder
+      - hass
+
+    profiles:
+      - tests
+
+    command: ./scripts/run-playwright.sh
 
 
 volumes:
