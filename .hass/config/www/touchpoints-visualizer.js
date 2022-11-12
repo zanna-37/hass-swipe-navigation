@@ -1,5 +1,4 @@
 let circle = document.createElement('div');
-circle.setAttribute('id', 'touchpoint');
 
 circle.style.position = "fixed";
 // pointerEvents property is very important and must be "none".
@@ -20,17 +19,44 @@ circle.style.borderWidth = "1px";
 circle.style.backgroundColor = "#eee";
 circle.style.transition = "opacity 0.5s";
 
-
 document.body.appendChild(circle);
 
+
 function moveCircle(event) {
-  if (event.touches.length > 1) {
-    throw "Unsupported number of touchpoints: " + event.touches.length;
+
+  let x = null, y = null;
+
+  if (event.type == "click") {
+    x = event.clientX;
+    y = event.clientY;
+  } else if (event.type == "touchstart" || event.type == "touchmove" || event.type == "touchend") {
+    if (event.touches.length > 1) {
+      console.error("Unsupported number of touchpoints: " + event.touches.length + ". Using only the first.");
+    }
+    x = event.touches[0].clientX;
+    y = event.touches[0].clientY;
   }
-  circle.style.left = (event.touches[0].clientX - 15 / 2) + "px";
-  circle.style.top = (event.touches[0].clientY - 15 / 2) + "px";
+
+  if (x != null && y != null) {
+    circle.style.left = (x - 15 / 2) + "px";
+    circle.style.top = (y - 15 / 2) + "px";
+  } else {
+    console.error("x or y is null");
+  }
 }
 
+
+document.body.addEventListener(
+  "click",
+  (event) => {
+    circle.style.opacity = ".7";
+    moveCircle(event);
+    // TODO subject to race condition with touchend
+    setTimeout(() => {
+      circle.style.opacity = "0";
+    }, 300);
+  }
+);
 
 document.body.addEventListener(
   "touchstart",
