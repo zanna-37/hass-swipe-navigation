@@ -13,7 +13,7 @@ services:
       - .:/project
 
       # Keep node_modules only inside a volume (for decluttering and performance)
-      - nodemodules:/project/node_modules
+      - nodemodules_builder:/project/node_modules
 
       # Sync time with host
       - "/etc/timezone:/etc/timezone:ro"
@@ -59,7 +59,7 @@ services:
       - .:/project
 
       # Keep node_modules only inside a volume (for decluttering and performance)
-      - nodemodules:/project/node_modules
+      - nodemodules_tester:/project/node_modules
 
       # Sync time with host
       - "/etc/timezone:/etc/timezone:ro"
@@ -78,4 +78,5 @@ services:
 
 
 volumes:
-  nodemodules:
+  nodemodules_builder:
+  nodemodules_tester:
