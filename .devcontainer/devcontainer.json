@@ -6,5 +6,8 @@
   "service": "builder",
   "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
   "workspaceFolder": "/project",
-  "shutdownAction": "stopCompose"
+  "shutdownAction": "stopCompose",
+  "features": {
+    "git": "os-provided"
+  },
 }
