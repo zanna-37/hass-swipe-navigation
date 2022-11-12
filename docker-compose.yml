@@ -21,7 +21,27 @@ services:
 
     working_dir: /project
 
-    command: ./scripts/build.sh
+    command: ./scripts/build.sh --serve
+
+
+  hass:
+    image: homeassistant/home-assistant:beta
+
+    ports:
+      - 8123:8123
+
+    volumes:
+      - .hass/hass-init.sh:/etc/cont-init.d/hass-init.sh:ro
+      - .hass/config/configuration.yaml:/config/configuration.yaml:ro
+      - .hass/config/dashboards.yaml:/config/dashboards.yaml:ro
+      - .hass/config/ui-lovelace.yaml:/config/ui-lovelace.yaml:ro
+      - .hass/config/dashboards/:/config/dashboards
+      - .hass/config/packages:/config/packages
+
+      # Sync time with host
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
 
 volumes:
   nodemodules:

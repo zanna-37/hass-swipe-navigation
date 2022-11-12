@@ -1,0 +1,72 @@
+  mode: yaml
+  resources:
+  - type: module
+    url: http://localhost:3000/swipe-navigation.js
+
+  dashboards:
+    # config/ui-lovelace.yaml is included by default
+
+    # Order dashboards alphabetically
+
+    animate-swipe:
+      mode: yaml
+      title: Animate swipe
+      icon: mdi:transition
+      show_in_sidebar: true
+      filename: ./dashboards/animate-swipe.yaml
+
+    default-values:
+      mode: yaml
+      title: Default values
+      icon: mdi:gesture-swipe
+      show_in_sidebar: true
+      filename: ./dashboards/default-values.yaml
+
+    default-values-with-logger:
+      mode: yaml
+      title: Default values with logger
+      icon: mdi:gesture-swipe
+      show_in_sidebar: true
+      filename: ./dashboards/default-values-with-logger.yaml
+
+    no-wrap:
+      mode: yaml
+      title: No wrap
+      icon: mdi:sign-direction-remove
+      show_in_sidebar: true
+      filename: ./dashboards/no-wrap.yaml
+
+    one-slider:
+      mode: yaml
+      title: One slider
+      icon: mdi:counter
+      show_in_sidebar: true
+      filename: ./dashboards/one-slider.yaml
+
+    skip-all:
+      mode: yaml
+      title: Skip all
+      icon: mdi:transit-skip
+      show_in_sidebar: true
+      filename: ./dashboards/skip-all.yaml
+
+    skip-tabs-no-wrap:
+      mode: yaml
+      title: Skip tabs no wrap
+      icon: mdi:transit-skip
+      show_in_sidebar: true
+      filename: ./dashboards/skip-tabs-no-wrap.yaml
+
+    skip-tabs:
+      mode: yaml
+      title: Skip tabs
+      icon: mdi:transit-skip
+      show_in_sidebar: true
+      filename: ./dashboards/skip-tabs.yaml
+
+    two-maps:
+      mode: yaml
+      title: Two maps
+      icon: mdi:map-outline
+      show_in_sidebar: true
+      filename: ./dashboards/two-maps.yaml

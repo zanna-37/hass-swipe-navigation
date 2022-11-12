@@ -1,0 +1,13 @@
+views:
+  - title: Home
+    path: home
+    icon: mdi:home-assistant
+    cards:
+      - type: markdown
+        title: Test instance
+        content: >-
+          This is a test instance.
+
+          All the dashboards are meant to test different edge cases of the swipe navigation.
+
+          ⚠️ **Ensure you are serving the .js file! (See the `/scripts` folder)**
