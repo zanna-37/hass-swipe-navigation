@@ -4,7 +4,7 @@ services:
 
   builder:
     build:
-      context: ./docker
+      context: ./docker/builder/
 
     ports:
       - 3000:3000
@@ -48,7 +48,8 @@ services:
 
 
   tester:
-    image: mcr.microsoft.com/playwright
+    build:
+      context: ./docker/builder/
 
     environment:
       - CI
