@@ -23,6 +23,8 @@ ROOT="${DIR}/.."
 "${DIR}/install-playwright-dependencies.sh"
 
 HOMEASSISTANT_URL=${HOMEASSISTANT_URL:-"http://localhost:8123"}
+SWIPE_NAVIGATION_JS_URL=${SWIPE_NAVIGATION_JS_URL:-"http://localhost:3000/swipe-navigation.js"}
+
 echo
 echo "Home Assistant URL is ${HOMEASSISTANT_URL}"
 
