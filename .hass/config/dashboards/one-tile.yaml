@@ -1,0 +1,22 @@
+swipe_nav:
+  swipe_amount: 1
+  logger_level: verbose
+
+views:
+
+  - title: Tile
+    cards:
+      - type: markdown
+        title: View 1
+        content: Content...
+
+      - type: tile
+        entity: light.main_light
+        features:
+          - type: light-brightness
+
+  - title: View 2
+    cards:
+      - type: markdown
+        title: View 2
+        content: Content...

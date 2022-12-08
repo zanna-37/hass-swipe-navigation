@@ -45,6 +45,13 @@
       show_in_sidebar: true
       filename: ./dashboards/one-slider.yaml
 
+    one-tile:
+      mode: yaml
+      title: One tile
+      icon: mdi:lightbulb
+      show_in_sidebar: true
+      filename: ./dashboards/one-tile.yaml
+
     skip-all:
       mode: yaml
       title: Skip all
