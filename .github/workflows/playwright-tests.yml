@@ -25,17 +25,6 @@ jobs:
       if: always()
       run: docker-compose -f docker-compose.yml -f docker-compose.test.yml down
 
-    - name: Get logs in case of failure
-      if: failure()
-      run: docker-compose logs --no-color > logs.txt
-
-    - uses: actions/upload-artifact@v3
-      if: failure()
-      with:
-        name: docker-logs.txt
-        path: logs.txt
-        retention-days: 7
-
     - uses: actions/upload-artifact@v3
       if: always()
       with:
