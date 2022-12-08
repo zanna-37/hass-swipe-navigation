@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.7.0] - 2022-12-08
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.5...v1.7.0)
+
+### Added 🎉
+- Tile slider has been added to swipe exceptions ([`39911fa`](https://github.com/zanna-37/hass-swipe-navigation/commit/39911facf9e075edb913027c3f826e8057216f41))
+
+
 ## 🏷️ [v1.6.5] - 2022-11-07
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.4...v1.6.5)
 
