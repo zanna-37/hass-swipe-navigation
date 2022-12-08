@@ -4,7 +4,7 @@ services:
 
   builder:
     build:
-      context: ./docker
+      context: ./docker/builder/
 
     ports:
       - 3000:3000
@@ -13,7 +13,7 @@ services:
       - .:/project
 
       # Keep node_modules only inside a volume (for decluttering and performance)
-      - nodemodules:/project/node_modules
+      - nodemodules_builder:/project/node_modules
 
       # Sync time with host
       - "/etc/timezone:/etc/timezone:ro"
@@ -21,7 +21,31 @@ services:
 
     working_dir: /project
 
-    command: ./scripts/build.sh
+    command: ./scripts/build.sh --serve
+
+
+  hass:
+    image: homeassistant/home-assistant:beta
+
+    environment:
+      - SWIPE_NAVIGATION_JS_URL=http://localhost:3000/swipe-navigation.js
+
+    ports:
+      - 8123:8123
+
+    volumes:
+      - .hass/hass-init.sh:/etc/cont-init.d/hass-init.sh:ro
+      - .hass/config/configuration.yaml:/config/configuration.yaml:ro
+      - .hass/config/dashboards.yaml:/config/dashboards.yaml:ro
+      - .hass/config/ui-lovelace.yaml:/config/ui-lovelace.yaml:ro
+      - .hass/config/dashboards/:/config/dashboards
+      - .hass/config/packages:/config/packages
+      - .hass/config/www/touchpoints-visualizer.js:/config/www/touchpoints-visualizer.js:ro
+
+      # Sync time with host
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
 
 volumes:
-  nodemodules:
+  nodemodules_builder:

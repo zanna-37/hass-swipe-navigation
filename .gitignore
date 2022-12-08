@@ -24,3 +24,8 @@ npm-debug.log*
 /node_modules
 /dist
 /.rollup.cache
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

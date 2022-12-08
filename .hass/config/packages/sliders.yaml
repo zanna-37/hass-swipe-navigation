@@ -1,0 +1,5 @@
+input_number:
+  slider:
+    name: Slider
+    min: 0
+    max: 100

@@ -85,6 +85,9 @@ If you need help, Mark Watt has an excellent video covering the configuration [i
 ## Contributions
 If you want to help, put a ⭐ to the repository and open issues or pull requests to contribute to the development.
 
+### For developers
+Have a look to the [CONTRIBUTING](./CONTRIBUTING.md) file.
+
 ## Thank you
 Big thanks to:
 * [@maykar](https://github.com/maykar) The original author of this project.

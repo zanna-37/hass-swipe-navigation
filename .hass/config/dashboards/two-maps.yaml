@@ -1,0 +1,20 @@
+swipe_nav:
+  logger_level: verbose
+
+views:
+
+  - title: Map1
+    type: panel
+    cards:
+      - type: map
+        entities:
+          - entity: zone.home
+        default_zoom: 3
+
+  - title: Map2
+    type: panel
+    cards:
+      - type: map
+        entities:
+          - entity: zone.home
+        default_zoom: 3

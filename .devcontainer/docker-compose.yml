@@ -3,6 +3,12 @@
 version: '2.4'
 services:
   builder:
+    environment:
+      - HOMEASSISTANT_URL=http://hass:8123
 
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
+
+  hass:
+    profiles:
+      - do_not_start_by_default
