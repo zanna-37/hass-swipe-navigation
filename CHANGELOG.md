@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.8.0] - 2022-12-08
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.7.0...v1.8.0)
+
+### Added 🎉
+- The project is now protected by a number of tests to ensure that the code is working as expected ([`#27`](https://github.com/zanna-37/hass-swipe-navigation/pull/27))
+
+
 ## 🏷️ [v1.7.0] - 2022-12-08
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.5...v1.7.0)
 
