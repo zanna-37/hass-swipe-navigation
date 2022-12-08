@@ -1,0 +1,8 @@
+light:
+  - platform: template
+    lights:
+      main_light:
+        friendly_name: "Main light"
+        turn_on:
+        turn_off:
+        set_level:
