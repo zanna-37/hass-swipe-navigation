@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { SwipeHelper } from "../../helpers/touchHelpers";
 
-test("should change, using animation swipe", async ({ page }) => {
-  const dashboardPath = "/animate-swipe";
+test("should change, using animation none", async ({ page }) => {
+  const dashboardPath = "/animate-none";
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 

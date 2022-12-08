@@ -10,6 +10,27 @@
 
     # Order dashboards alphabetically
 
+    animate-fade:
+      mode: yaml
+      title: Animate fade
+      icon: mdi:transition
+      show_in_sidebar: true
+      filename: ./dashboards/animate-fade.yaml
+
+    animate-flip:
+      mode: yaml
+      title: Animate flip
+      icon: mdi:transition
+      show_in_sidebar: true
+      filename: ./dashboards/animate-flip.yaml
+
+    animate-none:
+      mode: yaml
+      title: Animate none
+      icon: mdi:transition
+      show_in_sidebar: true
+      filename: ./dashboards/animate-none.yaml
+
     animate-swipe:
       mode: yaml
       title: Animate swipe
