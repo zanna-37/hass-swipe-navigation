@@ -1,5 +1,5 @@
 import { FullConfig } from "@playwright/test";
-import { unlinkSync } from 'node:fs';
+import { unlinkSync } from "node:fs";
 
 async function globalTeardown(config: FullConfig) {
   const { storageState } = config.projects[0].use;
@@ -9,7 +9,7 @@ async function globalTeardown(config: FullConfig) {
     unlinkSync(storageState.toString());
     console.log("storageState deleted successfully.");
   } else {
-    throw "Can't delete storageState file. The path it's null.";
+    throw new Error("Can't delete storageState file. The path it's null.");
   }
 }
 

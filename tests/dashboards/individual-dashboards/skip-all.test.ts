@@ -19,7 +19,7 @@ test("shouldn't change, skip-all", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = new RegExp(".*no viable tabs found for swiping.*");
+  const regexp = /.*no viable tabs found for swiping.*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

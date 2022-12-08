@@ -19,7 +19,7 @@ test("shouldn't change, map swiped", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = new RegExp(".*Ignoring touch on \"hui-map-card\".*");
+  const regexp = /.*Ignoring touch on "hui-map-card".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

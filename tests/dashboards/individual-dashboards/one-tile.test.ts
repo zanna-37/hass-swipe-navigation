@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { SwipeHelper } from "../../helpers/touchHelpers";
 
 // Annotate entire file as serial
-test.describe.configure({ mode: 'serial' });
+test.describe.configure({ mode: "serial" });
 
 test("shouldn't change, tile slider swiped", async ({ page }) => {
   const dashboardPath = "/one-tile";
@@ -32,7 +32,7 @@ test("shouldn't change, tile slider swiped", async ({ page }) => {
 
 
   let matches = 0;
-  const regexp = new RegExp(".*Ignoring touch on \"ha-bar-slider\".*");
+  const regexp = /.*Ignoring touch on "ha-bar-slider".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

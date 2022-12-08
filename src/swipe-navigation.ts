@@ -413,7 +413,7 @@ class PageObjectManager {
   );
 }
 
-class swipeManager {
+class SwipeManager {
   static #xDown: number | null;
   static #yDown: number | null;
   static #xDiff: number | null;
@@ -679,7 +679,7 @@ function run() {
       configurationLoading.then((configRead) => {
         if (configRead) {
           // Re-init swipeManager to load new config
-          swipeManager.init();
+          SwipeManager.init();
         }
       });
     },
@@ -690,13 +690,13 @@ function run() {
   configurationLoading.then((configRead) => {
     PageObjectManager.haAppLayout.watchChanges({
       onDomNodeRefreshedCallback: () => {
-        swipeManager.init();
+        SwipeManager.init();
       },
       onDomNodeRemovedCallback: null  // TODO
     });
 
     if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
-      swipeManager.init();
+      SwipeManager.init();
     }
   });
 }

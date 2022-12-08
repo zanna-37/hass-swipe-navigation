@@ -31,7 +31,7 @@ test("should skip 0 and 3, no wrap", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/2");
 
   let matches = 0;
-  const regexp = new RegExp(".*wrap is disabled.*");
+  const regexp = /.*wrap is disabled.*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

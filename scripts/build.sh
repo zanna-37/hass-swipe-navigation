@@ -68,7 +68,7 @@ if [[ "$#" -gt 0 && "$1" == '--' ]]; then shift; fi
 
 if [ "$#" -gt 0 ]; then
   echo "[!] Too many parameters! Ignoring:"
-  for par in $@; do
+  for par in "$@"; do
     echo "[!]   - ${par}"
   done
 fi

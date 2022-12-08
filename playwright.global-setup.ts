@@ -1,5 +1,4 @@
-import { chromium, FullConfig } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { chromium, FullConfig, expect } from "@playwright/test";
 
 
 async function globalSetup(config: FullConfig) {
@@ -33,7 +32,7 @@ async function globalSetup(config: FullConfig) {
 
   // Check that the Swipe navigation js is loaded
   let matches = 0;
-  const regexp = new RegExp(".*↔️ Swipe navigation ↔️.*");
+  const regexp = /.*↔️ Swipe navigation ↔️.*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

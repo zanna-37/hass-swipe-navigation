@@ -18,8 +18,11 @@ function ensure_hass_config() {
 function create_hass_user() {
   local username=${HASS_USERNAME:-user}
   local password=${HASS_PASSWORD:-pass}
-  echo "Creating Home Assistant User ${username}:${password}"
-  hass --script auth -c /config add ${username} ${password}
+  echo
+  echo "[.] Creating Home Assistant user..."
+  hass --script auth -c /config add "${username}" "${password}"
+  echo "[+] Username: ${username}"
+  echo "[+] Password: ${password}"
 }
 
 function bypass_onboarding() {

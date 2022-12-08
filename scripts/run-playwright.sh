@@ -30,7 +30,7 @@ echo "Home Assistant URL is ${HOMEASSISTANT_URL}"
 
 counter=0
 echo "Waiting for Home Assistant to be ready..."
-while ! curl -s -o /dev/null -w "%{http_code}" ${HOMEASSISTANT_URL} | grep -q 200; do
+while ! curl -s -o /dev/null -w "%{http_code}" "${HOMEASSISTANT_URL}" | grep -q 200; do
   sleep 1
   counter=$((counter+1))
   if [ $counter -eq 30 ]; then
@@ -46,7 +46,7 @@ echo
 echo "swipe-navigation.js URL is ${SWIPE_NAVIGATION_JS_URL}"
 counter=0
 echo "Waiting for swipe-navigation.js to be ready..."
-while ! curl -s -o /dev/null -w "%{http_code}" ${SWIPE_NAVIGATION_JS_URL} | grep -q 200; do
+while ! curl -s -o /dev/null -w "%{http_code}" "${SWIPE_NAVIGATION_JS_URL}" | grep -q 200; do
   sleep 1
   counter=$((counter+1))
   if [ $counter -eq 30 ]; then
