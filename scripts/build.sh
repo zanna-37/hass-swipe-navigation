@@ -1,15 +1,12 @@
-#!/bin/bash
-
-SCRIPT_NAME="build.sh";
+#!/usr/bin/env bash
 
 set -eEuo pipefail
-# set -e			Exit immediately if any command has a non-zero exit status.
-# set -E 			The ERR trap is inherited by shell functions.
-# set -u			Every non-declared variable will rise an error.
-# set -o pipefail	If any command in a pipeline fails, that return code will
-#					be used as the return code of the whole pipeline.
-#					By default, the pipeline's return code is that of the last
-#					command.
+# set -e          Exit immediately if any command has a non-zero exit status.
+# set -E          The ERR trap is inherited by shell functions.
+# set -u          Every non-declared variable will rise an error.
+# set -o pipefail If any command in a pipeline fails, that return code will be used as the return
+#                 code of the whole pipeline. By default, the pipeline's return code is that of the
+#                 last command.
 #
 # Use `help set` in a bash shell to get information.
 
@@ -23,25 +20,28 @@ fi
 ROOT="${DIR}/.."
 
 
+SCRIPT_NAME="build.sh";
+
+
 # ---- help() -----
 
 function printHelp() {
-	echo "Usage:"
-	echo "    ${SCRIPT_NAME} [ARGS]"
-	echo
-	echo "Example:"
-	echo "    ${SCRIPT_NAME} --serve"
-	echo
-	echo "Args:"
-	echo "    -s, --serve"
-	echo "        Serve the files via a web server and watch for code changes"
-	echo
-	echo "    --help"
-	echo "        Print this help page and exit"
-	echo
-	echo "    --"
-	echo "        This option can be used to separate command-line options from the list of files"
-	echo "        (useful when filenames might be mistaken for command-line options)"
+  echo "Usage:"
+  echo "    ${SCRIPT_NAME} [ARGS]"
+  echo
+  echo "Example:"
+  echo "    ${SCRIPT_NAME} --serve"
+  echo
+  echo "Args:"
+  echo "    -s, --serve"
+  echo "        Serve the files via a web server and watch for code changes"
+  echo
+  echo "    --help"
+  echo "        Print this help page and exit"
+  echo
+  echo "    --"
+  echo "        This option can be used to separate command-line options from the list of files"
+  echo "        (useful when filenames might be mistaken for command-line options)"
 }
 
 # ---- Flags -----
@@ -76,7 +76,7 @@ fi
 
 # ---- main() -----
 
-"${DIR}/install-dependencies.sh"
+"${DIR}/install-node-dependencies.sh"
 
 echo
 echo "Checking files..."
