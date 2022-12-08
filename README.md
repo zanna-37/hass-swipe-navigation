@@ -6,18 +6,18 @@ Swipe through Home Assistant Dashboard views on mobile.
 
 ![preview](./example.gif)
 
-This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project seems to be currently unmaintained.
+This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project is currently unmaintained.
 
-💡 **Please uninstall [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) before proceeding, as they will likely conflict.**
+💡 **Please uninstall [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) before proceeding, as it will conflict with this plugin.**
 
 ## Features:
-* Animated swiping through Dashboard views.
-* Configure views to skip over.
-* Set the swipe length needed.
-* Option to disable a browsers default swipe actions.
-* Wrap from first view to last view and vice versa.
-* Support RTL languages.
-* Option to ignore swipes over certain elements (e.g. sliders or maps).
+* Animated swiping through Dashboard views
+* Configure views to skip over
+* Set the swipe length needed
+* Option to disable browsers default swipe actions.
+* Option to wrap from first view to last view and vice versa
+* Supports RTL languages
+* Correctly ignores swipes over certain elements (e.g. sliders or maps)
 
 ## Installation:
 **Follow only one of these installation methods.**
@@ -25,7 +25,7 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
 <details>
   <summary><b>Installation and tracking with HACS:</b></summary>
 
-1. In "Frontend" hit the plus button at the bottom right, search for "swipe navigation", and install.
+1. In "Frontend" hit the plus button at the bottom right, search for "Home Assistant swipe navigation", and install.
 
 2. Refresh the Dashboard page. You might need to clear the cache.
 </details>
