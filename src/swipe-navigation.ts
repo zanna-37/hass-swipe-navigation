@@ -14,6 +14,8 @@ const exceptions = [
 
   // Header bar (contains tabs)
   "app-header",
+  // Slider bar (used by the Tile card)
+  "ha-bar-slider",
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
