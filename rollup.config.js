@@ -10,9 +10,9 @@ const dev = process.env.ROLLUP_WATCH ? true : false;
 
 const typescriptOptions = {
   sourceMap: dev,
-}
+};
 const serveOptions = {
-  contentBase: ["./dist"],
+  contentBase: ["./dist", "./"],
   host: "0.0.0.0",
   port: 3000,
   headers: {
