@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+
+// Console tag
+console.info("%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER", "color: #2980b9; font-weight: 700;");
+
+
 /**
  * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
  *
@@ -705,6 +710,3 @@ function run() {
 
 // Initial run
 run();
-
-// Console tag
-console.info("%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER", "color: #2980b9; font-weight: 700;");
