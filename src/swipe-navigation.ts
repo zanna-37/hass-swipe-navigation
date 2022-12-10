@@ -512,7 +512,9 @@ class SwipeManager {
 
           const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
           const nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
-          this.#click(nextTabIndex, directionLeft);
+          if (nextTabIndex >= 0) {
+            this.#click(nextTabIndex, directionLeft);
+          }
         }
       }
     }
