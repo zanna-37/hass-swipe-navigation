@@ -138,65 +138,75 @@ function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationCo
   return SwipeNavigationConfigSchema.safeParse(obj).success;
 }
 
+class ConfigDefaults {
+  static animate = "none" as const;
+  static logger_level = LogLevel.WARN as const;
+  static prevent_default = false as const;
+  static skip_hidden = true as const;
+  static skip_tabs = [] as const;
+  static swipe_amount = 0.15 as const;
+  static wrap = true as const;
+}
 
 class Config {
-  static animate: "none" | "swipe" | "fade" | "flip" = "none";
-  // Print all levels until the config is loaded, otherwise there is no way to see low level logs.
-  // The real default is set below.
-  static logger_level: LogLevel = LogLevel._ALL;
-  static prevent_default = false;
-  static skip_hidden = true;
-  static skip_tabs: number[] = [];
-  static swipe_amount = 0.15;
-  static wrap = true;
+  static animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
+  // Note that this is the level that is in force before the config is parsed.
+  // This means that all logs below this level will be ignored until the config is parsed.
+  static logger_level: LogLevel = ConfigDefaults.logger_level;
+  static prevent_default: boolean = ConfigDefaults.prevent_default;
+  static skip_hidden: boolean = ConfigDefaults.skip_hidden;
+  static skip_tabs: readonly number[] = ConfigDefaults.skip_tabs;
+  static swipe_amount: number = ConfigDefaults.swipe_amount;
+  static wrap: boolean = ConfigDefaults.wrap;
 
   static parseConfig(rawConfig: unknown) {
     if (instanceOfSwipeNavigationConfig(rawConfig)) {
-      if (rawConfig?.animate != undefined) Config.animate = rawConfig.animate;
-      if (rawConfig.logger_level != undefined) {
-        switch (rawConfig.logger_level) {
-          case "verbose":
-            Config.logger_level = LogLevel.VERBOSE;
-            break;
-          case "debug":
-            Config.logger_level = LogLevel.DEBUG;
-            break;
-          case "info":
-            Config.logger_level = LogLevel.INFO;
-            break;
-          case "warn":
-            Config.logger_level = LogLevel.WARN;
-            break;
-          case "error":
-            Config.logger_level = LogLevel.ERROR;
-            break;
-          default: {
-            const exhaustiveCheck: never = rawConfig.logger_level;
-            throw new Error(`Unhandled case: ${exhaustiveCheck}`);
-            break;
-          }
+      Config.animate = rawConfig.animate ?? ConfigDefaults.animate;
+      switch (rawConfig.logger_level) {
+        case "verbose":
+          Config.logger_level = LogLevel.VERBOSE;
+          break;
+        case "debug":
+          Config.logger_level = LogLevel.DEBUG;
+          break;
+        case "info":
+          Config.logger_level = LogLevel.INFO;
+          break;
+        case "warn":
+          Config.logger_level = LogLevel.WARN;
+          break;
+        case "error":
+          Config.logger_level = LogLevel.ERROR;
+          break;
+        case null:
+        case undefined:
+          Config.logger_level = ConfigDefaults.logger_level;
+          break;
+        default: {
+          const exhaustiveCheck: never = rawConfig.logger_level;
+          throw new Error(`Unhandled case: ${exhaustiveCheck}`);
+          break;
         }
-      } else {
-        // The default value is set here because we want to print everything before reading the config.
-        Config.logger_level = LogLevel.WARN;
       }
-      if (rawConfig?.prevent_default != undefined) Config.prevent_default = rawConfig.prevent_default;
-      if (rawConfig?.skip_hidden != undefined) Config.skip_hidden = rawConfig.skip_hidden;
+      Config.prevent_default = rawConfig.prevent_default ?? ConfigDefaults.prevent_default;
+      Config.skip_hidden = rawConfig.skip_hidden ?? ConfigDefaults.skip_hidden;
       if (rawConfig?.skip_tabs != undefined) {
         Config.skip_tabs =
           String(rawConfig.skip_tabs)
             .replace(/\s+/g, "")
             .split(",")
             .map((item) => { return parseInt(item); });
+      } else {
+        Config.skip_tabs = ConfigDefaults.skip_tabs;
       }
-      if (rawConfig?.swipe_amount != undefined) Config.swipe_amount = rawConfig.swipe_amount / 100.0;
-      if (rawConfig?.wrap != undefined) Config.wrap = rawConfig.wrap;
+      Config.swipe_amount = rawConfig.swipe_amount != null
+        ? (rawConfig.swipe_amount / 100.0)
+        : ConfigDefaults.swipe_amount;
+      Config.wrap = rawConfig.wrap ?? ConfigDefaults.wrap;
 
-      return true;
     } else {
       loge("Found invalid configuration.");
       // TODO log why the config is wrong
-      return false;
     }
   }
 }
