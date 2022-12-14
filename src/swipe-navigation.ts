@@ -33,6 +33,8 @@ const exceptions = [
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
 
+  // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
+  "#graph-wrapper svg.apexcharts-svg",
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
   "mushroom-slider",
   // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
