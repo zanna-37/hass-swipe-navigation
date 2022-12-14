@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.8.1] - 2022-12-14
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.8.0...v1.8.1)
+
+### Fixed 🐛
+- "ApexCharts Card by RomRider" has been added to swipe exceptions ([`7935ea0`](https://github.com/zanna-37/hass-swipe-navigation/commit/7935ea0c65c44a4ff6ca95586f236d4b7b12aa49) Closes [`#30`](https://github.com/zanna-37/hass-swipe-navigation/issues/30))
+
+
 ## 🏷️ [v1.8.0] - 2022-12-08
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.7.0...v1.8.0)
 
