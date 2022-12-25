@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.9.0] - 2022-12-25
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.8.1...v1.9.0)
+
+### Added 🎉
+- UI Card for Better Thermostat has been added to swipe exceptions (by [@csidirop](https://github.com/csidirop) in [`#32`](https://github.com/zanna-37/hass-swipe-navigation/pull/32))
+
+
 ## 🏷️ [v1.8.1] - 2022-12-14
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.8.0...v1.8.1)
 
