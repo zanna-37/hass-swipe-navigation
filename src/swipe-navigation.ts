@@ -33,6 +33,8 @@ const exceptions = [
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
 
+  // UI Card for Better Thermostat (https://github.com/KartoffelToby/better-thermostat-ui-card)
+  "better-thermostat-ui-card",
   // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
   "#graph-wrapper svg.apexcharts-svg",
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
