@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.10.0] - 2022-12-26
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.9.0...v1.10.0)
+
+### Added 🎉
+- my-slider-v2 has been added to swipe exceptions ([`4601c62`](https://github.com/zanna-37/hass-swipe-navigation/commit/4601c6279a10d2b19028884c0d0fcdf0f5c53b2b), closes [`#33`](https://github.com/zanna-37/hass-swipe-navigation/issues/33))
+
 ## 🏷️ [v1.9.0] - 2022-12-25
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.8.1...v1.9.0)
 
@@ -16,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.8.0...v1.8.1)
 
 ### Fixed 🐛
-- "ApexCharts Card by RomRider" has been added to swipe exceptions ([`7935ea0`](https://github.com/zanna-37/hass-swipe-navigation/commit/7935ea0c65c44a4ff6ca95586f236d4b7b12aa49) Closes [`#30`](https://github.com/zanna-37/hass-swipe-navigation/issues/30))
+- "ApexCharts Card by RomRider" has been added to swipe exceptions ([`7935ea0`](https://github.com/zanna-37/hass-swipe-navigation/commit/7935ea0c65c44a4ff6ca95586f236d4b7b12aa49), closes [`#30`](https://github.com/zanna-37/hass-swipe-navigation/issues/30))
 
 
 ## 🏷️ [v1.8.0] - 2022-12-08
@@ -37,14 +43,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.4...v1.6.5)
 
 ### Fixed 🐛
-- Animations are now snappier (by [@dbuezas](https://github.com/dbuezas) in [`#19`](https://github.com/zanna-37/hass-swipe-navigation/pull/19). Closes [`#18`](https://github.com/zanna-37/hass-swipe-navigation/issues/18))
+- Animations are now snappier (by [@dbuezas](https://github.com/dbuezas) in [`#19`](https://github.com/zanna-37/hass-swipe-navigation/pull/19), closes [`#18`](https://github.com/zanna-37/hass-swipe-navigation/issues/18))
 
 
 ## 🏷️ [v1.6.4] - 2022-11-02
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.3...v1.6.4)
 
 ### Fixed 🐛
-- Ignore swipe when multitouch is detected, for example, when pinching to zoom (by [@MasterTim17](https://github.com/MasterTim17) in [`#17`](https://github.com/zanna-37/hass-swipe-navigation/pull/17). Closes [`#16`](https://github.com/zanna-37/hass-swipe-navigation/issues/16))
+- Ignore swipe when multitouch is detected, for example, when pinching to zoom (by [@MasterTim17](https://github.com/MasterTim17) in [`#17`](https://github.com/zanna-37/hass-swipe-navigation/pull/17), closes [`#16`](https://github.com/zanna-37/hass-swipe-navigation/issues/16))
 
 
 ## 🏷️ [v1.6.3] - 2022-10-12
@@ -68,7 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.6.0...v1.6.1)
 
 ### Fixed 🐛
-- Fixed a bug that caused a fatal error when `logger_level` was not set in user configuration ([`6240772`](https://github.com/zanna-37/hass-swipe-navigation/commit/6240772c63a08aa01a3b62624a0bec43f6004efb) Closes [`#11`](https://github.com/zanna-37/hass-swipe-navigation/issues/11))
+- Fixed a bug that caused a fatal error when `logger_level` was not set in user configuration ([`6240772`](https://github.com/zanna-37/hass-swipe-navigation/commit/6240772c63a08aa01a3b62624a0bec43f6004efb), closes [`#11`](https://github.com/zanna-37/hass-swipe-navigation/issues/11))
 
 
 ## 🏷️ [v1.6.0] - 2022-09-17
@@ -78,7 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Logging can be enabled via the `logger_level` setting ([`4f1f09c`](https://github.com/zanna-37/hass-swipe-navigation/commit/4f1f09c5a716c0bd83fe52673816f24118cfedf5))
 
 ### Fixed 🐛
-- The entire code is now much more reliable and can auto heal even when the page changes considerably ([`71d3230`](https://github.com/zanna-37/hass-swipe-navigation/commit/71d3230e3fb92eb298310a0982f3eeeee7a35b7d) [`3076951`](https://github.com/zanna-37/hass-swipe-navigation/commit/30769514eaf52f69da9cbf116132b52d90490497) Closes [`#6`](https://github.com/zanna-37/hass-swipe-navigation/issues/6))
+- The entire code is now much more reliable and can auto heal even when the page changes considerably ([`71d3230`](https://github.com/zanna-37/hass-swipe-navigation/commit/71d3230e3fb92eb298310a0982f3eeeee7a35b7d) [`3076951`](https://github.com/zanna-37/hass-swipe-navigation/commit/30769514eaf52f69da9cbf116132b52d90490497), closes [`#6`](https://github.com/zanna-37/hass-swipe-navigation/issues/6))
 
 
 ## 🏷️ [v1.5.0] - 2022-06-20
