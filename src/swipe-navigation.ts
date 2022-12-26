@@ -133,7 +133,9 @@ const SwipeNavigationConfigSchema = z.object({
   swipe_amount: z.number().optional(),
   wrap: z.boolean().optional()
 });
+
 type SwipeNavigationConfig = z.infer<typeof SwipeNavigationConfigSchema>;
+
 function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationConfig {
   return SwipeNavigationConfigSchema.safeParse(obj).success;
 }
@@ -148,6 +150,14 @@ class ConfigDefaults {
   static wrap = true as const;
 }
 
+class ConfigObserver {
+  callback: () => void;
+
+  constructor(callback: () => void) {
+    this.callback = callback;
+  }
+}
+
 class Config {
   static animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
   // Note that this is the level that is in force before the config is parsed.
@@ -159,8 +169,93 @@ class Config {
   static swipe_amount: number = ConfigDefaults.swipe_amount;
   static wrap: boolean = ConfigDefaults.wrap;
 
-  static parseConfig(rawConfig: unknown) {
-    if (instanceOfSwipeNavigationConfig(rawConfig)) {
+  private static rawConfig: unknown = {};
+  private static configObservers: ConfigObserver[] = [];
+
+  static registerConfigObserver(configObserver: ConfigObserver) {
+    Config.configObservers.push(configObserver);
+
+    // When changing dashboards and when updating the config via the UI, the hui-root element is
+    // replaced. We therefore listen for its changes.
+    PageObjectManager.huiRoot.watchChanges({
+      onDomNodeRefreshedCallback: () => {
+        Config.refreshConfig();
+      },
+      onDomNodeRemovedCallback: null
+    });
+    Config.refreshConfig();
+  }
+
+  static unregisterConfigObserver(configObserver: ConfigObserver) {
+    const index = Config.configObservers.indexOf(configObserver);
+    if (index > -1) {
+      Config.configObservers.splice(index, 1);
+    } else {
+      loge("Internal error while unregistering a configObserver: not found.");
+    }
+  }
+
+  static async refreshConfig() {
+    logd("Getting config...");
+
+    const timeout = new Date(Date.now() + 10 * 1000);  // 10 seconds
+    let configContainer = null;
+    while (configContainer == null && Date.now() < timeout.getTime()) {
+      if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
+        configContainer = (
+          (
+            PageObjectManager.haPanelLovelace.getDomNode() as (
+              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
+            )
+          )?.lovelace?.config
+        ) ?? null;
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
+    }
+
+    let configValid = false;
+    let configChanged = false;
+    if (configContainer != null) {
+      const rawConfig = configContainer.swipe_nav ?? {};
+      [configChanged, configValid] = Config.parseAndUpdateConfig(rawConfig);
+    } else {
+      loge("Can't find dashboard configuration.");
+    }
+
+    if (configChanged) {
+      Config.configObservers.forEach((configObserver) => {
+        configObserver.callback();
+      });
+    } else {
+      logv("Config hasn't changed.");
+    }
+  }
+
+  static parseAndUpdateConfig(rawConfig: unknown): [boolean, boolean] {
+    let configChanged;
+    let configValid;
+
+    if (!instanceOfSwipeNavigationConfig(rawConfig)) {
+      configValid = false;
+
+      loge("Found invalid configuration.");
+      // TODO log why the config is wrong
+
+      rawConfig = {};  // act as the config is empty
+      if (!instanceOfSwipeNavigationConfig(rawConfig)) {
+        throw new Error("Internal error: empty config should always be valid.");
+      }
+    } else {
+      configValid = true;
+    }
+
+    if (JSON.stringify(rawConfig) != JSON.stringify(Config.rawConfig)) {
+      configChanged = true;
+      Config.rawConfig = rawConfig;
+    } else {
+      configChanged = false;
+    }
+
       Config.animate = rawConfig.animate ?? ConfigDefaults.animate;
       switch (rawConfig.logger_level) {
         case "verbose":
@@ -204,10 +299,7 @@ class Config {
         : ConfigDefaults.swipe_amount;
       Config.wrap = rawConfig.wrap ?? ConfigDefaults.wrap;
 
-    } else {
-      loge("Found invalid configuration.");
-      // TODO log why the config is wrong
-    }
+    return [configChanged, configValid];
   }
 }
 
@@ -453,6 +545,13 @@ class SwipeManager {
     this.#touchMoveController = new AbortController();
     this.#touchEndController = new AbortController();
 
+    PageObjectManager.haAppLayout.watchChanges({
+      onDomNodeRefreshedCallback: () => {
+        SwipeManager.init();
+      },
+      onDomNodeRemovedCallback: null
+    });
+
     const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
     if (haAppLayoutDomNode != null) {
       logd("Initializing SwipeManger...");
@@ -661,68 +760,18 @@ class SwipeManager {
 
 
 
-async function getConfiguration() {
-  let configRead = false;
-
-  if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
-    let configReadingAttempts = 0;
-
-    while (!configRead && configReadingAttempts < 300) {
-      configReadingAttempts++;
-      try {
-        const rawConfig = (
-          (
-            PageObjectManager.haPanelLovelace.getDomNode() as (
-              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
-            )
-          )?.lovelace?.config?.swipe_nav
-        ) ?? {};
-        Config.parseConfig(rawConfig);
-        configRead = true;
-      } catch (e) {
-        logw("Error while obtaining config: " + (e instanceof Error ? e.message : e) + ". Retrying...");
-        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
-      }
-    }
-  }
-
-  if (configRead) {
-    logd("Configuration read.");
-    return true;
-  } else {
-    loge("Can't read configuration.");
-    return false;
-  }
-}
-
-
 function run() {
-  PageObjectManager.haPanelLovelace.watchChanges({
-    onDomNodeRefreshedCallback: () => {
-      const configurationLoading = getConfiguration();
-      configurationLoading.then((configRead) => {
-        if (configRead) {
-          // Re-init swipeManager to load new config
-          SwipeManager.init();
-        }
-      });
-    },
-    onDomNodeRemovedCallback: null  // TODO
-  });
 
-  const configurationLoading = getConfiguration();
-  configurationLoading.then((configRead) => {
-    PageObjectManager.haAppLayout.watchChanges({
-      onDomNodeRefreshedCallback: () => {
-        SwipeManager.init();
-      },
-      onDomNodeRemovedCallback: null  // TODO
-    });
+  // get Config
+  Config.registerConfigObserver(
+    new ConfigObserver(
+      () => {
+        logi("Config values have changed.");
+      }
+            )
+  );
 
-    if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
-      SwipeManager.init();
-    }
-  });
+  SwipeManager.init();
 }
 
 
