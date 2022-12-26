@@ -39,8 +39,9 @@ const exceptions = [
   "#graph-wrapper svg.apexcharts-svg",
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
   "mushroom-slider",
-  // my-slider (https://github.com/AnthonMS/my-cards/blob/main/src/my-slider.ts)
+  // my-cards (https://github.com/AnthonMS/my-cards)
   "my-slider",
+  "my-slider-v2",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
   // round-slider (https://github.com/thomasloven/round-slider)
