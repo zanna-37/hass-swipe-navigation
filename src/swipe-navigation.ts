@@ -37,6 +37,8 @@ const exceptions = [
   "better-thermostat-ui-card",
   // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
   "#graph-wrapper svg.apexcharts-svg",
+  // History explorer card (https://github.com/alexarch21/history-explorer-card)
+  "history-explorer-card",
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
   "mushroom-slider",
   // my-cards (https://github.com/AnthonMS/my-cards)
