@@ -5,11 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.10.1] - 2023-02-11
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.10.0...v1.10.1)
+
+### Fixed 🐛
+- History explorer card has been added to swipe exceptions ([`1cb14be`](https://github.com/zanna-37/hass-swipe-navigation/commit/1cb14bec90bb463e45a9729bb01450ab611ef60a), closes [`#34`](https://github.com/zanna-37/hass-swipe-navigation/issues/34))
+
+
 ## 🏷️ [v1.10.0] - 2022-12-26
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.9.0...v1.10.0)
 
 ### Added 🎉
 - my-slider-v2 has been added to swipe exceptions ([`4601c62`](https://github.com/zanna-37/hass-swipe-navigation/commit/4601c6279a10d2b19028884c0d0fcdf0f5c53b2b), closes [`#33`](https://github.com/zanna-37/hass-swipe-navigation/issues/33))
+
 
 ## 🏷️ [v1.9.0] - 2022-12-25
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.8.1...v1.9.0)
