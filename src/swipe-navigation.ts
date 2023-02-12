@@ -149,6 +149,21 @@ class Config {
   static skip_tabs: number[] = [];
   static swipe_amount = 0.15;
   static wrap = true;
+  // TODO: Load this from yaml config
+  static specificSwipeConfig = [
+    {
+      swipe_back_index: undefined,
+      swipe_forward_index: undefined
+    },
+    {
+      swipe_back_index: 0,
+      swipe_forward_index: undefined
+    },
+    {
+      swipe_back_index: 0,
+      swipe_forward_index: 6
+    }
+  ];
 
   static parseConfig(rawConfig: unknown) {
     if (instanceOfSwipeNavigationConfig(rawConfig)) {
@@ -514,11 +529,23 @@ class SwipeManager {
 
         } else {
           const directionLeft = this.#xDiff < 0;
+          let nextTabIndex = -1;
 
-          logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
+          const currentTabIndex = this.#getActiveTabIndex();
+          const specificIndex = directionLeft ? Config.specificSwipeConfig[currentTabIndex].swipe_back_index : Config.specificSwipeConfig[currentTabIndex].swipe_forward_index;
+          if(specificIndex !== undefined) {
+            if(specificIndex === null) {
+              logi("Swipe " + (directionLeft ? "left" : "right") + " ignored, disabled on current tab.");
+              return;
+            }
+            logi("Swipe detected, changing tab to specific tab " + specificIndex + ".");
+            nextTabIndex = specificIndex;
+          } else {
+            logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
-          const nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
+            const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
+            nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
+          }
           if (nextTabIndex >= 0) {
             this.#click(nextTabIndex, directionLeft);
           }
@@ -532,10 +559,16 @@ class SwipeManager {
     return Array.from(PageObjectManager.tabsContainer.getDomNode()?.querySelectorAll("paper-tab") ?? []);
   }
 
-  static #getNextTabIndex(directionLeft: boolean) {
+  static #getActiveTabIndex(): number {
     const tabs = this.#getTabsArray();
     const activeTab = PageObjectManager.tabsContainer.getDomNode()?.querySelector(".iron-selected");
     const activeTabIndex = activeTab != null ? tabs.indexOf(activeTab) : -1;
+    return activeTabIndex;
+  }
+
+  static #getNextTabIndex(directionLeft: boolean) {
+    const tabs = this.#getTabsArray();
+    const activeTabIndex = this.#getActiveTabIndex();
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
 
@@ -660,14 +693,33 @@ async function getConfiguration() {
     while (!configRead && configReadingAttempts < 300) {
       configReadingAttempts++;
       try {
-        const rawConfig = (
-          (
+        const lovelaceConfig = (
             PageObjectManager.haPanelLovelace.getDomNode() as (
-              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
+              HTMLElement & { lovelace: undefined | { config: undefined | {swipe_nav: unknown, views: Array<{path: string; swipe_back?: string | number | null, swipe_forward?: string | number | null}>} } }
             )
-          )?.lovelace?.config?.swipe_nav
-        ) ?? {};
-        Config.parseConfig(rawConfig);
+        )?.lovelace?.config;
+
+        const lovelaceViews = lovelaceConfig?.views;
+
+        const getIndexByPath = (path: string) => {
+          return lovelaceViews?.findIndex((view) => view.path === path);
+        };
+
+        const globalSwipeConfig = lovelaceConfig?.swipe_nav;
+        // TODO: Actually load this, save to config.
+        const specificSwipeConfig = lovelaceViews?.map((view) => {
+          const back = view.swipe_back;
+          const forward = view.swipe_forward;
+
+          const back_index = typeof(back) === "string" ? getIndexByPath(back) : back;
+          const forward_index = typeof(forward) === "string" ? getIndexByPath(forward) : forward;
+
+          return {
+            swipe_back_index: back_index,
+            swipe_forward_index: forward_index
+          };
+        });
+        Config.parseConfig(globalSwipeConfig);
         configRead = true;
       } catch (e) {
         logw("Error while obtaining config: " + (e instanceof Error ? e.message : e) + ". Retrying...");
