@@ -131,7 +131,17 @@ const SwipeNavigationConfigSchema = z.object({
   skip_hidden: z.boolean().optional(),
   skip_tabs: z.string().optional(),
   swipe_amount: z.number().optional(),
-  wrap: z.boolean().optional()
+  wrap: z.boolean().optional(),
+  specific_swipe: z.record(z.object({
+    swipe_back: z.nullable(z.union([
+      z.number(),
+      z.string()
+    ]).optional()),
+    swipe_forward: z.nullable(z.union([
+      z.number(),
+      z.string()
+    ]).optional())
+  })).optional()
 });
 type SwipeNavigationConfig = z.infer<typeof SwipeNavigationConfigSchema>;
 function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationConfig {
@@ -149,8 +159,12 @@ class Config {
   static skip_tabs: number[] = [];
   static swipe_amount = 0.15;
   static wrap = true;
+  static specificSwipeConfig: Record<string, {swipe_back?: number | null, swipe_forward?: number | null }> = {};
 
-  static parseConfig(rawConfig: unknown) {
+  static parseConfig(rawConfig: unknown, lovelaceViews?: Array<{path: string; swipe_back?: string | number | null, swipe_forward?: string | number | null}>) {
+    if(rawConfig == undefined || lovelaceViews == undefined) {
+      throw new Error("Config not loaded");
+    }
     if (instanceOfSwipeNavigationConfig(rawConfig)) {
       if (rawConfig?.animate != undefined) Config.animate = rawConfig.animate;
       if (rawConfig.logger_level != undefined) {
@@ -192,6 +206,34 @@ class Config {
       if (rawConfig?.swipe_amount != undefined) Config.swipe_amount = rawConfig.swipe_amount / 100.0;
       if (rawConfig?.wrap != undefined) Config.wrap = rawConfig.wrap;
 
+      const mapValueToTabIndex = (value?: number | string | null): number | null | undefined => {
+        if(typeof(value) != "string") {
+          return value;
+        }
+        let tabIndex = parseInt(value);
+        if(isNaN(tabIndex)){
+          tabIndex = lovelaceViews?.findIndex((view) => view.path === value) ?? undefined;
+        }
+        return tabIndex;
+      };
+
+      lovelaceViews.map((viewConfig) => {
+        Config.specificSwipeConfig[(mapValueToTabIndex(viewConfig.path) ?? "").toString()] = {
+          swipe_back: mapValueToTabIndex(viewConfig.swipe_back),
+          swipe_forward: mapValueToTabIndex(viewConfig.swipe_forward)
+        };
+      });
+
+      if(rawConfig?.specific_swipe != undefined) {
+        Object.keys(rawConfig?.specific_swipe).forEach(viewKey => {
+          if(rawConfig?.specific_swipe != undefined) {
+            Config.specificSwipeConfig[(mapValueToTabIndex(viewKey) ?? "").toString()] = {
+              swipe_back: mapValueToTabIndex(rawConfig?.specific_swipe[viewKey].swipe_back),
+              swipe_forward: mapValueToTabIndex(rawConfig?.specific_swipe[viewKey].swipe_forward)
+            };
+          }
+        });
+      }
       return true;
     } else {
       loge("Found invalid configuration.");
@@ -514,11 +556,26 @@ class SwipeManager {
 
         } else {
           const directionLeft = this.#xDiff < 0;
+          let nextTabIndex = -1;
 
-          logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
+          const currentTabIndex = this.#getActiveTabIndex();
+          if(Config.specificSwipeConfig != undefined) {
+            const specificIndex = directionLeft ? Config.specificSwipeConfig[currentTabIndex]?.swipe_back : Config.specificSwipeConfig[currentTabIndex]?.swipe_forward;
+            if(typeof(specificIndex) !== "undefined") {
+              if(specificIndex === null) {
+                logi("Swipe " + (directionLeft ? "left" : "right") + " ignored, disabled on current tab.");
+                return;
+              }
+              logi("Swipe detected, changing tab to specific tab " + specificIndex + ".");
+              nextTabIndex = specificIndex;
+            }
+          }
+          if(nextTabIndex == -1) {
+            logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
-          const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
-          const nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
+            const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
+            nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
+          }
           if (nextTabIndex >= 0) {
             this.#click(nextTabIndex, directionLeft);
           }
@@ -532,10 +589,16 @@ class SwipeManager {
     return Array.from(PageObjectManager.tabsContainer.getDomNode()?.querySelectorAll("paper-tab") ?? []);
   }
 
-  static #getNextTabIndex(directionLeft: boolean) {
+  static #getActiveTabIndex(): number {
     const tabs = this.#getTabsArray();
     const activeTab = PageObjectManager.tabsContainer.getDomNode()?.querySelector(".iron-selected");
     const activeTabIndex = activeTab != null ? tabs.indexOf(activeTab) : -1;
+    return activeTabIndex;
+  }
+
+  static #getNextTabIndex(directionLeft: boolean) {
+    const tabs = this.#getTabsArray();
+    const activeTabIndex = this.#getActiveTabIndex();
     let nextTabIndex = activeTabIndex;
     let stopReason = null;
 
@@ -657,17 +720,18 @@ async function getConfiguration() {
   if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
     let configReadingAttempts = 0;
 
-    while (!configRead && configReadingAttempts < 300) {
+    while (!configRead && configReadingAttempts < 10000) {
       configReadingAttempts++;
       try {
-        const rawConfig = (
-          (
+        const lovelaceConfig = (
             PageObjectManager.haPanelLovelace.getDomNode() as (
-              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
+              HTMLElement & { lovelace: undefined | { config: undefined | {swipe_nav: unknown, views: Array<{path: string; swipe_back?: string | number | null, swipe_forward?: string | number | null}>} } }
             )
-          )?.lovelace?.config?.swipe_nav
-        ) ?? {};
-        Config.parseConfig(rawConfig);
+        )?.lovelace?.config;
+
+        const lovelaceViews = lovelaceConfig?.views;
+        const globalSwipeConfig = lovelaceConfig?.swipe_nav;
+        Config.parseConfig(globalSwipeConfig, lovelaceViews);
         configRead = true;
       } catch (e) {
         logw("Error while obtaining config: " + (e instanceof Error ? e.message : e) + ". Retrying...");
