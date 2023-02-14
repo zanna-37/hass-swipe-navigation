@@ -172,18 +172,20 @@ class Config {
   private static rawConfig: unknown = {};
   private static configObservers: ConfigObserver[] = [];
 
-  static registerConfigObserver(configObserver: ConfigObserver) {
-    Config.configObservers.push(configObserver);
-
+  static readAndMonitorConfig() {
     // When changing dashboards and when updating the config via the UI, the hui-root element is
     // replaced. We therefore listen for its changes.
     PageObjectManager.huiRoot.watchChanges({
       onDomNodeRefreshedCallback: () => {
-        Config.refreshConfig();
+        Config.readConfig();
       },
       onDomNodeRemovedCallback: null
     });
-    Config.refreshConfig();
+    Config.readConfig();
+  }
+
+  static registerConfigObserver(configObserver: ConfigObserver) {
+    Config.configObservers.push(configObserver);
   }
 
   static unregisterConfigObserver(configObserver: ConfigObserver) {
@@ -195,11 +197,92 @@ class Config {
     }
   }
 
-  static async refreshConfig() {
-    logd("Getting config...");
+  private static async readConfig() {
+    logd("Attempting to read config...");
 
-    const timeout = new Date(Date.now() + 10 * 1000);  // 10 seconds
+    const rawConfig = await Config.getRawConfigOrNull();
+
+    if (JSON.stringify(rawConfig) != JSON.stringify(Config.rawConfig)) {
+      Config.rawConfig = rawConfig;
+
+      Config.parseAndUpdateConfig(rawConfig);
+
+      Config.configObservers.forEach((configObserver) => {
+        configObserver.callback();
+      });
+
+    } else {
+      logd("Config is identical.");
+    }
+  }
+
+  private static parseAndUpdateConfig(rawConfig: unknown): void {
+    if (!instanceOfSwipeNavigationConfig(rawConfig)) {
+      loge("Found invalid configuration.");
+      // TODO log why the config is wrong
+
+      rawConfig = {};  // act as if the config was empty
+      if (!instanceOfSwipeNavigationConfig(rawConfig)) {
+        throw new Error("Internal error: empty config should always be valid.");
+      }
+    }
+
+    Config.animate = rawConfig.animate ?? ConfigDefaults.animate;
+    switch (rawConfig.logger_level) {
+      case "verbose":
+        Config.logger_level = LogLevel.VERBOSE;
+        break;
+      case "debug":
+        Config.logger_level = LogLevel.DEBUG;
+        break;
+      case "info":
+        Config.logger_level = LogLevel.INFO;
+        break;
+      case "warn":
+        Config.logger_level = LogLevel.WARN;
+        break;
+      case "error":
+        Config.logger_level = LogLevel.ERROR;
+        break;
+      case null:
+      case undefined:
+        Config.logger_level = ConfigDefaults.logger_level;
+        break;
+      default: {
+        const exhaustiveCheck: never = rawConfig.logger_level;
+        throw new Error(`Unhandled case: ${exhaustiveCheck}`);
+        break;
+      }
+    }
+    Config.prevent_default = rawConfig.prevent_default ?? ConfigDefaults.prevent_default;
+    Config.skip_hidden = rawConfig.skip_hidden ?? ConfigDefaults.skip_hidden;
+    if (rawConfig?.skip_tabs != undefined) {
+      Config.skip_tabs =
+        String(rawConfig.skip_tabs)
+          .replace(/\s+/g, "")
+          .split(",")
+          .map((item) => { return parseInt(item); });
+    } else {
+      Config.skip_tabs = ConfigDefaults.skip_tabs;
+    }
+    Config.swipe_amount = rawConfig.swipe_amount != null
+      ? (rawConfig.swipe_amount / 100.0)
+      : ConfigDefaults.swipe_amount;
+    Config.wrap = rawConfig.wrap ?? ConfigDefaults.wrap;
+  }
+
+  /**
+   * Tries to get the raw config from the config file until it succeed or until a timeout is
+   * reached.
+   *
+   * @returns the swipe_nav raw config if the section can be read from the config file. An empty
+   * object if the swipe_nav section is missing in the config file. `null` if the config file cannot
+   * be read.
+   */
+  private static async getRawConfigOrNull(): Promise<unknown> {
+    const timeout = new Date(Date.now() + 15 * 1000);  // 15 seconds
     let configContainer = null;
+
     while (configContainer == null && Date.now() < timeout.getTime()) {
       if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
         configContainer = (
@@ -213,93 +296,14 @@ class Config {
       await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
     }
 
-    let configValid = false;
-    let configChanged = false;
+    let rawConfig = null;
     if (configContainer != null) {
-      const rawConfig = configContainer.swipe_nav ?? {};
-      [configChanged, configValid] = Config.parseAndUpdateConfig(rawConfig);
+      rawConfig = configContainer.swipe_nav ?? {};
     } else {
-      loge("Can't find dashboard configuration.");
+      loge("Can't find dashboard configuration");
     }
 
-    if (configChanged) {
-      Config.configObservers.forEach((configObserver) => {
-        configObserver.callback();
-      });
-    } else {
-      logv("Config hasn't changed.");
-    }
-  }
-
-  static parseAndUpdateConfig(rawConfig: unknown): [boolean, boolean] {
-    let configChanged;
-    let configValid;
-
-    if (!instanceOfSwipeNavigationConfig(rawConfig)) {
-      configValid = false;
-
-      loge("Found invalid configuration.");
-      // TODO log why the config is wrong
-
-      rawConfig = {};  // act as the config is empty
-      if (!instanceOfSwipeNavigationConfig(rawConfig)) {
-        throw new Error("Internal error: empty config should always be valid.");
-      }
-    } else {
-      configValid = true;
-    }
-
-    if (JSON.stringify(rawConfig) != JSON.stringify(Config.rawConfig)) {
-      configChanged = true;
-      Config.rawConfig = rawConfig;
-    } else {
-      configChanged = false;
-    }
-
-      Config.animate = rawConfig.animate ?? ConfigDefaults.animate;
-      switch (rawConfig.logger_level) {
-        case "verbose":
-          Config.logger_level = LogLevel.VERBOSE;
-          break;
-        case "debug":
-          Config.logger_level = LogLevel.DEBUG;
-          break;
-        case "info":
-          Config.logger_level = LogLevel.INFO;
-          break;
-        case "warn":
-          Config.logger_level = LogLevel.WARN;
-          break;
-        case "error":
-          Config.logger_level = LogLevel.ERROR;
-          break;
-        case null:
-        case undefined:
-          Config.logger_level = ConfigDefaults.logger_level;
-          break;
-        default: {
-          const exhaustiveCheck: never = rawConfig.logger_level;
-          throw new Error(`Unhandled case: ${exhaustiveCheck}`);
-          break;
-        }
-      }
-      Config.prevent_default = rawConfig.prevent_default ?? ConfigDefaults.prevent_default;
-      Config.skip_hidden = rawConfig.skip_hidden ?? ConfigDefaults.skip_hidden;
-      if (rawConfig?.skip_tabs != undefined) {
-        Config.skip_tabs =
-          String(rawConfig.skip_tabs)
-            .replace(/\s+/g, "")
-            .split(",")
-            .map((item) => { return parseInt(item); });
-      } else {
-        Config.skip_tabs = ConfigDefaults.skip_tabs;
-      }
-      Config.swipe_amount = rawConfig.swipe_amount != null
-        ? (rawConfig.swipe_amount / 100.0)
-        : ConfigDefaults.swipe_amount;
-      Config.wrap = rawConfig.wrap ?? ConfigDefaults.wrap;
-
-    return [configChanged, configValid];
+    return rawConfig;
   }
 }
 
@@ -762,13 +766,14 @@ class SwipeManager {
 
 function run() {
 
-  // get Config
+  Config.readAndMonitorConfig();
+
   Config.registerConfigObserver(
     new ConfigObserver(
       () => {
         logi("Config values have changed.");
       }
-            )
+    )
   );
 
   SwipeManager.init();
