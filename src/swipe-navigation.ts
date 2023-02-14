@@ -293,7 +293,10 @@ class Config {
           )?.lovelace?.config
         ) ?? null;
       }
-      await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
+
+      if (configContainer == null) {
+        await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
+      }
     }
 
     let rawConfig = null;
