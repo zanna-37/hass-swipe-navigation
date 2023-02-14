@@ -75,7 +75,7 @@ function logw(msg: string) { log(msg, LogLevel.WARN); }
 function loge(msg: string) { log(msg, LogLevel.ERROR); }
 
 function log(msg: string, level: Exclude<LogLevel, LogLevel._ALL>) {
-  if (level >= Config.logger_level) {
+  if (level >= Config.current().getLoggerLevel()) {
     let level_tag;
     switch (level) {
       case LogLevel.VERBOSE:
@@ -159,36 +159,42 @@ class ConfigObserver {
 }
 
 class Config {
-  static animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
+  private animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
   // Note that this is the level that is in force before the config is parsed.
   // This means that all logs below this level will be ignored until the config is parsed.
-  static logger_level: LogLevel = ConfigDefaults.logger_level;
-  static prevent_default: boolean = ConfigDefaults.prevent_default;
-  static skip_hidden: boolean = ConfigDefaults.skip_hidden;
-  static skip_tabs: readonly number[] = ConfigDefaults.skip_tabs;
-  static swipe_amount: number = ConfigDefaults.swipe_amount;
-  static wrap: boolean = ConfigDefaults.wrap;
+  private logger_level: LogLevel = ConfigDefaults.logger_level;
+  private prevent_default: boolean = ConfigDefaults.prevent_default;
+  private skip_hidden: boolean = ConfigDefaults.skip_hidden;
+  private skip_tabs: readonly number[] = ConfigDefaults.skip_tabs;
+  private swipe_amount: number = ConfigDefaults.swipe_amount;
+  private wrap: boolean = ConfigDefaults.wrap;
 
-  private static rawConfig: unknown = {};
+  private static currentConfig: Config = new Config();
+  private static rawConfig: unknown | null = null;
   private static configObservers: ConfigObserver[] = [];
 
-  static readAndMonitorConfig() {
+  public static current(): Config {
+    return Config.currentConfig;
+  }
+
+  public static async readAndMonitorConfig() {
     // When changing dashboards and when updating the config via the UI, the hui-root element is
     // replaced. We therefore listen for its changes.
     PageObjectManager.huiRoot.watchChanges({
       onDomNodeRefreshedCallback: () => {
-        Config.readConfig();
+        void Config.readConfig();
       },
       onDomNodeRemovedCallback: null
     });
-    Config.readConfig();
+
+    await Config.readConfig();
   }
 
-  static registerConfigObserver(configObserver: ConfigObserver) {
+  public static registerConfigObserver(configObserver: ConfigObserver) {
     Config.configObservers.push(configObserver);
   }
 
-  static unregisterConfigObserver(configObserver: ConfigObserver) {
+  public static unregisterConfigObserver(configObserver: ConfigObserver) {
     const index = Config.configObservers.indexOf(configObserver);
     if (index > -1) {
       Config.configObservers.splice(index, 1);
@@ -197,56 +203,98 @@ class Config {
     }
   }
 
+  public getAnimate(): "none" | "swipe" | "fade" | "flip" {
+    return this.animate;
+  }
+
+  public getLoggerLevel(): LogLevel {
+    return this.logger_level;
+  }
+
+  public getPreventDefault(): boolean {
+    return this.prevent_default;
+  }
+
+  public getSkipHidden(): boolean {
+    return this.skip_hidden;
+  }
+
+  public getSkipTabs(): readonly number[] {
+    return this.skip_tabs;
+  }
+
+  public getSwipeAmount(): number {
+    return this.swipe_amount;
+  }
+
+  public getWrap(): boolean {
+    return this.wrap;
+  }
+
   private static async readConfig() {
     logd("Attempting to read config...");
 
     const rawConfig = await Config.getRawConfigOrNull();
 
-    if (JSON.stringify(rawConfig) != JSON.stringify(Config.rawConfig)) {
-      Config.rawConfig = rawConfig;
-
-      Config.parseAndUpdateConfig(rawConfig);
-
-      Config.configObservers.forEach((configObserver) => {
-        configObserver.callback();
-      });
-
-    } else {
+    if (JSON.stringify(rawConfig) == JSON.stringify(Config.rawConfig)) {
       logd("Config is identical.");
+      return;
     }
+
+    // Save the new raw config.
+    Config.rawConfig = rawConfig;
+
+    const newConfig = Config.parseConfig(rawConfig);
+    if (newConfig == null) {
+      // Couldn't parse config, error already logged.
+      return;
+    }
+
+    if (JSON.stringify(newConfig) == JSON.stringify(Config.currentConfig)) {
+      logd("Config is equivalent.");
+      return;
+    }
+
+    // Save the new config.
+    Config.currentConfig = newConfig;
+    logi("Config values have changed.");
+
+    // Notify all observers that the config has changed.
+    Config.configObservers.forEach((configObserver) => {
+      configObserver.callback();
+    });
   }
 
-  private static parseAndUpdateConfig(rawConfig: unknown): void {
+  private static parseConfig(rawConfig: unknown): Config | null {
     if (!instanceOfSwipeNavigationConfig(rawConfig)) {
       loge("Found invalid configuration.");
       // TODO log why the config is wrong
 
-      rawConfig = {};  // act as if the config was empty
-      if (!instanceOfSwipeNavigationConfig(rawConfig)) {
-        throw new Error("Internal error: empty config should always be valid.");
-      }
+      return null;
     }
 
-    Config.animate = rawConfig.animate ?? ConfigDefaults.animate;
+    const newConfig = new Config();
+
+    if (rawConfig.animate != null) { newConfig.animate = rawConfig.animate; }
+
     switch (rawConfig.logger_level) {
       case "verbose":
-        Config.logger_level = LogLevel.VERBOSE;
+        newConfig.logger_level = LogLevel.VERBOSE;
         break;
       case "debug":
-        Config.logger_level = LogLevel.DEBUG;
+        newConfig.logger_level = LogLevel.DEBUG;
         break;
       case "info":
-        Config.logger_level = LogLevel.INFO;
+        newConfig.logger_level = LogLevel.INFO;
         break;
       case "warn":
-        Config.logger_level = LogLevel.WARN;
+        newConfig.logger_level = LogLevel.WARN;
         break;
       case "error":
-        Config.logger_level = LogLevel.ERROR;
+        newConfig.logger_level = LogLevel.ERROR;
         break;
       case null:
       case undefined:
-        Config.logger_level = ConfigDefaults.logger_level;
         break;
       default: {
         const exhaustiveCheck: never = rawConfig.logger_level;
@@ -254,21 +302,19 @@ class Config {
         break;
       }
     }
-    Config.prevent_default = rawConfig.prevent_default ?? ConfigDefaults.prevent_default;
-    Config.skip_hidden = rawConfig.skip_hidden ?? ConfigDefaults.skip_hidden;
-    if (rawConfig?.skip_tabs != undefined) {
-      Config.skip_tabs =
+    if (rawConfig.prevent_default != null) { newConfig.prevent_default = rawConfig.prevent_default; }
+    if (rawConfig.skip_hidden != null) { newConfig.skip_hidden = rawConfig.skip_hidden; }
+    if (rawConfig.skip_tabs != undefined) {
+      newConfig.skip_tabs =
         String(rawConfig.skip_tabs)
           .replace(/\s+/g, "")
           .split(",")
           .map((item) => { return parseInt(item); });
-    } else {
-      Config.skip_tabs = ConfigDefaults.skip_tabs;
     }
-    Config.swipe_amount = rawConfig.swipe_amount != null
-      ? (rawConfig.swipe_amount / 100.0)
-      : ConfigDefaults.swipe_amount;
-    Config.wrap = rawConfig.wrap ?? ConfigDefaults.wrap;
+    if (rawConfig.swipe_amount != null) { newConfig.swipe_amount = rawConfig.swipe_amount / 100.0; }
+    if (rawConfig.wrap != null) { newConfig.wrap = rawConfig.wrap; }
+
+    return newConfig;
   }
 
   /**
@@ -279,7 +325,7 @@ class Config {
    * object if the swipe_nav section is missing in the config file. `null` if the config file cannot
    * be read.
    */
-  private static async getRawConfigOrNull(): Promise<unknown> {
+  private static async getRawConfigOrNull(): Promise<unknown | null> {
     const timeout = new Date(Date.now() + 15 * 1000);  // 15 seconds
     let configContainer = null;
 
@@ -578,7 +624,7 @@ class SwipeManager {
         () => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.animate == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
+      if (Config.current().getAnimate() == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
     }
   }
 
@@ -615,7 +661,7 @@ class SwipeManager {
     if (this.#xDown && this.#yDown) {
       this.#xDiff = this.#xDown - event.touches[0].clientX;
       this.#yDiff = this.#yDown - event.touches[0].clientY;
-      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.prevent_default) event.preventDefault();
+      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.current().getPreventDefault()) event.preventDefault();
     }
   }
 
@@ -625,7 +671,7 @@ class SwipeManager {
         logd("Swipe ignored, vertical movement.");
 
       } else {  // Horizontal movement
-        if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.swipe_amount)) {
+        if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.current().getSwipeAmount())) {
           logd("Swipe ignored, too short.");
 
         } else {
@@ -664,9 +710,9 @@ class SwipeManager {
         nextTabIndex += increment;
 
         if (nextTabIndex == -1) {
-          nextTabIndex = Config.wrap ? tabs.length - 1 : -1;
+          nextTabIndex = Config.current().getWrap() ? tabs.length - 1 : -1;
         } else if (nextTabIndex == tabs.length) {
-          nextTabIndex = Config.wrap ? 0 : -1;
+          nextTabIndex = Config.current().getWrap() ? 0 : -1;
         }
 
         if (nextTabIndex == activeTabIndex) {
@@ -685,10 +731,10 @@ class SwipeManager {
         stopReason == null
         && (
           // ...the current tab should be skipped or...
-          Config.skip_tabs.includes(nextTabIndex)
+          Config.current().getSkipTabs().includes(nextTabIndex)
           || (
             // ...if skip hidden is enabled and the tab is hidden
-            Config.skip_hidden
+            Config.current().getSkipHidden()
             && getComputedStyle(tabs[nextTabIndex], null).display == "none"
           )
         )
@@ -715,14 +761,15 @@ class SwipeManager {
         loge("view is null when attempting to change tab.");
 
       } else {
-        if (Config.animate == "none") {
+        const configAnimate = Config.current().getAnimate();
+        if (configAnimate == "none") {
           tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
 
         } else {
           const duration = 200;
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
 
-          if (Config.animate == "swipe") {
+          if (configAnimate == "swipe") {
             const _in = directionLeft ? `${screen.width / 2}px` : `-${screen.width / 2}px`;
             const _out = directionLeft ? `-${screen.width / 2}px` : `${screen.width / 2}px`;
             view.style.opacity = "0";
@@ -733,7 +780,7 @@ class SwipeManager {
               tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
             }, duration + 10);
 
-          } else if (Config.animate == "fade") {
+          } else if (configAnimate == "fade") {
             view.style.opacity = "0";
             setTimeout(function () {
               view.style.transition = "";
@@ -741,7 +788,7 @@ class SwipeManager {
               view.style.opacity = "0";
             }, duration + 10);
 
-          } else if (Config.animate == "flip") {
+          } else if (configAnimate == "flip") {
             view.style.transform = "rotatey(90deg)";
             view.style.opacity = "0.25";
             setTimeout(function () {
@@ -750,7 +797,7 @@ class SwipeManager {
             }, duration + 10);
 
           } else {
-            const exhaustiveCheck: never = Config.animate;
+            const exhaustiveCheck: never = configAnimate;
             throw new Error(`Unhandled case: ${exhaustiveCheck}`);
           }
 
@@ -767,17 +814,9 @@ class SwipeManager {
 
 
 
-function run() {
+async function run() {
 
-  Config.readAndMonitorConfig();
-
-  Config.registerConfigObserver(
-    new ConfigObserver(
-      () => {
-        logi("Config values have changed.");
-      }
-    )
-  );
+  await Config.readAndMonitorConfig();
 
   SwipeManager.init();
 }
@@ -785,4 +824,4 @@ function run() {
 
 
 // Initial run
-run();
+void run();
