@@ -1,13 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { SwipeHelper } from "../helpers/touchHelpers";
 
-test.skip("should update config", async ({ page }) => {
-  // TODO solve this
-  test.fail(true, "Bug https://github.com/zanna-37/hass-swipe-navigation/issues/12");
+test("should update config", async ({ page, isMobile }) => {
+  test.skip(isMobile ?? false, 'Sidebar is hidden on mobile, can\'t click easily');
 
   // Use default config
   await page.goto("/default-values");
   await expect(page).toHaveURL("/default-values/0");
+
+  const consoleLogs: string[] = [];
+  page.on("console", (message) => {
+    consoleLogs.push(message.text());
+  });
 
   // Change page
   await page.getByText(/No wrap/).click();
@@ -22,5 +26,10 @@ test.skip("should update config", async ({ page }) => {
   await SwipeHelper.swipeRight(haAppLayout);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  // TODO test if the console prints "Configuration read"
+  let matches = 0;
+  const regexp = /.*Config values have changed.*/;
+  for (const log of consoleLogs) {
+    if (regexp.test(log)) { matches++; }
+  }
+  expect(matches).toBe(1);
 });
