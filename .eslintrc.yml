@@ -25,3 +25,7 @@ rules:
     - always
   "@typescript-eslint/no-explicit-any":
     - error
+  "@typescript-eslint/no-misused-promises":
+    - error
+  "@typescript-eslint/no-floating-promises":
+    - error
