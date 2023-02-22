@@ -44,6 +44,9 @@ const exceptions = [
   // my-cards (https://github.com/AnthonMS/my-cards)
   "my-slider",
   "my-slider-v2",
+  // @material/mwc-tab-bar (https://www.npmjs.com/package/@material/mwc-tab-bar)
+  //   Used by: Tabbed Card (https://github.com/kinghat/tabbed-card)
+  "mwc-tab-bar",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
   // round-slider (https://github.com/thomasloven/round-slider)
