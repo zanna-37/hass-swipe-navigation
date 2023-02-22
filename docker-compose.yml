@@ -25,7 +25,7 @@ services:
 
 
   hass:
-    image: homeassistant/home-assistant:beta
+    image: homeassistant/home-assistant
 
     environment:
       - SWIPE_NAVIGATION_JS_URL=http://localhost:3000/swipe-navigation.js
