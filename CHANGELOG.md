@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.10.2] - 2023-02-23
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.10.1...v1.10.2)
+
+### Fixed 🐛
+- Configuration is now reloaded when switching dashboards and when the configuration is changed from the raw configuration editor ([`8925c3f`](https://github.com/zanna-37/hass-swipe-navigation/commit/8925c3f6b58bd0834e98fc5c580e186e270b800b), closes [`#12`](https://github.com/zanna-37/hass-swipe-navigation/issues/12))
+- material/mwc-tab-bar (Used by Tabbed Card) has been added to swipe exceptions ([`e5f1f35`](https://github.com/zanna-37/hass-swipe-navigation/commit/e5f1f35b0a668e51e0b14e0ac67442c08ccaa914), closes [`#36`](https://github.com/zanna-37/hass-swipe-navigation/issues/36))
+
+
 ## 🏷️ [v1.10.1] - 2023-02-11
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.10.0...v1.10.1)
 
