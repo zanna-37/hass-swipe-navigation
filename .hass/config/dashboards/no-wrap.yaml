@@ -1,5 +1,6 @@
 swipe_nav:
   wrap: false
+  logger_level: verbose
 
 views:
 

@@ -1,6 +1,7 @@
 swipe_nav:
   skip_tabs: 0,3
   wrap: false
+  logger_level: verbose
 
 views:
 

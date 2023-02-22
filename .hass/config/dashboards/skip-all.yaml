@@ -1,5 +1,6 @@
 swipe_nav:
   skip_tabs: 0,1,2,3
+  logger_level: verbose
 
 views:
 
