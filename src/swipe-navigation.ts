@@ -75,7 +75,7 @@ function logw(msg: string) { log(msg, LogLevel.WARN); }
 function loge(msg: string) { log(msg, LogLevel.ERROR); }
 
 function log(msg: string, level: Exclude<LogLevel, LogLevel._ALL>) {
-  if (level >= Config.logger_level) {
+  if (level >= Config.current().getLoggerLevel()) {
     let level_tag;
     switch (level) {
       case LogLevel.VERBOSE:
@@ -133,71 +133,226 @@ const SwipeNavigationConfigSchema = z.object({
   swipe_amount: z.number().optional(),
   wrap: z.boolean().optional()
 });
+
 type SwipeNavigationConfig = z.infer<typeof SwipeNavigationConfigSchema>;
+
 function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationConfig {
   return SwipeNavigationConfigSchema.safeParse(obj).success;
 }
 
+class ConfigDefaults {
+  static animate = "none" as const;
+  static logger_level = LogLevel.WARN as const;
+  static prevent_default = false as const;
+  static skip_hidden = true as const;
+  static skip_tabs = [] as const;
+  static swipe_amount = 0.15 as const;
+  static wrap = true as const;
+}
+
+class ConfigObserver {
+  callback: () => void;
+
+  constructor(callback: () => void) {
+    this.callback = callback;
+  }
+}
 
 class Config {
-  static animate: "none" | "swipe" | "fade" | "flip" = "none";
-  // Print all levels until the config is loaded, otherwise there is no way to see low level logs.
-  // The real default is set below.
-  static logger_level: LogLevel = LogLevel._ALL;
-  static prevent_default = false;
-  static skip_hidden = true;
-  static skip_tabs: number[] = [];
-  static swipe_amount = 0.15;
-  static wrap = true;
+  private animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
+  // Note that this is the level that is in force before the config is parsed.
+  // This means that all logs below this level will be ignored until the config is parsed.
+  private logger_level: LogLevel = ConfigDefaults.logger_level;
+  private prevent_default: boolean = ConfigDefaults.prevent_default;
+  private skip_hidden: boolean = ConfigDefaults.skip_hidden;
+  private skip_tabs: readonly number[] = ConfigDefaults.skip_tabs;
+  private swipe_amount: number = ConfigDefaults.swipe_amount;
+  private wrap: boolean = ConfigDefaults.wrap;
 
-  static parseConfig(rawConfig: unknown) {
-    if (instanceOfSwipeNavigationConfig(rawConfig)) {
-      if (rawConfig?.animate != undefined) Config.animate = rawConfig.animate;
-      if (rawConfig.logger_level != undefined) {
-        switch (rawConfig.logger_level) {
-          case "verbose":
-            Config.logger_level = LogLevel.VERBOSE;
-            break;
-          case "debug":
-            Config.logger_level = LogLevel.DEBUG;
-            break;
-          case "info":
-            Config.logger_level = LogLevel.INFO;
-            break;
-          case "warn":
-            Config.logger_level = LogLevel.WARN;
-            break;
-          case "error":
-            Config.logger_level = LogLevel.ERROR;
-            break;
-          default: {
-            const exhaustiveCheck: never = rawConfig.logger_level;
-            throw new Error(`Unhandled case: ${exhaustiveCheck}`);
-            break;
-          }
-        }
-      } else {
-        // The default value is set here because we want to print everything before reading the config.
-        Config.logger_level = LogLevel.WARN;
-      }
-      if (rawConfig?.prevent_default != undefined) Config.prevent_default = rawConfig.prevent_default;
-      if (rawConfig?.skip_hidden != undefined) Config.skip_hidden = rawConfig.skip_hidden;
-      if (rawConfig?.skip_tabs != undefined) {
-        Config.skip_tabs =
-          String(rawConfig.skip_tabs)
-            .replace(/\s+/g, "")
-            .split(",")
-            .map((item) => { return parseInt(item); });
-      }
-      if (rawConfig?.swipe_amount != undefined) Config.swipe_amount = rawConfig.swipe_amount / 100.0;
-      if (rawConfig?.wrap != undefined) Config.wrap = rawConfig.wrap;
+  private static currentConfig: Config = new Config();
+  private static rawConfig: unknown | null = null;
+  private static configObservers: ConfigObserver[] = [];
 
-      return true;
+  public static current(): Config {
+    return Config.currentConfig;
+  }
+
+  public static async readAndMonitorConfig() {
+    // When changing dashboards and when updating the config via the UI, the hui-root element is
+    // replaced. We therefore listen for its changes.
+    PageObjectManager.huiRoot.watchChanges({
+      onDomNodeRefreshedCallback: () => {
+        void Config.readConfig();
+      },
+      onDomNodeRemovedCallback: null
+    });
+
+    await Config.readConfig();
+  }
+
+  public static registerConfigObserver(configObserver: ConfigObserver) {
+    Config.configObservers.push(configObserver);
+  }
+
+  public static unregisterConfigObserver(configObserver: ConfigObserver) {
+    const index = Config.configObservers.indexOf(configObserver);
+    if (index > -1) {
+      Config.configObservers.splice(index, 1);
     } else {
+      loge("Internal error while unregistering a configObserver: not found.");
+    }
+  }
+
+  public getAnimate(): "none" | "swipe" | "fade" | "flip" {
+    return this.animate;
+  }
+
+  public getLoggerLevel(): LogLevel {
+    return this.logger_level;
+  }
+
+  public getPreventDefault(): boolean {
+    return this.prevent_default;
+  }
+
+  public getSkipHidden(): boolean {
+    return this.skip_hidden;
+  }
+
+  public getSkipTabs(): readonly number[] {
+    return this.skip_tabs;
+  }
+
+  public getSwipeAmount(): number {
+    return this.swipe_amount;
+  }
+
+  public getWrap(): boolean {
+    return this.wrap;
+  }
+
+  private static async readConfig() {
+    logd("Attempting to read config...");
+
+    const rawConfig = await Config.getRawConfigOrNull();
+
+    if (JSON.stringify(rawConfig) == JSON.stringify(Config.rawConfig)) {
+      logd("Config is identical.");
+      return;
+    }
+
+    // Save the new raw config.
+    Config.rawConfig = rawConfig;
+
+    const newConfig = Config.parseConfig(rawConfig);
+    if (newConfig == null) {
+      // Couldn't parse config, error already logged.
+      return;
+    }
+
+    if (JSON.stringify(newConfig) == JSON.stringify(Config.currentConfig)) {
+      logd("Config is equivalent.");
+      return;
+    }
+
+    // Save the new config.
+    Config.currentConfig = newConfig;
+    logi("Config values have changed.");
+
+    // Notify all observers that the config has changed.
+    Config.configObservers.forEach((configObserver) => {
+      configObserver.callback();
+    });
+  }
+
+  private static parseConfig(rawConfig: unknown): Config | null {
+    if (!instanceOfSwipeNavigationConfig(rawConfig)) {
       loge("Found invalid configuration.");
       // TODO log why the config is wrong
-      return false;
+
+      return null;
     }
+
+    const newConfig = new Config();
+
+    if (rawConfig.animate != null) { newConfig.animate = rawConfig.animate; }
+
+    switch (rawConfig.logger_level) {
+      case "verbose":
+        newConfig.logger_level = LogLevel.VERBOSE;
+        break;
+      case "debug":
+        newConfig.logger_level = LogLevel.DEBUG;
+        break;
+      case "info":
+        newConfig.logger_level = LogLevel.INFO;
+        break;
+      case "warn":
+        newConfig.logger_level = LogLevel.WARN;
+        break;
+      case "error":
+        newConfig.logger_level = LogLevel.ERROR;
+        break;
+      case null:
+      case undefined:
+        break;
+      default: {
+        const exhaustiveCheck: never = rawConfig.logger_level;
+        throw new Error(`Unhandled case: ${exhaustiveCheck}`);
+        break;
+      }
+    }
+    if (rawConfig.prevent_default != null) { newConfig.prevent_default = rawConfig.prevent_default; }
+    if (rawConfig.skip_hidden != null) { newConfig.skip_hidden = rawConfig.skip_hidden; }
+    if (rawConfig.skip_tabs != undefined) {
+      newConfig.skip_tabs =
+        String(rawConfig.skip_tabs)
+          .replace(/\s+/g, "")
+          .split(",")
+          .map((item) => { return parseInt(item); });
+    }
+    if (rawConfig.swipe_amount != null) { newConfig.swipe_amount = rawConfig.swipe_amount / 100.0; }
+    if (rawConfig.wrap != null) { newConfig.wrap = rawConfig.wrap; }
+
+    return newConfig;
+  }
+
+  /**
+   * Tries to get the raw config from the config file until it succeed or until a timeout is
+   * reached.
+   *
+   * @returns the swipe_nav raw config if the section can be read from the config file. An empty
+   * object if the swipe_nav section is missing in the config file. `null` if the config file cannot
+   * be read.
+   */
+  private static async getRawConfigOrNull(): Promise<unknown | null> {
+    const timeout = new Date(Date.now() + 15 * 1000);  // 15 seconds
+    let configContainer = null;
+
+    while (configContainer == null && Date.now() < timeout.getTime()) {
+      if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
+        configContainer = (
+          (
+            PageObjectManager.haPanelLovelace.getDomNode() as (
+              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
+            )
+          )?.lovelace?.config
+        ) ?? null;
+      }
+
+      if (configContainer == null) {
+        await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
+      }
+    }
+
+    let rawConfig = null;
+    if (configContainer != null) {
+      rawConfig = configContainer.swipe_nav ?? {};
+    } else {
+      loge("Can't find dashboard configuration");
+    }
+
+    return rawConfig;
   }
 }
 
@@ -443,6 +598,13 @@ class SwipeManager {
     this.#touchMoveController = new AbortController();
     this.#touchEndController = new AbortController();
 
+    PageObjectManager.haAppLayout.watchChanges({
+      onDomNodeRefreshedCallback: () => {
+        SwipeManager.init();
+      },
+      onDomNodeRemovedCallback: null
+    });
+
     const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
     if (haAppLayoutDomNode != null) {
       logd("Initializing SwipeManger...");
@@ -462,7 +624,7 @@ class SwipeManager {
         () => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.animate == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
+      if (Config.current().getAnimate() == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
     }
   }
 
@@ -499,7 +661,7 @@ class SwipeManager {
     if (this.#xDown && this.#yDown) {
       this.#xDiff = this.#xDown - event.touches[0].clientX;
       this.#yDiff = this.#yDown - event.touches[0].clientY;
-      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.prevent_default) event.preventDefault();
+      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.current().getPreventDefault()) event.preventDefault();
     }
   }
 
@@ -509,7 +671,7 @@ class SwipeManager {
         logd("Swipe ignored, vertical movement.");
 
       } else {  // Horizontal movement
-        if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.swipe_amount)) {
+        if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.current().getSwipeAmount())) {
           logd("Swipe ignored, too short.");
 
         } else {
@@ -548,9 +710,9 @@ class SwipeManager {
         nextTabIndex += increment;
 
         if (nextTabIndex == -1) {
-          nextTabIndex = Config.wrap ? tabs.length - 1 : -1;
+          nextTabIndex = Config.current().getWrap() ? tabs.length - 1 : -1;
         } else if (nextTabIndex == tabs.length) {
-          nextTabIndex = Config.wrap ? 0 : -1;
+          nextTabIndex = Config.current().getWrap() ? 0 : -1;
         }
 
         if (nextTabIndex == activeTabIndex) {
@@ -569,10 +731,10 @@ class SwipeManager {
         stopReason == null
         && (
           // ...the current tab should be skipped or...
-          Config.skip_tabs.includes(nextTabIndex)
+          Config.current().getSkipTabs().includes(nextTabIndex)
           || (
             // ...if skip hidden is enabled and the tab is hidden
-            Config.skip_hidden
+            Config.current().getSkipHidden()
             && getComputedStyle(tabs[nextTabIndex], null).display == "none"
           )
         )
@@ -599,14 +761,15 @@ class SwipeManager {
         loge("view is null when attempting to change tab.");
 
       } else {
-        if (Config.animate == "none") {
+        const configAnimate = Config.current().getAnimate();
+        if (configAnimate == "none") {
           tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
 
         } else {
           const duration = 200;
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
 
-          if (Config.animate == "swipe") {
+          if (configAnimate == "swipe") {
             const _in = directionLeft ? `${screen.width / 2}px` : `-${screen.width / 2}px`;
             const _out = directionLeft ? `-${screen.width / 2}px` : `${screen.width / 2}px`;
             view.style.opacity = "0";
@@ -617,7 +780,7 @@ class SwipeManager {
               tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
             }, duration + 10);
 
-          } else if (Config.animate == "fade") {
+          } else if (configAnimate == "fade") {
             view.style.opacity = "0";
             setTimeout(function () {
               view.style.transition = "";
@@ -625,7 +788,7 @@ class SwipeManager {
               view.style.opacity = "0";
             }, duration + 10);
 
-          } else if (Config.animate == "flip") {
+          } else if (configAnimate == "flip") {
             view.style.transform = "rotatey(90deg)";
             view.style.opacity = "0.25";
             setTimeout(function () {
@@ -634,7 +797,7 @@ class SwipeManager {
             }, duration + 10);
 
           } else {
-            const exhaustiveCheck: never = Config.animate;
+            const exhaustiveCheck: never = configAnimate;
             throw new Error(`Unhandled case: ${exhaustiveCheck}`);
           }
 
@@ -651,71 +814,14 @@ class SwipeManager {
 
 
 
-async function getConfiguration() {
-  let configRead = false;
+async function run() {
 
-  if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
-    let configReadingAttempts = 0;
+  await Config.readAndMonitorConfig();
 
-    while (!configRead && configReadingAttempts < 300) {
-      configReadingAttempts++;
-      try {
-        const rawConfig = (
-          (
-            PageObjectManager.haPanelLovelace.getDomNode() as (
-              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
-            )
-          )?.lovelace?.config?.swipe_nav
-        ) ?? {};
-        Config.parseConfig(rawConfig);
-        configRead = true;
-      } catch (e) {
-        logw("Error while obtaining config: " + (e instanceof Error ? e.message : e) + ". Retrying...");
-        await new Promise(resolve => setTimeout(resolve, 100));  // Sleep 100ms
-      }
-    }
-  }
-
-  if (configRead) {
-    logd("Configuration read.");
-    return true;
-  } else {
-    loge("Can't read configuration.");
-    return false;
-  }
-}
-
-
-function run() {
-  PageObjectManager.haPanelLovelace.watchChanges({
-    onDomNodeRefreshedCallback: () => {
-      const configurationLoading = getConfiguration();
-      configurationLoading.then((configRead) => {
-        if (configRead) {
-          // Re-init swipeManager to load new config
-          SwipeManager.init();
-        }
-      });
-    },
-    onDomNodeRemovedCallback: null  // TODO
-  });
-
-  const configurationLoading = getConfiguration();
-  configurationLoading.then((configRead) => {
-    PageObjectManager.haAppLayout.watchChanges({
-      onDomNodeRefreshedCallback: () => {
-        SwipeManager.init();
-      },
-      onDomNodeRemovedCallback: null  // TODO
-    });
-
-    if (configRead && PageObjectManager.haAppLayout.getDomNode() != null) {
-      SwipeManager.init();
-    }
-  });
+  SwipeManager.init();
 }
 
 
 
 // Initial run
-run();
+void run();
