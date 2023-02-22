@@ -46,6 +46,8 @@ services:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
 
+    stop_grace_period: 1m
+
 
 volumes:
   nodemodules_builder:
