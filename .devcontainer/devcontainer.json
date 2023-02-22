@@ -7,7 +7,4 @@
   "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
   "workspaceFolder": "/project",
   "shutdownAction": "stopCompose",
-  "features": {
-    "git": "os-provided"
-  },
 }
