@@ -52,6 +52,13 @@
       show_in_sidebar: true
       filename: ./dashboards/default-values-with-logger.yaml
 
+    enable-false:
+      mode: yaml
+      title: Enable false
+      icon: mdi:cancel
+      show_in_sidebar: true
+      filename: ./dashboards/enable-false.yaml
+
     no-wrap:
       mode: yaml
       title: No wrap

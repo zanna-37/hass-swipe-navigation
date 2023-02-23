@@ -121,6 +121,7 @@ const SwipeNavigationConfigSchema = z.object({
       z.literal("fade"),
       z.literal("flip"),
     ]).optional(),
+  enable: z.boolean().optional(),
   logger_level: z
     .union([
       z.literal("verbose"),
@@ -145,6 +146,7 @@ function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationCo
 
 class ConfigDefaults {
   static animate = "none" as const;
+  static enable = true as const;
   static logger_level = LogLevel.WARN as const;
   static prevent_default = false as const;
   static skip_hidden = true as const;
@@ -163,6 +165,7 @@ class ConfigObserver {
 
 class Config {
   private animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
+  private enable: boolean = ConfigDefaults.enable;
   // Note that this is the level that is in force before the config is parsed.
   // This means that all logs below this level will be ignored until the config is parsed.
   private logger_level: LogLevel = ConfigDefaults.logger_level;
@@ -208,6 +211,10 @@ class Config {
 
   public getAnimate(): "none" | "swipe" | "fade" | "flip" {
     return this.animate;
+  }
+
+  public getEnable(): boolean {
+    return this.enable;
   }
 
   public getLoggerLevel(): LogLevel {
@@ -279,6 +286,8 @@ class Config {
     const newConfig = new Config();
 
     if (rawConfig.animate != null) { newConfig.animate = rawConfig.animate; }
+
+    if (rawConfig.enable != null) { newConfig.enable = rawConfig.enable; }
 
     switch (rawConfig.logger_level) {
       case "verbose":
@@ -632,6 +641,12 @@ class SwipeManager {
   }
 
   static #handleTouchStart(event: TouchEvent) {
+
+    if (Config.current().getEnable() == false) {
+      logd("Ignoring touch: Swipe navigation is disabled in the config.");
+      return; // Ignore swipe: Swipe is disabled in the config
+    }
+
     if (event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
