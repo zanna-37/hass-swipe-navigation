@@ -27,7 +27,7 @@ test("should update config", async ({ page, isMobile }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = /.*Config values have changed.*/;
+  const regexp = /.*New configuration loaded.*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

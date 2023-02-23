@@ -267,7 +267,7 @@ class Config {
 
     // Save the new config.
     Config.currentConfig = newConfig;
-    logi("Config values have changed.");
+    logi("New configuration loaded.");
 
     // Notify all observers that the config has changed.
     Config.configObservers.forEach((configObserver) => {
