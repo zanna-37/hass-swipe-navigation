@@ -144,17 +144,6 @@ function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationCo
   return SwipeNavigationConfigSchema.safeParse(obj).success;
 }
 
-class ConfigDefaults {
-  static animate = "none" as const;
-  static enable = true as const;
-  static logger_level = LogLevel.WARN as const;
-  static prevent_default = false as const;
-  static skip_hidden = true as const;
-  static skip_tabs = [] as const;
-  static swipe_amount = 0.15 as const;
-  static wrap = true as const;
-}
-
 class ConfigObserver {
   callback: () => void;
 
@@ -164,16 +153,16 @@ class ConfigObserver {
 }
 
 class Config {
-  private animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
-  private enable: boolean = ConfigDefaults.enable;
+  private animate: "none" | "swipe" | "fade" | "flip" = "none";
+  private enable = true;
   // Note that this is the level that is in force before the config is parsed.
   // This means that all logs below this level will be ignored until the config is parsed.
-  private logger_level: LogLevel = ConfigDefaults.logger_level;
-  private prevent_default: boolean = ConfigDefaults.prevent_default;
-  private skip_hidden: boolean = ConfigDefaults.skip_hidden;
-  private skip_tabs: readonly number[] = ConfigDefaults.skip_tabs;
-  private swipe_amount: number = ConfigDefaults.swipe_amount;
-  private wrap: boolean = ConfigDefaults.wrap;
+  private logger_level: LogLevel = LogLevel.WARN;
+  private prevent_default = false;
+  private skip_hidden = true;
+  private skip_tabs: readonly number[] = [];
+  private swipe_amount = 0.15;
+  private wrap = true;
 
   private static currentConfig: Config = new Config();
   private static rawConfig: unknown | null = null;
