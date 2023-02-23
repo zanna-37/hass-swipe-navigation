@@ -625,7 +625,6 @@ class SwipeManager {
         () => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.current().getAnimate() == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
     }
   }
 
@@ -777,6 +776,10 @@ class SwipeManager {
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
 
           if (configAnimate == "swipe") {
+            const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
+            if (haAppLayoutDomNode != null) {
+              haAppLayoutDomNode.style.overflow = "hidden";
+            }
             const _in = directionLeft ? `${screen.width / 2}px` : `-${screen.width / 2}px`;
             const _out = directionLeft ? `-${screen.width / 2}px` : `${screen.width / 2}px`;
             view.style.opacity = "0";
@@ -813,6 +816,15 @@ class SwipeManager {
             view.style.opacity = "1";
             view.style.transform = "";
           }, duration + 50);
+
+          if (configAnimate == "swipe") {
+            setTimeout(function () {
+              const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
+              if (haAppLayoutDomNode != null) {
+                haAppLayoutDomNode.style.overflow = "";
+              }
+            }, duration * 2 + 100);
+          }
         }
       }
     }
