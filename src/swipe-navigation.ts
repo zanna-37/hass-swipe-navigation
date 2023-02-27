@@ -19,6 +19,8 @@ const exceptions = [
 
   // Header bar (contains tabs)
   "app-header",
+  // Scrollbar
+  ".ha-scrollbar",
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider

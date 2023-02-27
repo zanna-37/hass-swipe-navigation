@@ -66,6 +66,13 @@
       show_in_sidebar: true
       filename: ./dashboards/no-wrap.yaml
 
+    one-scrollbar:
+      mode: yaml
+      title: One scrollbar
+      icon: mdi:pan-horizontal
+      show_in_sidebar: true
+      filename: ./dashboards/one-scrollbar.yaml
+
     one-slider:
       mode: yaml
       title: One slider

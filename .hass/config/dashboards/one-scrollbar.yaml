@@ -1,0 +1,40 @@
+swipe_nav:
+  logger_level: verbose
+
+views:
+
+  - title: Scrollbar
+    cards:
+      - type: markdown
+        title: View 1
+        content: Content...
+
+      - type: entities
+        entities:
+          - entity: light.main_light
+          - entity: sun.sun
+        header:
+          type: buttons
+          entities:
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+            - light.main_light
+
+  - title: View 2
+    cards:
+      - type: markdown
+        title: View 2
+        content: Content...
