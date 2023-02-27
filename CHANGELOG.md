@@ -5,12 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.11.0] - 2023-02-28
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.10.2...v1.11.0)
+
+### Added 🎉
+- You can now disable the swipe navigation on certain dashboards by using the new configuration option `enable: false` ([`d5709a5`](https://github.com/zanna-37/hass-swipe-navigation/commit/d5709a50a3e5f1d928439d2a95403acf0dc23387), closes [`#15`](https://github.com/zanna-37/hass-swipe-navigation/issues/15))
+
+### Fixed 🐛
+- Detect new sliders introduced with Home Assistant core `v2023.3` ([`28391b6`](https://github.com/zanna-37/hass-swipe-navigation/commit/28391b61c33759a06dd58995d3e52d248bc2ae83))
+- Add built-in scrollbar to the swipe exception list ([`278b842`](https://github.com/zanna-37/hass-swipe-navigation/commit/278b8428e06d1d9def499e93d6c5fde12e409c8f), closes [`#41`](https://github.com/zanna-37/hass-swipe-navigation/issues/41))
+
+
 ## 🏷️ [v1.10.2] - 2023-02-23
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.10.1...v1.10.2)
 
 ### Fixed 🐛
 - Configuration is now reloaded when switching dashboards and when the configuration is changed from the raw configuration editor ([`8925c3f`](https://github.com/zanna-37/hass-swipe-navigation/commit/8925c3f6b58bd0834e98fc5c580e186e270b800b), closes [`#12`](https://github.com/zanna-37/hass-swipe-navigation/issues/12))
-- material/mwc-tab-bar (Used by Tabbed Card) has been added to swipe exceptions ([`e5f1f35`](https://github.com/zanna-37/hass-swipe-navigation/commit/e5f1f35b0a668e51e0b14e0ac67442c08ccaa914), closes [`#36`](https://github.com/zanna-37/hass-swipe-navigation/issues/36))
+- material/mwc-tab-bar (used by Tabbed Card) has been added to swipe exceptions ([`e5f1f35`](https://github.com/zanna-37/hass-swipe-navigation/commit/e5f1f35b0a668e51e0b14e0ac67442c08ccaa914), closes [`#36`](https://github.com/zanna-37/hass-swipe-navigation/issues/36))
 
 
 ## 🏷️ [v1.10.1] - 2023-02-11
