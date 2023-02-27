@@ -19,12 +19,11 @@ const exceptions = [
 
   // Header bar (contains tabs)
   "app-header",
-  // Slider bar (used by the Tile card)
-  "ha-bar-slider",
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
   "ha-slider",
+  "#slider",
   // Map
   "hui-map-card",
 
@@ -39,8 +38,6 @@ const exceptions = [
   "#graph-wrapper svg.apexcharts-svg",
   // History explorer card (https://github.com/alexarch21/history-explorer-card)
   "history-explorer-card",
-  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
-  "mushroom-slider",
   // my-cards (https://github.com/AnthonMS/my-cards)
   "my-slider",
   "my-slider-v2",
@@ -57,6 +54,15 @@ const exceptions = [
   "swipe-card",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
+
+
+  // DEPRECATED
+  // will be removed in December 2023
+
+  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
+  "mushroom-slider", // it uses the same id as built-in slider
+  // Slider bar (used by the Tile card)
+  "ha-bar-slider", // it uses the same id as built-in slider
 ].join(",");
 
 
