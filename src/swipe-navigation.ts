@@ -19,12 +19,13 @@ const exceptions = [
 
   // Header bar (contains tabs)
   "app-header",
-  // Slider bar (used by the Tile card)
-  "ha-bar-slider",
+  // Scrollbar
+  ".ha-scrollbar",
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
   "ha-slider",
+  "#slider",
   // Map
   "hui-map-card",
 
@@ -39,8 +40,6 @@ const exceptions = [
   "#graph-wrapper svg.apexcharts-svg",
   // History explorer card (https://github.com/alexarch21/history-explorer-card)
   "history-explorer-card",
-  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
-  "mushroom-slider",
   // my-cards (https://github.com/AnthonMS/my-cards)
   "my-slider",
   "my-slider-v2",
@@ -57,6 +56,15 @@ const exceptions = [
   "swipe-card",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
+
+
+  // DEPRECATED
+  // will be removed in December 2023
+
+  // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
+  "mushroom-slider", // it uses the same id as built-in slider
+  // Slider bar (used by the Tile card)
+  "ha-bar-slider", // it uses the same id as built-in slider
 ].join(",");
 
 
@@ -121,6 +129,7 @@ const SwipeNavigationConfigSchema = z.object({
       z.literal("fade"),
       z.literal("flip"),
     ]).optional(),
+  enable: z.boolean().optional(),
   logger_level: z
     .union([
       z.literal("verbose"),
@@ -143,16 +152,6 @@ function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationCo
   return SwipeNavigationConfigSchema.safeParse(obj).success;
 }
 
-class ConfigDefaults {
-  static animate = "none" as const;
-  static logger_level = LogLevel.WARN as const;
-  static prevent_default = false as const;
-  static skip_hidden = true as const;
-  static skip_tabs = [] as const;
-  static swipe_amount = 0.15 as const;
-  static wrap = true as const;
-}
-
 class ConfigObserver {
   callback: () => void;
 
@@ -162,15 +161,16 @@ class ConfigObserver {
 }
 
 class Config {
-  private animate: "none" | "swipe" | "fade" | "flip" = ConfigDefaults.animate;
+  private animate: "none" | "swipe" | "fade" | "flip" = "none";
+  private enable = true;
   // Note that this is the level that is in force before the config is parsed.
   // This means that all logs below this level will be ignored until the config is parsed.
-  private logger_level: LogLevel = ConfigDefaults.logger_level;
-  private prevent_default: boolean = ConfigDefaults.prevent_default;
-  private skip_hidden: boolean = ConfigDefaults.skip_hidden;
-  private skip_tabs: readonly number[] = ConfigDefaults.skip_tabs;
-  private swipe_amount: number = ConfigDefaults.swipe_amount;
-  private wrap: boolean = ConfigDefaults.wrap;
+  private logger_level: LogLevel = LogLevel.WARN;
+  private prevent_default = false;
+  private skip_hidden = true;
+  private skip_tabs: readonly number[] = [];
+  private swipe_amount = 0.15;
+  private wrap = true;
 
   private static currentConfig: Config = new Config();
   private static rawConfig: unknown | null = null;
@@ -208,6 +208,10 @@ class Config {
 
   public getAnimate(): "none" | "swipe" | "fade" | "flip" {
     return this.animate;
+  }
+
+  public getEnable(): boolean {
+    return this.enable;
   }
 
   public getLoggerLevel(): LogLevel {
@@ -260,7 +264,7 @@ class Config {
 
     // Save the new config.
     Config.currentConfig = newConfig;
-    logi("Config values have changed.");
+    logi("New configuration loaded.");
 
     // Notify all observers that the config has changed.
     Config.configObservers.forEach((configObserver) => {
@@ -279,6 +283,8 @@ class Config {
     const newConfig = new Config();
 
     if (rawConfig.animate != null) { newConfig.animate = rawConfig.animate; }
+
+    if (rawConfig.enable != null) { newConfig.enable = rawConfig.enable; }
 
     switch (rawConfig.logger_level) {
       case "verbose":
@@ -627,11 +633,16 @@ class SwipeManager {
         () => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
-      if (Config.current().getAnimate() == "swipe") haAppLayoutDomNode.style.overflow = "hidden";
     }
   }
 
   static #handleTouchStart(event: TouchEvent) {
+
+    if (Config.current().getEnable() == false) {
+      logd("Ignoring touch: Swipe navigation is disabled in the config.");
+      return; // Ignore swipe: Swipe is disabled in the config
+    }
+
     if (event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
@@ -773,6 +784,10 @@ class SwipeManager {
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
 
           if (configAnimate == "swipe") {
+            const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
+            if (haAppLayoutDomNode != null) {
+              haAppLayoutDomNode.style.overflow = "hidden";
+            }
             const _in = directionLeft ? `${screen.width / 2}px` : `-${screen.width / 2}px`;
             const _out = directionLeft ? `-${screen.width / 2}px` : `${screen.width / 2}px`;
             view.style.opacity = "0";
@@ -809,6 +824,15 @@ class SwipeManager {
             view.style.opacity = "1";
             view.style.transform = "";
           }, duration + 50);
+
+          if (configAnimate == "swipe") {
+            setTimeout(function () {
+              const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
+              if (haAppLayoutDomNode != null) {
+                haAppLayoutDomNode.style.overflow = "";
+              }
+            }, duration * 2 + 100);
+          }
         }
       }
     }

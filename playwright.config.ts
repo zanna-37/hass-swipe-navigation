@@ -40,8 +40,8 @@ const config: PlaywrightTestConfig = {
     storageState: "storageState.json",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: process.env.Z_DEBUG ? "retain-on-failure" : "on-first-retry",
-    video: process.env.Z_DEBUG ? "retain-on-failure" : "on-first-retry",
+    trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
+    video: process.env.CI ? "retain-on-failure" : "on-first-retry",
   },
 
   /* Configure projects for major browsers */

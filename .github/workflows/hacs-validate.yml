@@ -2,14 +2,30 @@ name: HACS Validation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, develop ]
   schedule:
     - cron: "0 0 * * *"
 
 jobs:
+
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          cancel_others: 'true'
+          concurrent_skipping: 'same_content_newer'
+          paths_ignore: '[ "**/CHANGELOG.md" ]'
+          skip_after_successful_duplicate: 'true'
+
   hacs:
+    needs: pre_job
+    if: needs.pre_job.outputs.should_skip != 'true' && github.repository == 'zanna-37/hass-swipe-navigation'
     name: HACS Validation
     runs-on: "ubuntu-latest"
     steps:

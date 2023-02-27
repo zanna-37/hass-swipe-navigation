@@ -52,12 +52,26 @@
       show_in_sidebar: true
       filename: ./dashboards/default-values-with-logger.yaml
 
+    enable-false:
+      mode: yaml
+      title: Enable false
+      icon: mdi:cancel
+      show_in_sidebar: true
+      filename: ./dashboards/enable-false.yaml
+
     no-wrap:
       mode: yaml
       title: No wrap
       icon: mdi:sign-direction-remove
       show_in_sidebar: true
       filename: ./dashboards/no-wrap.yaml
+
+    one-scrollbar:
+      mode: yaml
+      title: One scrollbar
+      icon: mdi:pan-horizontal
+      show_in_sidebar: true
+      filename: ./dashboards/one-scrollbar.yaml
 
     one-slider:
       mode: yaml
