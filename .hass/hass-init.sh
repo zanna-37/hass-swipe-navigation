@@ -11,13 +11,22 @@ set -eEuo pipefail
 # Use `help set` in a bash shell to get information.
 
 
+function print_home_assistant_version() {
+  echo
+  echo "[.] Home Assistant version:"
+  hass --version
+}
+
 function ensure_hass_config() {
+  echo
+  echo "[.] Creating Home Assistant config if not present..."
   hass --script ensure_config -c /config
 }
 
 function create_hass_user() {
   local username=${HASS_USERNAME:-user}
   local password=${HASS_PASSWORD:-pass}
+
   echo
   echo "[.] Creating Home Assistant user..."
   hass --script auth -c /config add "${username}" "${password}"
@@ -26,6 +35,8 @@ function create_hass_user() {
 }
 
 function bypass_onboarding() {
+  echo
+  echo "[.] Bypassing Home Assistant onboarding..."
   cat > /config/.storage/onboarding << EOF
 {
   "data": {
@@ -43,6 +54,7 @@ EOF
 
 
 function main() {
+  print_home_assistant_version
   ensure_hass_config
   create_hass_user
   bypass_onboarding
