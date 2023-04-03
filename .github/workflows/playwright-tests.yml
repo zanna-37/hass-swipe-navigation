@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, develop ]
   schedule:
-    - cron: "0 0 1 * *" # Every first day of the month, so we test with the last beta release
+    - cron: "0 12 23-31,1 * 4"  # The day after the beta release
 
 jobs:
 
