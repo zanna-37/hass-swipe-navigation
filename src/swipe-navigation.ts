@@ -19,6 +19,8 @@ const exceptions = [
 
   // Dashboard tabs
   "ha-tabs",
+  // Map
+  "hui-map-card",
   // Scrollbar
   ".ha-scrollbar",
   // Sidebar (contains dashboards)
@@ -26,8 +28,6 @@ const exceptions = [
   // Slider
   "ha-slider",
   "#slider",
-  // Map
-  "hui-map-card",
 
 
   // THIRD PARTIES
