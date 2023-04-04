@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.11.1] - 2023-04-04
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.11.0...v1.11.1)
+
+### Fixed 🐛
+- Adapt to changes introduced by the Home Assistant 2023.4 release ([`da23102`](https://github.com/zanna-37/hass-swipe-navigation/commit/da23102c515f780b5cc76db4e30733ad616eed85), closes [`#45`](https://github.com/zanna-37/hass-swipe-navigation/issues/45))
+- Sankey Chart Card has been added to swipe exceptions ([`380476e`](https://github.com/zanna-37/hass-swipe-navigation/commit/380476e233d08a113d811ee1e898c5e945906de7), closes [`#35`](https://github.com/zanna-37/hass-swipe-navigation/issues/35))
+- Meteoalarm Card has been added to swipe exceptions ([`55ebfce`](https://github.com/zanna-37/hass-swipe-navigation/commit/55ebfce481eae65e32624c74e8cec373bc0fb445), closes [`#43`](https://github.com/zanna-37/hass-swipe-navigation/issues/43))
+
+
 ## 🏷️ [v1.11.0] - 2023-02-28
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.10.2...v1.11.0)
 
