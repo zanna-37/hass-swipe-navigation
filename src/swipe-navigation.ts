@@ -56,6 +56,8 @@ const exceptions = [
   "slider-button-card",
   // Swipe Card (https://github.com/bramkragten/swipe-card)
   "swipe-card",
+  // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
+  ".swiper",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
 
