@@ -21,7 +21,7 @@ test("should update config", async ({ page, isMobile }) => {
 
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const haAppLayout = page.locator("ha-app-layout");
+  const haAppLayout = page.locator("div[id='view']");
 
   await SwipeHelper.swipeRight(haAppLayout);
   await expect(page).toHaveURL(dashboardPath + "/0");

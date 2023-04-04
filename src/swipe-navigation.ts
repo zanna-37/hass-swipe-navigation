@@ -17,8 +17,10 @@ const exceptions = [
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
 
-  // Header bar (contains tabs)
-  "app-header",
+  // Dashboard tabs
+  "ha-tabs",
+  // Map
+  "hui-map-card",
   // Scrollbar
   ".ha-scrollbar",
   // Sidebar (contains dashboards)
@@ -26,8 +28,6 @@ const exceptions = [
   // Slider
   "ha-slider",
   "#slider",
-  // Map
-  "hui-map-card",
 
 
   // THIRD PARTIES
@@ -50,10 +50,14 @@ const exceptions = [
   "#plotly g.draglayer",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
+  // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
+  "sankey-chart",
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
   // Swipe Card (https://github.com/bramkragten/swipe-card)
   "swipe-card",
+  // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
+  ".swiper",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
 
@@ -69,6 +73,32 @@ const exceptions = [
 
 
 const LOG_TAG = "↔️ Swipe navigation:";
+
+
+function isNewerVersion(oldVersion: string, newVersion: string) {
+  const oldParts = oldVersion.split(".");
+  const newParts = newVersion.split(".");
+  for (let i = 0; i < newParts.length; i++) {
+    const a = ~~newParts[i];  // Parse int
+    const b = ~~oldParts[i];  // Parse int
+    if (a > b) return true;
+    if (a < b) return false;
+  }
+  return false;
+}
+
+function isLessThan2023_4() {
+  const currentVersion = (
+    document.getElementsByTagName("home-assistant")[0] as (
+      HTMLElement & { hass: undefined | { config: undefined | { version: string } } }
+    )
+  )?.hass?.config?.version || null;
+
+  return currentVersion == null
+    ? false  // Assume newer if we can't determine the version
+    : isNewerVersion(currentVersion, "2023.4");
+}
+
 
 enum LogLevel {
   _ALL = 0,
@@ -571,7 +601,7 @@ class PageObjectManager {
   );
   static haAppLayout = new PageObject(
     PageObjectManager.huiRoot,
-    ["ha-app-layout"],
+    [(isLessThan2023_4() ? "ha-app-layout" : "div")],
     true,
   );
   static haAppLayoutView = new PageObject(
