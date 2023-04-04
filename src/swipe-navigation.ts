@@ -50,6 +50,8 @@ const exceptions = [
   "#plotly g.draglayer",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
+  // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
+  "sankey-chart",
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
   // Swipe Card (https://github.com/bramkragten/swipe-card)
