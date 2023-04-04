@@ -6,7 +6,7 @@ test("shouldn't wrap", async ({ page }) => {
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const haAppLayout = page.locator("ha-app-layout");
+  const haAppLayout = page.locator("div[id='view']");
 
   const consoleLogs: string[] = [];
   page.on("console", (message) => {

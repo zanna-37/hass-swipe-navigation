@@ -17,8 +17,8 @@ const exceptions = [
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
 
-  // Header bar (contains tabs)
-  "app-header",
+  // Dashboard tabs
+  "ha-tabs",
   // Scrollbar
   ".ha-scrollbar",
   // Sidebar (contains dashboards)
@@ -69,6 +69,32 @@ const exceptions = [
 
 
 const LOG_TAG = "↔️ Swipe navigation:";
+
+
+function isNewerVersion(oldVersion: string, newVersion: string) {
+  const oldParts = oldVersion.split(".");
+  const newParts = newVersion.split(".");
+  for (let i = 0; i < newParts.length; i++) {
+    const a = ~~newParts[i];  // Parse int
+    const b = ~~oldParts[i];  // Parse int
+    if (a > b) return true;
+    if (a < b) return false;
+  }
+  return false;
+}
+
+function isLessThan2023_4() {
+  const currentVersion = (
+    document.getElementsByTagName("home-assistant")[0] as (
+      HTMLElement & { hass: undefined | { config: undefined | { version: string } } }
+    )
+  )?.hass?.config?.version || null;
+
+  return currentVersion == null
+    ? false  // Assume newer if we can't determine the version
+    : isNewerVersion(currentVersion, "2023.4");
+}
+
 
 enum LogLevel {
   _ALL = 0,
@@ -571,7 +597,7 @@ class PageObjectManager {
   );
   static haAppLayout = new PageObject(
     PageObjectManager.huiRoot,
-    ["ha-app-layout"],
+    [(isLessThan2023_4() ? "ha-app-layout" : "div")],
     true,
   );
   static haAppLayoutView = new PageObject(
