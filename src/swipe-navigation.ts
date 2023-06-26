@@ -36,6 +36,10 @@ const exceptions = [
 
   // UI Card for Better Thermostat (https://github.com/KartoffelToby/better-thermostat-ui-card)
   "better-thermostat-ui-card",
+  // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
+  "floor3d-card",
+  // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
+  "gallery-card",
   // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
   "#graph-wrapper svg.apexcharts-svg",
   // History explorer card (https://github.com/alexarch21/history-explorer-card)
