@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.12.0] - 2023-06-27
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.11.1...v1.12.0)
+
+### Added 🎉
+- The animation duration can now be adjusted thanks to [@ambroseus](https://github.com/ambroseus) who added the new configuration option `animation_duration` ([`1cbdcca`](https://github.com/zanna-37/hass-swipe-navigation/commit/1cbdcca893b14db9dd2412fb503bfcb8d1f2c016), closes [`#56`](https://github.com/zanna-37/hass-swipe-navigation/pull/56))
+
+### Fixed 🐛
+- floor3d-card has been added to swipe exceptions ([`8f0237f`](https://github.com/zanna-37/hass-swipe-navigation/commit/8f0237fea37aab32e2333352e376ca2ceb9a3f24), closes [`#48`](https://github.com/zanna-37/hass-swipe-navigation/issues/48))
+- Gallery Card has been added to swipe exceptions ([`fa54775`](https://github.com/zanna-37/hass-swipe-navigation/commit/fa547759e68ba8d01f1516cbc0f26a3d1870391f), closes [`#51`](https://github.com/zanna-37/hass-swipe-navigation/issues/51))
+
+
 ## 🏷️ [v1.11.1] - 2023-04-04
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.11.0...v1.11.1)
 
