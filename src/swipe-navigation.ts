@@ -36,6 +36,8 @@ const exceptions = [
 
   // UI Card for Better Thermostat (https://github.com/KartoffelToby/better-thermostat-ui-card)
   "better-thermostat-ui-card",
+  // Big Slider Card (https://github.com/nicufarmache/lovelace-big-slider-card)
+  "big-slider-card",
   // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
   "floor3d-card",
   // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
