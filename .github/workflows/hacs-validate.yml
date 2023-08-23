@@ -26,7 +26,13 @@ jobs:
 
   hacs:
     needs: pre_job
-    if: needs.pre_job.outputs.should_skip != 'true' && github.repository == 'zanna-37/hass-swipe-navigation'
+    if: >
+      needs.pre_job.outputs.should_skip != 'true'
+      && github.repository == 'zanna-37/hass-swipe-navigation'
+      && (
+        github.event_name != 'pull_request'
+        || github.event.pull_request.head.repo.full_name == 'zanna-37/hass-swipe-navigation'
+      )
     name: HACS Validation
     runs-on: "ubuntu-latest"
     steps:
