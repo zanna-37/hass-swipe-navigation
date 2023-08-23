@@ -93,3 +93,6 @@ Have a look to the [CONTRIBUTING](./CONTRIBUTING.md) file.
 ## Thank you
 Big thanks to:
 * [@maykar](https://github.com/maykar) The original author of this project.
+
+## Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=zanna-37/hass-swipe-navigation&type=Date)](https://star-history.com/#zanna-37/hass-swipe-navigation&Date)
