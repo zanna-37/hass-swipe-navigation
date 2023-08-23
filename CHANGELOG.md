@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.12.1] - 2023-08-23
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.12.0...v1.12.1)
+
+### Fixed 🐛
+- skip_tabs can now contain a single tab number without throwing an error ([`165a46f`](https://github.com/zanna-37/hass-swipe-navigation/commit/165a46f77b5812406783a2ce53dc037484c35661), closes [`#58`](https://github.com/zanna-37/hass-swipe-navigation/issues/58))
+- Big Slider Card has been added to swipe exceptions thanks to [@tkadauke](https://github.com/tkadauke) ([`87042ed`](https://github.com/zanna-37/hass-swipe-navigation/commit/87042ed5bc9d8f1784dd7c38172c3b1af8d9c84a), closes [`#57`](https://github.com/zanna-37/hass-swipe-navigation/pull/57))
+
+
 ## 🏷️ [v1.12.0] - 2023-06-27
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.11.1...v1.12.0)
 
