@@ -176,7 +176,7 @@ const SwipeNavigationConfigSchema = z.object({
     .optional(),
   prevent_default: z.boolean().optional(),
   skip_hidden: z.boolean().optional(),
-  skip_tabs: z.string().optional(),
+  skip_tabs: z.coerce.string().optional(),
   swipe_amount: z.number().optional(),
   wrap: z.boolean().optional()
 });
