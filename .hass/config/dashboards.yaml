@@ -94,6 +94,13 @@
       show_in_sidebar: true
       filename: ./dashboards/skip-all.yaml
 
+    skip-one-tab:
+      mode: yaml
+      title: Skip one
+      icon: mdi:transit-skip
+      show_in_sidebar: true
+      filename: ./dashboards/skip-one-tab.yaml
+
     skip-tabs-no-wrap:
       mode: yaml
       title: Skip tabs no wrap
