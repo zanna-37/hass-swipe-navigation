@@ -1,0 +1,86 @@
+extends: ['@commitlint/config-conventional']
+rules:
+    # Ref. https://commitlint.js.org/#/reference-rules
+
+    body-full-stop:             [0, always, '.']
+    body-leading-blank:         [2, always]
+    body-empty:                 [0, never]
+    body-max-length:            [0, always, Infinity]
+    body-max-line-length:       [2, always, 100]
+    body-min-length:            [0, always, Infinity]
+    body-case:                  [2, always, 'sentence-case']
+
+    footer-leading-blank:       [2, always]
+    footer-empty:               [0, never]
+    footer-max-length:          [0, always, Infinity]
+    footer-max-line-length:     [2, always, 100]
+    footer-min-length:          [0, always, 0]
+
+    header-case:                [0, always, 'lower-case']
+    header-full-stop:           [2, never, '.']
+    header-max-length:          [2, always, 100]
+    header-min-length:          [0, always, 0]
+
+    references-empty:           [0, never]
+
+    scope-enum:                 [2, always,
+                                    [
+                                        'core',
+                                        'docker',
+                                        'swipe-exception',
+                                    ]
+                                ]
+    scope-case:                 [2, always, 'lower-case']
+    scope-empty:                [0, never]
+    scope-max-length:           [0, always, Infinity]
+    scope-min-length:           [0, always, 0]
+
+    subject-case:               [2, never,
+                                    [
+                                        'upper-case',
+                                        'camel-case',
+                                        'pascal-case',
+                                        'sentence-case',
+                                        'snake-case',
+                                        'start-case'
+                                    ]
+                                ]
+    subject-empty:              [2, never]
+    subject-full-stop:          [2, never, '.']
+    subject-max-length:         [0, always, Infinity]
+    subject-min-length:         [0, always, 0]
+    subject-exclamation-mark:   [2, never]
+
+    type-enum:                  [2, always,
+                                    [
+                                        'build',
+                                        'chore',
+                                        'ci',
+                                        'docs',
+                                        'feat',
+                                        'fix',
+                                        'perf',
+                                        'refactor',
+                                        'revert',
+                                        'style',
+                                        'test',
+                                    ]
+                                ]
+    type-case:                  [2, always, 'lower-case']
+    type-empty:                 [2, never]
+    type-max-length:            [0, always, Infinity]
+    type-min-length:            [0, always, 0]
+
+    signed-off-by:              [0, never]
+    trailer-exists:             [0, never]
+
+prompt:
+    # Ref. https://commitlint.js.org/#/reference-prompt?id=prompt
+
+    settings:
+        enableMultipleScopes: true
+        scopeEnumSeparator: ','
+
+    questions:
+        issues:
+            description: 'Add issue references (e.g., "Ref. #123", "See URL").'
