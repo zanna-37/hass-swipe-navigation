@@ -19,12 +19,12 @@ async function globalSetup(config: FullConfig) {
     await page.getByText("Username").fill("user");
     await page.getByText("Keep me logged in").click();
     await page.getByText("Password").fill("pass");
-    await page.getByText("Login").click();
+    await page.getByText("Login", { exact: true }).click();
 
     await page.getByText("This is a test instance.").waitFor({ timeout: 30 * 1000 /* 30 seconds*/ });
-  } catch(e) {
+  } catch (e) {
     await page.screenshot({ path: "test-results/failed-login.png" });
-    throw(e);
+    throw (e);
   }
   // Save signed-in state
   await page.context().storageState({ path: storageState });
