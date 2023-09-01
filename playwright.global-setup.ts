@@ -14,13 +14,13 @@ async function globalSetup(config: FullConfig) {
     consoleLogs.push(message.text());
   });
 
-  await page.goto(baseURL);
-  await page.getByText("Username").fill("user");
-  await page.getByText("Keep me logged in").click();
-  await page.getByText("Password").fill("pass");
-  await page.getByText("Login").click();
-
   try {
+    await page.goto(baseURL);
+    await page.getByText("Username").fill("user");
+    await page.getByText("Keep me logged in").click();
+    await page.getByText("Password").fill("pass");
+    await page.getByText("Login").click();
+
     await page.getByText("This is a test instance.").waitFor({ timeout: 30 * 1000 /* 30 seconds*/ });
   } catch(e) {
     await page.screenshot({ path: "test-results/failed-login.png" });
