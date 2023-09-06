@@ -46,6 +46,8 @@ const exceptions = [
   "#graph-wrapper svg.apexcharts-svg",
   // History explorer card (https://github.com/alexarch21/history-explorer-card)
   "history-explorer-card",
+  // Bubble Card horizontal buttons stack (https://github.com/Clooos/Bubble-Card)
+  ".horizontal-buttons-stack-container",
   // my-cards (https://github.com/AnthonMS/my-cards)
   "my-slider",
   "my-slider-v2",
@@ -54,6 +56,8 @@ const exceptions = [
   "mwc-tab-bar",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
+  // Bubble Card button slider (https://github.com/Clooos/Bubble-Card)
+  ".range-slider",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
@@ -64,6 +68,8 @@ const exceptions = [
   "swipe-card",
   // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
   ".swiper",
+  // Android TV Card touchpad (https://github.com/Nerwyn/android-tv-card)
+  "toucharea",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
 
