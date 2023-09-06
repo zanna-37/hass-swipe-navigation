@@ -167,6 +167,7 @@ const SwipeNavigationConfigSchema = z.object({
     ]).optional(),
   animate_duration: z.number().optional(),
   enable: z.boolean().optional(),
+  enable_mouse_swipe: z.boolean().optional(),
   logger_level: z
     .union([
       z.literal("verbose"),
@@ -201,6 +202,7 @@ class Config {
   private animate: "none" | "swipe" | "fade" | "flip" = "none";
   private animate_duration = 200;
   private enable = true;
+  private enable_mouse_swipe = false;
   // Note that this is the level that is in force before the config is parsed.
   // This means that all logs below this level will be ignored until the config is parsed.
   private logger_level: LogLevel = LogLevel.WARN;
@@ -254,6 +256,10 @@ class Config {
 
   public getEnable(): boolean {
     return this.enable;
+  }
+
+  public getEnableMouseSwipe(): boolean {
+    return this.enable_mouse_swipe;
   }
 
   public getLoggerLevel(): LogLevel {
@@ -329,6 +335,8 @@ class Config {
     if (rawConfig.animate_duration != null) { newConfig.animate_duration = rawConfig.animate_duration; }
 
     if (rawConfig.enable != null) { newConfig.enable = rawConfig.enable; }
+
+    if (rawConfig.enable_mouse_swipe != null) { newConfig.enable_mouse_swipe = rawConfig.enable_mouse_swipe; }
 
     switch (rawConfig.logger_level) {
       case "verbose":
@@ -677,21 +685,41 @@ class SwipeManager {
         () => { this.#handleTouchEnd(); },
         { signal: this.#touchEndController.signal, passive: true }
       );
+      haAppLayoutDomNode.addEventListener(
+        "mousedown",
+        (event) => { this.#handleTouchStart(event); },
+        { signal: this.#touchStartController.signal, passive: true }
+      );
+      haAppLayoutDomNode.addEventListener(
+        "mousemove",
+        (event) => { this.#handleTouchMove(event); },
+        { signal: this.#touchMoveController.signal, passive: false }
+      );
+      haAppLayoutDomNode.addEventListener(
+        "mouseup",
+        () => { this.#handleTouchEnd(); },
+        { signal: this.#touchEndController.signal, passive: true }
+      );
     }
   }
 
-  static #handleTouchStart(event: TouchEvent) {
+  static #handleTouchStart(event: TouchEvent | MouseEvent) {
 
     if (Config.current().getEnable() == false) {
       logd("Ignoring touch: Swipe navigation is disabled in the config.");
       return; // Ignore swipe: Swipe is disabled in the config
     }
 
-    if (event.touches.length > 1) {
+    if (event instanceof TouchEvent && event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
       logd("Ignoring touch: multiple touchpoints detected.");
       return; // Ignore swipe: Multitouch detected
+    } else if (event instanceof MouseEvent && !Config.current().getEnableMouseSwipe()) {
+      this.#xDown = null;
+      this.#yDown = null;
+      logd("Ignoring click: swiping via mouse is disabled.");
+      return;
     }
 
     if (typeof event.composedPath() == "object") {
@@ -711,14 +739,31 @@ class SwipeManager {
         }
       }
     }
-    this.#xDown = event.touches[0].clientX;
-    this.#yDown = event.touches[0].clientY;
+    if (event instanceof TouchEvent) {
+      this.#xDown = event.touches[0].clientX;
+      this.#yDown = event.touches[0].clientY;
+    } else if (event instanceof MouseEvent) {
+      this.#xDown = event.clientX;
+      this.#yDown = event.clientY;
+    } else {
+      const eventCheck: never = event;
+      throw new Error(`Unhandled case: ${eventCheck}`);
+    }
   }
 
-  static #handleTouchMove(event: TouchEvent) {
+  static #handleTouchMove(event: TouchEvent | MouseEvent) {
     if (this.#xDown && this.#yDown) {
-      this.#xDiff = this.#xDown - event.touches[0].clientX;
-      this.#yDiff = this.#yDown - event.touches[0].clientY;
+      if (event instanceof TouchEvent) {
+        this.#xDiff = this.#xDown - event.touches[0].clientX;
+        this.#yDiff = this.#yDown - event.touches[0].clientY;
+      } else if (event instanceof MouseEvent) {
+        this.#xDiff = this.#xDown - event.clientX;
+        this.#yDiff = this.#yDown - event.clientY;
+      } else {
+        const eventCheck: never = event;
+        throw new Error(`Unhandled case: ${eventCheck}`);
+      }
+
       if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.current().getPreventDefault()) event.preventDefault();
     }
   }
