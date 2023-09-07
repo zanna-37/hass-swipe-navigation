@@ -27,8 +27,5 @@ RUN apt-get update \
     nodejs \
   && rm -rf /var/lib/apt/lists/*
 
-# Workaround to upgrade npm to 9 # TODO: Remove when npm 9 is in LTS
-RUN npm install -g npm@latest
-
 # Reset parent entrypoint
 ENTRYPOINT []
