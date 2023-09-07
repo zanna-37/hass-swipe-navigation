@@ -647,17 +647,11 @@ class SwipeManager {
   static #xDiff: number | null;
   static #yDiff: number | null;
 
-  static #touchStartController: AbortController | null = null;
-  static #touchMoveController: AbortController | null = null;
-  static #touchEndController: AbortController | null = null;
+  static #swipeAbortController: AbortController | null = null;
 
   static init() {
-    this.#touchStartController?.abort();
-    this.#touchMoveController?.abort();
-    this.#touchEndController?.abort();
-    this.#touchStartController = new AbortController();
-    this.#touchMoveController = new AbortController();
-    this.#touchEndController = new AbortController();
+    this.#swipeAbortController?.abort();
+    this.#swipeAbortController = new AbortController();
 
     PageObjectManager.haAppLayout.watchChanges({
       onDomNodeRefreshedCallback: () => {
@@ -673,32 +667,32 @@ class SwipeManager {
       haAppLayoutDomNode.addEventListener(
         "touchstart",
         (event) => { this.#handleTouchStart(event); },
-        { signal: this.#touchStartController.signal, passive: true }
+        { signal: this.#swipeAbortController.signal, passive: true }
       );
       haAppLayoutDomNode.addEventListener(
         "touchmove",
         (event) => { this.#handleTouchMove(event); },
-        { signal: this.#touchMoveController.signal, passive: false }
+        { signal: this.#swipeAbortController.signal, passive: false }
       );
       haAppLayoutDomNode.addEventListener(
         "touchend",
         () => { this.#handleTouchEnd(); },
-        { signal: this.#touchEndController.signal, passive: true }
+        { signal: this.#swipeAbortController.signal, passive: true }
       );
       haAppLayoutDomNode.addEventListener(
         "mousedown",
         (event) => { this.#handleTouchStart(event); },
-        { signal: this.#touchStartController.signal, passive: true }
+        { signal: this.#swipeAbortController.signal, passive: true }
       );
       haAppLayoutDomNode.addEventListener(
         "mousemove",
         (event) => { this.#handleTouchMove(event); },
-        { signal: this.#touchMoveController.signal, passive: false }
+        { signal: this.#swipeAbortController.signal, passive: false }
       );
       haAppLayoutDomNode.addEventListener(
         "mouseup",
         () => { this.#handleTouchEnd(); },
-        { signal: this.#touchEndController.signal, passive: true }
+        { signal: this.#swipeAbortController.signal, passive: true }
       );
     }
   }
