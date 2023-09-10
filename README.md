@@ -54,17 +54,18 @@ If you want to modify the configuration, place it in the root of your dashboard 
 
 **Config Options:**
 
-| Name             |  Type   | Default | Description                                                                                                                                                                                                                                                               |
-|------------------|:-------:|:-------:|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| animate          | string  | `none`  | Swipe animations. Can be: `none`, `swipe`, `fade`, `flip`. The swipe animation should be considered experimental and depending on your setup may appear buggy.                                                                                                            |
-| animate_duration | number  |  `200`  | Swipe animation's duration in milliseconds.                                                                                                                                                                                                                               |
-| enable           | boolean | `true`  | Enable or disable the swipe navigation.                                                                                                                                                                                                                                   |
-| logger_level     | string  | `warn`  | Set logging level. Possible values are: `verbose`, `debug`, `info`, `warn`, `error`.                                                                                                                                                                                      |
-| prevent_default  | boolean | `false` | Prevent the browsers default horizontal swipe actions. May require a browser refresh to take effect, if using an HA companion app this can be done by closing the app and reopening.                                                                                      |
-| skip_hidden      | boolean | `true`  | Automatically skip hidden tabs.<br>⚠️ _Note that [subviews](https://www.home-assistant.io/dashboards/views/#subview) are implemented as hidden tabs (they can be seen in edit mode), therefore, by setting `skip_hidden` to `false` you can land in a subview by swiping._ |
-| skip_tabs        | string  |         | A comma separated list of views to skip when swiping. e.g., `1,3,5`.<br>⚠️ _Note that tabs count starts at `0`, so the first is `0`, second is `1`, and so on._                                                                                                            |
-| swipe_amount     | number  |  `15`   | Minimum percent of screen needed to be swiped in order to navigate.                                                                                                                                                                                                       |
-| wrap             | boolean | `true`  | Wrap from first tab to last tab and vice versa.                                                                                                                                                                                                                           |
+| Name                |  Type   | Default | Description                                                                                                                                                                                                                                                                |
+|---------------------|:-------:|:-------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| animate             | string  | `none`  | Swipe animations. Can be: `none`, `swipe`, `fade`, `flip`. The swipe animation should be considered experimental and depending on your setup may appear buggy.                                                                                                             |
+| animate_duration    | number  |  `200`  | Swipe animation's duration in milliseconds.                                                                                                                                                                                                                                |
+| enable              | boolean | `true`  | Enable or disable the swipe navigation.                                                                                                                                                                                                                                    |
+| enable_mouse_swipe  | boolean | `false` | Enable or disable the swipe navigation via mouse.                                                                                                                                                                                                                          |
+| logger_level        | string  | `warn`  | Set logging level. Possible values are: `verbose`, `debug`, `info`, `warn`, `error`.                                                                                                                                                                                       |
+| prevent_default     | boolean | `false` | Prevent the browsers default horizontal swipe actions. May require a browser refresh to take effect, if using an HA companion app this can be done by closing the app and reopening.                                                                                       |
+| skip_hidden         | boolean | `true`  | Automatically skip hidden tabs.<br>⚠️ _Note that [subviews](https://www.home-assistant.io/dashboards/views/#subview) are implemented as hidden tabs (they can be seen in edit mode), therefore, by setting `skip_hidden` to `false` you can land in a subview by swiping._ |
+| skip_tabs           | string  |         | A comma separated list of views to skip when swiping. e.g., `1,3,5`.<br>⚠️ _Note that tabs count starts at `0`, so the first is `0`, second is `1`, and so on._                                                                                                            |
+| swipe_amount        | number  |  `15`   | Minimum percent of screen needed to be swiped in order to navigate.                                                                                                                                                                                                        |
+| wrap                | boolean | `true`  | Wrap from first tab to last tab and vice versa.                                                                                                                                                                                                                            |
 
 
 **Example:**
@@ -74,6 +75,7 @@ Don't just copy the example, it won't fit your needs. Build your own using the c
 ```yaml
 swipe_nav:
   wrap: false
+  enable_mouse_swipe: true
   animate: swipe
   skip_tabs: 5,6,7,8
   prevent_default: true
