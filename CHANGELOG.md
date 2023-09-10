@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.13.0] - 2023-09-10
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.12.1...v1.13.0)
+
+### Added 🎉
+- You can now use your mouse 🖱️ to swipe through tabs thanks to [@wrabel](https://github.com/wrabel). **This feature is disabled by default** but can be enabled by setting `enable_mouse_swipe: true` in the configuration ([`#59`](https://github.com/zanna-37/hass-swipe-navigation/pull/59))
+
+### Fixed 🐛
+- Android TV Card and Bubble Card have been added to swipe exceptions thanks to [@Nerwyn](https://github.com/Nerwyn) ([`#60`](https://github.com/zanna-37/hass-swipe-navigation/pull/60), closes [`#61`](https://github.com/zanna-37/hass-swipe-navigation/issues/61))
+
+
 ## 🏷️ [v1.12.1] - 2023-08-23
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.12.0...v1.12.1)
 
