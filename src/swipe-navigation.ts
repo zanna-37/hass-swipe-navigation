@@ -699,20 +699,30 @@ class SwipeManager {
 
   static #handleTouchStart(event: TouchEvent | MouseEvent) {
 
+    let interactionType;
+    if (event instanceof TouchEvent) {
+      interactionType = "touch";
+    } else if (event instanceof MouseEvent) {
+      interactionType = "click";
+    } else {
+      const eventCheck: never = event;
+      throw new Error(`Unhandled case: ${eventCheck}`);
+    }
+
     if (Config.current().getEnable() == false) {
-      logd("Ignoring touch: Swipe navigation is disabled in the config.");
+      logd("Ignoring " + interactionType + ": Swipe navigation is disabled in the config.");
       return; // Ignore swipe: Swipe is disabled in the config
     }
 
     if (event instanceof TouchEvent && event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
-      logd("Ignoring touch: multiple touchpoints detected.");
+      logd("Ignoring " + interactionType + ": multiple touchpoints detected.");
       return; // Ignore swipe: Multitouch detected
     } else if (event instanceof MouseEvent && !Config.current().getEnableMouseSwipe()) {
       this.#xDown = null;
       this.#yDown = null;
-      logd("Ignoring click: swiping via mouse is disabled.");
+      logd("Ignoring " + interactionType + ": swiping via mouse is disabled.");
       return;
     }
 
@@ -724,7 +734,7 @@ class SwipeManager {
             break;
           } else {
             if (element.matches && element.matches(exceptions)) {
-              logd("Ignoring touch on \""
+              logd("Ignoring " + interactionType + " on \""
                 + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
                 + "\".");
               return; // Ignore swipe
