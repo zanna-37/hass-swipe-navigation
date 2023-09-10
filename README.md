@@ -73,6 +73,8 @@ If you want to modify the configuration, place it in the root of your dashboard 
 Don't just copy the example, it won't fit your needs. Build your own using the config options above.
 
 ```yaml
+# You don't necessarily need a configuration.
+# Add only the options that differ from the default values.
 swipe_nav:
   wrap: false
   enable_mouse_swipe: true
