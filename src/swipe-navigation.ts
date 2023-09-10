@@ -647,11 +647,11 @@ class SwipeManager {
   static #xDiff: number | null;
   static #yDiff: number | null;
 
-  static #swipeAbortController: AbortController | null = null;
+  static #pointerEventsAbortController: AbortController | null = null;
 
   static init() {
-    this.#swipeAbortController?.abort();
-    this.#swipeAbortController = new AbortController();
+    this.#pointerEventsAbortController?.abort();
+    this.#pointerEventsAbortController = new AbortController();
 
     PageObjectManager.haAppLayout.watchChanges({
       onDomNodeRefreshedCallback: () => {
@@ -666,40 +666,40 @@ class SwipeManager {
 
       haAppLayoutDomNode.addEventListener(
         "touchstart",
-        (event) => { this.#handleTouchStart(event); },
-        { signal: this.#swipeAbortController.signal, passive: true }
+        (event) => { this.#handlePointerStart(event); },
+        { signal: this.#pointerEventsAbortController.signal, passive: true }
       );
       haAppLayoutDomNode.addEventListener(
         "touchmove",
-        (event) => { this.#handleTouchMove(event); },
-        { signal: this.#swipeAbortController.signal, passive: false }
+        (event) => { this.#handlePointerMove(event); },
+        { signal: this.#pointerEventsAbortController.signal, passive: false }
       );
       haAppLayoutDomNode.addEventListener(
         "touchend",
-        () => { this.#handleTouchEnd(); },
-        { signal: this.#swipeAbortController.signal, passive: true }
+        () => { this.#handlePointerEnd(); },
+        { signal: this.#pointerEventsAbortController.signal, passive: true }
       );
       haAppLayoutDomNode.addEventListener(
         "mousedown",
-        (event) => { this.#handleTouchStart(event); },
-        { signal: this.#swipeAbortController.signal, passive: true }
+        (event) => { this.#handlePointerStart(event); },
+        { signal: this.#pointerEventsAbortController.signal, passive: true }
       );
       if (Config.current().getEnableMouseSwipe()) {
         haAppLayoutDomNode.addEventListener(
           "mousemove",
-          (event) => { this.#handleTouchMove(event); },
-          { signal: this.#swipeAbortController.signal, passive: false }
+          (event) => { this.#handlePointerMove(event); },
+          { signal: this.#pointerEventsAbortController.signal, passive: false }
         );
         haAppLayoutDomNode.addEventListener(
           "mouseup",
-          () => { this.#handleTouchEnd(); },
-          { signal: this.#swipeAbortController.signal, passive: true }
+          () => { this.#handlePointerEnd(); },
+          { signal: this.#pointerEventsAbortController.signal, passive: true }
         );
       }
     }
   }
 
-  static #handleTouchStart(event: TouchEvent | MouseEvent) {
+  static #handlePointerStart(event: TouchEvent | MouseEvent) {
 
     let interactionType;
     if (event instanceof TouchEvent) {
@@ -757,7 +757,7 @@ class SwipeManager {
     }
   }
 
-  static #handleTouchMove(event: TouchEvent | MouseEvent) {
+  static #handlePointerMove(event: TouchEvent | MouseEvent) {
     if (this.#xDown && this.#yDown) {
       if (event instanceof TouchEvent) {
         this.#xDiff = this.#xDown - event.touches[0].clientX;
@@ -774,7 +774,7 @@ class SwipeManager {
     }
   }
 
-  static #handleTouchEnd() {
+  static #handlePointerEnd() {
     if (this.#xDiff != null && this.#yDiff != null) {
       if (Math.abs(this.#xDiff) < Math.abs(this.#yDiff)) {
         logd("Swipe ignored, vertical movement.");
