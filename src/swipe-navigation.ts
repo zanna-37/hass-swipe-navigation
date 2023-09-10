@@ -684,16 +684,18 @@ class SwipeManager {
         (event) => { this.#handleTouchStart(event); },
         { signal: this.#swipeAbortController.signal, passive: true }
       );
-      haAppLayoutDomNode.addEventListener(
-        "mousemove",
-        (event) => { this.#handleTouchMove(event); },
-        { signal: this.#swipeAbortController.signal, passive: false }
-      );
-      haAppLayoutDomNode.addEventListener(
-        "mouseup",
-        () => { this.#handleTouchEnd(); },
-        { signal: this.#swipeAbortController.signal, passive: true }
-      );
+      if (Config.current().getEnableMouseSwipe()) {
+        haAppLayoutDomNode.addEventListener(
+          "mousemove",
+          (event) => { this.#handleTouchMove(event); },
+          { signal: this.#swipeAbortController.signal, passive: false }
+        );
+        haAppLayoutDomNode.addEventListener(
+          "mouseup",
+          () => { this.#handleTouchEnd(); },
+          { signal: this.#swipeAbortController.signal, passive: true }
+        );
+      }
     }
   }
 
