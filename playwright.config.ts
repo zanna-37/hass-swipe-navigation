@@ -54,11 +54,31 @@ const config: PlaywrightTestConfig = {
       },
     },
     {
+      name: "chromium - no touch",
+      use: {
+        ...devices["Desktop Chrome"],
+        hasTouch: false
+      },
+      testMatch: [
+        "**/tests/dashboards/individual-dashboards/with-mouse.test.ts",
+      ]
+    },
+    {
       name: "firefox",
       use: {
         ...devices["Desktop Firefox"],
         hasTouch: true, // Needed as this project uses touch-based swipes
       },
+    },
+    {
+      name: "firefox - no touch",
+      use: {
+        ...devices["Desktop Firefox"],
+        hasTouch: false
+      },
+      testMatch: [
+        "**/tests/dashboards/individual-dashboards/with-mouse.test.ts",
+      ]
     },
     {
       name: "Mobile Chrome",

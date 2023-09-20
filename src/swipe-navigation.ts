@@ -708,12 +708,12 @@ class SwipeManager {
   static #handlePointerStart(event: TouchEvent | MouseEvent) {
 
     let interactionType;
-    if (event instanceof TouchEvent) {
+    if (window.TouchEvent != null && event instanceof TouchEvent) {
       interactionType = "touch";
     } else if (event instanceof MouseEvent) {
       interactionType = "click";
     } else {
-      const eventCheck: never = event;
+      const eventCheck/*: never*/ = event; // Firefox doesn't always set TouchEvent type
       throw new Error(`Unhandled case: ${eventCheck}`);
     }
 
@@ -722,7 +722,7 @@ class SwipeManager {
       return; // Ignore swipe: Swipe is disabled in the config
     }
 
-    if (event instanceof TouchEvent && event.touches.length > 1) {
+    if (window.TouchEvent != null && event instanceof TouchEvent && event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
       logd("Ignoring " + interactionType + ": multiple touchpoints detected.");
@@ -751,28 +751,28 @@ class SwipeManager {
         }
       }
     }
-    if (event instanceof TouchEvent) {
+    if (window.TouchEvent != null && event instanceof TouchEvent) {
       this.#xDown = event.touches[0].clientX;
       this.#yDown = event.touches[0].clientY;
     } else if (event instanceof MouseEvent) {
       this.#xDown = event.clientX;
       this.#yDown = event.clientY;
     } else {
-      const eventCheck: never = event;
+      const eventCheck/*: never*/ = event; // Firefox doesn't always set TouchEvent type
       throw new Error(`Unhandled case: ${eventCheck}`);
     }
   }
 
   static #handlePointerMove(event: TouchEvent | MouseEvent) {
     if (this.#xDown && this.#yDown) {
-      if (event instanceof TouchEvent) {
+      if (window.TouchEvent != null && event instanceof TouchEvent) {
         this.#xDiff = this.#xDown - event.touches[0].clientX;
         this.#yDiff = this.#yDown - event.touches[0].clientY;
       } else if (event instanceof MouseEvent) {
         this.#xDiff = this.#xDown - event.clientX;
         this.#yDiff = this.#yDown - event.clientY;
       } else {
-        const eventCheck: never = event;
+        const eventCheck/*: never*/ = event; // Firefox doesn't always set TouchEvent type
         throw new Error(`Unhandled case: ${eventCheck}`);
       }
 
