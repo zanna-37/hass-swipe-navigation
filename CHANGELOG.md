@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.13.1] - 2023-09-20
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.0...v1.13.1)
+
+### Fixed 🐛
+- Fixed a bug that caused the swipe navigation to not work when swiping with the mouse on a Firefox browser ([`#63`](https://github.com/zanna-37/hass-swipe-navigation/pull/63), closes [`#62`](https://github.com/zanna-37/hass-swipe-navigation/issues/62))
+
+
 ## 🏷️ [v1.13.0] - 2023-09-10
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.12.1...v1.13.0)
 
