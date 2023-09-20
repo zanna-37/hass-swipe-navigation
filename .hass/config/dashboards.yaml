@@ -121,3 +121,10 @@
       icon: mdi:map-outline
       show_in_sidebar: true
       filename: ./dashboards/two-maps.yaml
+
+    with-mouse:
+      mode: yaml
+      title: With mouse
+      icon: mdi:mouse
+      show_in_sidebar: true
+      filename: ./dashboards/with-mouse.yaml

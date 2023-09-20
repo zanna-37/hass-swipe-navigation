@@ -1,4 +1,4 @@
-import { JSHandle, Locator } from "@playwright/test";
+import { JSHandle, Locator, Page } from "@playwright/test";
 
 export class SwipeHelper {
   private static async getTouchEventInit(x: number, y: number, touchId: number, element: Locator) {
@@ -75,5 +75,23 @@ export class SwipeHelper {
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await this.swipe(box.x + box.width * 0.1, box.x + box.width * 0.9, box.y + box.height / 2, box.y + box.height / 2, target);
+  }
+
+  static async swipeLeftMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    await page.mouse.move(box.x + box.width * 0.9, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.1, box.y + box.height / 2);
+    await page.mouse.up();
+  }
+
+  static async swipeRightMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    await page.mouse.move(box.x + box.width * 0.1, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.9, box.y + box.height / 2);
+    await page.mouse.up();
   }
 }
