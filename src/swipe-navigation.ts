@@ -26,7 +26,9 @@ const exceptions = [
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
-  "ha-slider",
+  "ha-slider", // Deprecated since HA v2023.11
+  "input[type=range]",
+  // Tile slider
   "#slider",
 
 
