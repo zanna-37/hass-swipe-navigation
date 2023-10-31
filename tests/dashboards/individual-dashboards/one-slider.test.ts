@@ -33,7 +33,7 @@ test("shouldn't change, slider swiped", async ({ page }) => {
 
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "ha-slider".*/;
+  const regexp = /.*Ignoring touch on "input".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }
