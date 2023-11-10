@@ -64,12 +64,16 @@ const exceptions = [
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
   "sankey-chart",
+  // Service call tile feature slider (https://github.com/Nerwyn/service-call-tile-feature)
+  "service-call-slider",
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
   // Swipe Card (https://github.com/bramkragten/swipe-card)
   "swipe-card",
   // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
   ".swiper",
+  // Android TV Card slider (https://github.com/Nerwyn/android-tv-card)
+  "remote-slider",
   // Android TV Card touchpad (https://github.com/Nerwyn/android-tv-card)
   "toucharea",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
