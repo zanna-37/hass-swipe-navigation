@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.13.2] - 2023-11-25
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.1...v1.13.2)
+
+### Fixed 🐛
+- `input[type=range]` has been added to swipe exceptions ([`#64`](https://github.com/zanna-37/hass-swipe-navigation/pull/64))
+
+
 ## 🏷️ [v1.13.1] - 2023-09-20
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.0...v1.13.1)
 
