@@ -16,9 +16,9 @@ async function globalSetup(config: FullConfig) {
 
   try {
     await page.goto(baseURL);
-    await page.getByText("Username").fill("user");
+    await page.locator("input[name='username']").fill("user");
     await page.getByText("Keep me logged in").click();
-    await page.getByText("Password").fill("pass");
+    await page.locator("input[name='password']").fill("pass");
     await page.getByText("Log in", { exact: true }).click();
 
     await page.getByText("This is a test instance.").waitFor({ timeout: 30 * 1000 /* 30 seconds*/ });
