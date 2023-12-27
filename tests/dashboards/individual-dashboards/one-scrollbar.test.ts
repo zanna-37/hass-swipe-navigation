@@ -8,7 +8,7 @@ test("shouldn't change, scrollbar swiped", async ({ page, isMobile }) => {
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const scrollbarContainer = page.locator("hui-buttons-header-footer > * > div");
+  const scrollbarContainer = page.locator("ha-chip-set");
   const mdCard = page.locator("hui-markdown-card");
 
   const consoleLogs: string[] = [];
@@ -27,7 +27,7 @@ test("shouldn't change, scrollbar swiped", async ({ page, isMobile }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "div".*/;
+  const regexp = /.*Ignoring touch on "ha-chip-set".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }
