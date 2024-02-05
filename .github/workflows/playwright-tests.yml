@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 40
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     # Connect to the runner with ssh for debugging
     # - name: Setup upterm session
@@ -42,7 +42,7 @@ jobs:
       if: always()
       run: docker-compose -f docker-compose.yml -f docker-compose.test.yml down
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results
@@ -50,7 +50,7 @@ jobs:
         if-no-files-found: ignore
         retention-days: 7
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
