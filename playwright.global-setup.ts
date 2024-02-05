@@ -17,7 +17,6 @@ async function globalSetup(config: FullConfig) {
   try {
     await page.goto(baseURL);
     await page.locator("input[name='username']").fill("user");
-    await page.getByText("Keep me logged in").click();
     await page.locator("input[name='password']").fill("pass");
     await page.getByText("Log in", { exact: true }).click();
 
