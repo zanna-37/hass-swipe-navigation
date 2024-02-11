@@ -50,7 +50,7 @@ resources:
 ## Config:
 **If you just want to use the default config values you don't need to add a config at all.**
 
-If you want to modify the configuration, place it in the root of your dashboard configuration.
+If you want to modify the configuration, place it in the root of your dashboard configuration under `swipe_nav` element (see example below).
 
 **Config Options:**
 
