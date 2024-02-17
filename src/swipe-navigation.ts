@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LogLevel, Logger } from "./logger";
 
 
 // Console tag
@@ -113,58 +114,6 @@ function isLessThan2023_4() {
     : isNewerVersion(currentVersion, "2023.4");
 }
 
-
-enum LogLevel {
-  _ALL = 0,
-  VERBOSE = 1,
-  DEBUG = 2,
-  INFO = 3,
-  WARN = 4,
-  ERROR = 5,
-}
-
-function logv(msg: string) { log(msg, LogLevel.VERBOSE); }
-function logd(msg: string) { log(msg, LogLevel.DEBUG); }
-function logi(msg: string) { log(msg, LogLevel.INFO); }
-function logw(msg: string) { log(msg, LogLevel.WARN); }
-function loge(msg: string) { log(msg, LogLevel.ERROR); }
-
-function log(msg: string, level: Exclude<LogLevel, LogLevel._ALL>) {
-  if (level >= Config.current().getLoggerLevel()) {
-    let level_tag;
-    switch (level) {
-      case LogLevel.VERBOSE:
-        level_tag = "[V]";
-        break;
-      case LogLevel.DEBUG:
-        level_tag = "[D]";
-        break;
-      case LogLevel.INFO:
-        level_tag = "[I]";
-        break;
-      case LogLevel.WARN:
-        level_tag = "[W]";
-        break;
-      case LogLevel.ERROR:
-        level_tag = "[E]";
-        break;
-      default: {
-        const exhaustiveCheck: never = level;
-        throw new Error(`Unhandled case: ${exhaustiveCheck}`);
-        break;
-      }
-    }
-    const line = LOG_TAG + " " + level_tag + " " + msg;
-
-    if (level < LogLevel.ERROR) {
-      console.log(line);
-    }
-    else {
-      console.error(line);
-    }
-  }
-}
-
 const SwipeNavigationConfigSchema = z.object({
   animate: z
     .union([
@@ -250,7 +199,7 @@ class Config {
     if (index > -1) {
       Config.configObservers.splice(index, 1);
     } else {
-      loge("Internal error while unregistering a configObserver: not found.");
+      Logger.loge(LOG_TAG, "Internal error while unregistering a configObserver: not found.");
     }
   }
 
@@ -295,12 +244,12 @@ class Config {
   }
 
   private static async readConfig() {
-    logd("Attempting to read config...");
+    Logger.logd(LOG_TAG, "Attempting to read config...");
 
     const rawConfig = await Config.getRawConfigOrNull();
 
     if (JSON.stringify(rawConfig) == JSON.stringify(Config.rawConfig)) {
-      logd("Config is identical.");
+      Logger.logd(LOG_TAG, "Config is identical.");
       return;
     }
 
@@ -314,13 +263,13 @@ class Config {
     }
 
     if (JSON.stringify(newConfig) == JSON.stringify(Config.currentConfig)) {
-      logd("Config is equivalent.");
+      Logger.logd(LOG_TAG, "Config is equivalent.");
       return;
     }
 
     // Save the new config.
     Config.currentConfig = newConfig;
-    logi("New configuration loaded.");
+    Logger.logi(LOG_TAG, "New configuration loaded.");
 
     // Notify all observers that the config has changed.
     Config.configObservers.forEach((configObserver) => {
@@ -330,7 +279,7 @@ class Config {
 
   private static parseConfig(rawConfig: unknown): Config | null {
     if (!instanceOfSwipeNavigationConfig(rawConfig)) {
-      loge("Found invalid configuration.");
+      Logger.loge(LOG_TAG, "Found invalid configuration.");
       // TODO log why the config is wrong
 
       return null;
@@ -418,7 +367,7 @@ class Config {
     if (configContainer != null) {
       rawConfig = configContainer.swipe_nav ?? {};
     } else {
-      loge("Can't find dashboard configuration");
+      Logger.loge(LOG_TAG, "Can't find dashboard configuration");
     }
 
     return rawConfig;
@@ -476,7 +425,7 @@ class PageObject {
         new MutationObserver((mutations) => {
           for (const mutation of mutations) {
             if (mutation.addedNodes.length > 0) {
-              logv(
+              Logger.logv(LOG_TAG,
                 mutation.addedNodes.length + " new element(s) appeared under \""
                 + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\". Checking..."
               );
@@ -501,7 +450,7 @@ class PageObject {
     } else {
       // Stale detection
       if (this.#isStale()) {
-        logd("Stale object in cache: \"" + this.#domNode.nodeName.toLowerCase() + "\". Invalidating...");
+        Logger.logd(LOG_TAG, "Stale object in cache: \"" + this.#domNode.nodeName.toLowerCase() + "\". Invalidating...");
         this.invalidateDomNode();
         this.getDomNode();
       }
@@ -520,7 +469,7 @@ class PageObject {
       if ("shadowRoot" in parentNode) {
         parentNode = parentNode.shadowRoot;
       } else {
-        loge(parentNode.nodeName + " is expected to have a shadowRoot, but it is missing.");
+        Logger.loge(LOG_TAG, parentNode.nodeName + " is expected to have a shadowRoot, but it is missing.");
         parentNode = null;
       }
     }
@@ -548,7 +497,7 @@ class PageObject {
       })();
 
     if (this.#domNode != null) {
-      logd("Object refreshed: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\".");
+      Logger.logd(LOG_TAG, "Object refreshed: \"" + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\".");
 
       this.#ensureKeepAliveWhenNeeded();
       this.#connectAllChildrenObservers();
@@ -561,7 +510,7 @@ class PageObject {
 
   #connectAllChildrenObservers() {
     if (this.#domNode != null && this.#keepAliveChildren.size > 0) {
-      logv("Reconnecting " + this.#keepAliveChildren.size + " observers to " + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown"));
+      Logger.logv(LOG_TAG, "Reconnecting " + this.#keepAliveChildren.size + " observers to " + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown"));
 
       this.#keepAliveChildren.forEach((value, key) => {
         this.#connectChildObserver(key);
@@ -578,9 +527,9 @@ class PageObject {
       const parentNode = pageObject.getParentNode();
 
       if (observer == null) {
-        loge("Illegal state: observer is not defined when connecting a child observer.");
+        Logger.loge(LOG_TAG, "Illegal state: observer is not defined when connecting a child observer.");
       } else if (parentNode == null) {
-        loge("Illegal state: parent is not defined when connecting a child observer.");
+        Logger.loge(LOG_TAG, "Illegal state: parent is not defined when connecting a child observer.");
       } else {
         observer.observe(parentNode, { childList: true });
       }
@@ -591,7 +540,7 @@ class PageObject {
 
   #disconnectAllChildrenObservers() {
     if (this.#keepAliveChildren.size > 0) {
-      logv(
+      Logger.logv(LOG_TAG,
         "Disconnecting " + this.#keepAliveChildren.size + " observers from \""
         + (this.#domNode?.nodeName?.toLowerCase() ?? "unknown") + "\""
       );
@@ -670,7 +619,7 @@ class SwipeManager {
 
     const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
     if (haAppLayoutDomNode != null) {
-      logd("Initializing SwipeManger...");
+      Logger.logd(LOG_TAG, "Initializing SwipeManger...");
 
       haAppLayoutDomNode.addEventListener(
         "touchstart",
@@ -720,19 +669,19 @@ class SwipeManager {
     }
 
     if (Config.current().getEnable() == false) {
-      logd("Ignoring " + interactionType + ": Swipe navigation is disabled in the config.");
+      Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation is disabled in the config.");
       return; // Ignore swipe: Swipe is disabled in the config
     }
 
     if (window.TouchEvent != null && event instanceof TouchEvent && event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
-      logd("Ignoring " + interactionType + ": multiple touchpoints detected.");
+      Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": multiple touchpoints detected.");
       return; // Ignore swipe: Multitouch detected
     } else if (event instanceof MouseEvent && !Config.current().getEnableMouseSwipe()) {
       this.#xDown = null;
       this.#yDown = null;
-      logd("Ignoring " + interactionType + ": swiping via mouse is disabled.");
+      Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": swiping via mouse is disabled.");
       return;
     }
 
@@ -744,7 +693,7 @@ class SwipeManager {
             break;
           } else {
             if (element.matches && element.matches(exceptions)) {
-              logd("Ignoring " + interactionType + " on \""
+              Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on \""
                 + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
                 + "\".");
               return; // Ignore swipe
@@ -785,16 +734,16 @@ class SwipeManager {
   static #handlePointerEnd() {
     if (this.#xDiff != null && this.#yDiff != null) {
       if (Math.abs(this.#xDiff) < Math.abs(this.#yDiff)) {
-        logd("Swipe ignored, vertical movement.");
+        Logger.logd(LOG_TAG, "Swipe ignored, vertical movement.");
 
       } else {  // Horizontal movement
         if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.current().getSwipeAmount())) {
-          logd("Swipe ignored, too short.");
+          Logger.logd(LOG_TAG, "Swipe ignored, too short.");
 
         } else {
           const directionLeft = this.#xDiff < 0;
 
-          logi("Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
+          Logger.logi(LOG_TAG, "Swipe detected, changing tab to the " + (directionLeft ? "left" : "right") + ".");
 
           const rtl = PageObjectManager.ha.getDomNode()?.style.direction == "rtl";
           const nextTabIndex = this.#getNextTabIndex(rtl ? !directionLeft : directionLeft);
@@ -859,7 +808,7 @@ class SwipeManager {
     }
 
     if (stopReason != null) {
-      logw(stopReason);
+      Logger.logw(LOG_TAG, stopReason);
       return -1;
     } else {
       return nextTabIndex;
@@ -868,14 +817,14 @@ class SwipeManager {
 
   static #click(index: number, directionLeft: boolean) {
     if (index < 0) {
-      loge("Invalid tab index: " + index + ".");
+      Logger.loge(LOG_TAG, "Invalid tab index: " + index + ".");
 
     } else {
       const view = PageObjectManager.haAppLayoutView.getDomNode();
       const tabs = this.#getTabsArray();
 
       if (view == null) {
-        loge("view is null when attempting to change tab.");
+        Logger.loge(LOG_TAG, "view is null when attempting to change tab.");
 
       } else {
         const configAnimate = Config.current().getAnimate();
@@ -945,6 +894,11 @@ class SwipeManager {
 
 
 async function run() {
+
+  Logger.setLoggerLevel(Config.current().getLoggerLevel());
+  Config.registerConfigObserver(new ConfigObserver(() => {
+    Logger.setLoggerLevel(Config.current().getLoggerLevel());
+  }));
 
   await Config.readAndMonitorConfig();
 
