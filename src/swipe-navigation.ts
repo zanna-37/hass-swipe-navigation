@@ -269,7 +269,6 @@ class Config {
 
     // Save the new config.
     Config.currentConfig = newConfig;
-    Logger.logi(LOG_TAG, "New configuration loaded.");
 
     // Notify all observers that the config has changed.
     Config.configObservers.forEach((configObserver) => {
@@ -898,6 +897,7 @@ async function run() {
   Logger.setLoggerLevel(Config.current().getLoggerLevel());
   Config.registerConfigObserver(new ConfigObserver(() => {
     Logger.setLoggerLevel(Config.current().getLoggerLevel());
+    Logger.logi(LOG_TAG, "New configuration loaded.");
   }));
 
   await Config.readAndMonitorConfig();
