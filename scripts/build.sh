@@ -80,7 +80,7 @@ fi
 
 echo
 echo "Checking files..."
-npx eslint "${ROOT}/src/swipe-navigation.ts"
+npx eslint "${ROOT}/src"
 
 if [ "${FLAG_SERVE}" -eq 0 ]; then
   echo
