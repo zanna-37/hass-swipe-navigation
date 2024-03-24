@@ -39,7 +39,7 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
 
 ```yaml
 resources:
-  # increase this version number at end of URL after each update
+  # Increase the version number (`v=x.y.z`) at end of the URL after each update
   - url: /local/hass-swipe-navigation/swipe-navigation.js?v=1.0.0
     type: module
 ```
@@ -50,7 +50,7 @@ resources:
 ## Config:
 **If you just want to use the default config values you don't need to add a config at all.**
 
-If you want to modify the configuration, place it in the root of your dashboard configuration under `swipe_nav` element (see example below).
+If you want to modify the configuration, place it in the root of your dashboard configuration under the `swipe_nav` element (see example below).
 
 **Config Options:**
 

@@ -5,12 +5,9 @@ import serve from "rollup-plugin-serve";
 import { terser } from 'rollup-plugin-terser';
 
 
-const dev = process.env.ROLLUP_WATCH ? true : false;
+const isDevelopment = process.env.ROLLUP_WATCH ? true : false;
 
 
-const typescriptOptions = {
-  sourceMap: dev,
-};
 const serveOptions = {
   contentBase: ["./dist", "./"],
   host: "0.0.0.0",
@@ -28,11 +25,11 @@ const terserOptions = {
 export default defineConfig(
   [
     {
-      input: "src/swipe-navigation.ts",
+      input: "src/main.ts",
       output: {
-        dir: "dist",
+        file: "dist/swipe-navigation.js",
         format: "es",
-        sourcemap: dev,
+        sourcemap: isDevelopment,
       },
       watch:{
         chokidar: {
@@ -41,12 +38,12 @@ export default defineConfig(
         }
       },
       plugins: [
-        typescript(typescriptOptions),
+        typescript({
+          sourceMap: isDevelopment,
+        }),
         nodeResolve(),
         // Serve or Uglify based on develop or release
-        dev ?
-          serve(serveOptions)
-          : terser(terserOptions),
+        isDevelopment ? serve(serveOptions) : terser(terserOptions),
       ]
     },
   ]

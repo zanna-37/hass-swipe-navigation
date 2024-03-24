@@ -21,7 +21,7 @@ jobs:
             GITHUB_REF_CLEAN=${GITHUB_REF#refs/tags/}
             ;;
         esac
-        sed -i "s|VERSION_PLACEHOLDER|${GITHUB_REF_CLEAN}|g" src/swipe-navigation.ts
+        sed -i "s|VERSION_PLACEHOLDER|${GITHUB_REF_CLEAN}|g" src/main.ts
 
     - name: Build project
       run: scripts/build.sh
