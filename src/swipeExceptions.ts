@@ -12,6 +12,9 @@ const exceptions = [
 
   // Dashboard tabs
   "ha-tabs",
+  // A draggable card when editing a "Sections" view type
+  "hui-card-edit-mode",
+  ".section-actions .handle",
   // Map
   "hui-map-card",
   // Scrollbar
