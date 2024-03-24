@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.13.3] - 2024-03-24
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.2...v1.13.3)
+
+### Fixed 🐛
+- Ensure that dragging cards in Sections doesn't trigger a swipe ([`aaf0f2a`](https://github.com/zanna-37/hass-swipe-navigation/commit/aaf0f2a1a8ac85b552049f7aa3a3cc2bf7fb07a1), closes [`#72`](https://github.com/zanna-37/hass-swipe-navigation/issues/72))
+
+
 ## 🏷️ [v1.13.2] - 2023-11-25
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.1...v1.13.2)
 
