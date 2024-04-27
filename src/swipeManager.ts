@@ -16,13 +16,6 @@ class SwipeManager {
     this.#pointerEventsAbortController?.abort();
     this.#pointerEventsAbortController = new AbortController();
 
-    PageObjectManager.haAppLayout.watchChanges({
-      onDomNodeRefreshedCallback: () => {
-        SwipeManager.init();
-      },
-      onDomNodeRemovedCallback: null
-    });
-
     const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
     if (haAppLayoutDomNode != null) {
       Logger.logd(LOG_TAG, "Initializing SwipeManger...");

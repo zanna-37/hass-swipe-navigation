@@ -28,11 +28,8 @@ class Config {
   public static async readAndMonitorConfig() {
     // When changing dashboards and when updating the config via the UI, the hui-root element is
     // replaced. We therefore listen for its changes.
-    PageObjectManager.huiRoot.watchChanges({
-      onDomNodeRefreshedCallback: () => {
-        void Config.readConfig();
-      },
-      onDomNodeRemovedCallback: null
+    PageObjectManager.huiRoot.addDomNodeAddedCallback(() => {
+      void Config.readConfig();
     });
 
     await Config.readConfig();
