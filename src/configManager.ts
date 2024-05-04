@@ -1,7 +1,20 @@
+import { Config } from "./config";
+import { Lovelace, LovelaceConfig, PanelLovelace } from "./ha/data/lovelace";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
-import { Config } from "./config";
+
+export interface PanelLovelaceCustom extends PanelLovelace {
+  lovelace?: LovelaceCustom;
+}
+
+export interface LovelaceCustom extends Lovelace {
+  config?: LovelaceConfigCustom;
+}
+
+export interface LovelaceConfigCustom extends LovelaceConfig {
+  swipe_nav?: unknown;
+}
 
 class ConfigManager {
   private static currentConfig: Config = new Config();
@@ -38,13 +51,18 @@ class ConfigManager {
   private static async readConfig() {
     Logger.logd(LOG_TAG, "Attempting to read config...");
 
-    const rawConfig = await ConfigManager.getRawConfigOrNull();
+    const haPanelLovelace: (HTMLElement & PanelLovelaceCustom) | null = PageObjectManager.haPanelLovelace.getDomNode();
 
-    if (JSON.stringify(rawConfig) == JSON.stringify(ConfigManager.rawConfig)) {
-      Logger.logd(LOG_TAG, "Config is identical.");
-      return;
+    const rawConfig = haPanelLovelace?.lovelace?.config?.swipe_nav ?? {};
+    // TODO const views = haPanelLovelace?.lovelace?.config?.views ?? [];
+    // TODO const currentView = haPanelLovelace?.route?.path;
+
+    if (JSON.stringify(rawConfig) != JSON.stringify(ConfigManager.rawConfig)) {
+      ConfigManager.saveConfig(rawConfig);
     }
+  }
 
+  private static saveConfig(rawConfig: unknown) {
     // Save the new raw config.
     ConfigManager.rawConfig = rawConfig;
 
@@ -66,44 +84,6 @@ class ConfigManager {
     ConfigManager.configObservers.forEach((configObserver) => {
       configObserver.callback();
     });
-  }
-
-  /**
-   * Tries to get the raw config from the config file until it succeed or until a timeout is
-   * reached.
-   *
-   * @returns the swipe_nav raw config if the section can be read from the config file. An empty
-   * object if the swipe_nav section is missing in the config file. `null` if the config file cannot
-   * be read.
-   */
-  private static async getRawConfigOrNull(): Promise<unknown | null> {
-    const timeout = new Date(Date.now() + 15 * 1000);  // 15 seconds
-    let configContainer = null;
-
-    while (configContainer == null && Date.now() < timeout.getTime()) {
-      if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
-        configContainer = (
-          (
-            PageObjectManager.haPanelLovelace.getDomNode() as (
-              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
-            )
-          )?.lovelace?.config
-        ) ?? null;
-      }
-
-      if (configContainer == null) {
-        await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
-      }
-    }
-
-    let rawConfig = null;
-    if (configContainer != null) {
-      rawConfig = configContainer.swipe_nav ?? {};
-    } else {
-      Logger.loge(LOG_TAG, "Can't find dashboard configuration");
-    }
-
-    return rawConfig;
   }
 }
 
