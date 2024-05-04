@@ -97,7 +97,12 @@ class PageObject {
         }
       });
 
-      this.observers[index]?.observe(currentRootNode, { childList: true });
+      this.observers[index]?.observe(
+        currentRootNode, {
+          childList: true,
+          // For performance reasons
+          subtree: false
+        });
 
       if (index < this.observers.length - 1) {
         this.createNodeObserversFrom(index + 1);
