@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { LogLevel, Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
-import { PageObjectManager } from "./pageObjectManager";
 
 class Config {
   private animate: "none" | "swipe" | "fade" | "flip" = "none";
@@ -16,37 +15,6 @@ class Config {
   private skip_tabs: readonly number[] = [];
   private swipe_amount = 0.15;
   private wrap = true;
-
-  private static currentConfig: Config = new Config();
-  private static rawConfig: unknown | null = null;
-  private static configObservers: ConfigObserver[] = [];
-
-  public static current(): Config {
-    return Config.currentConfig;
-  }
-
-  public static async readAndMonitorConfig() {
-    // When changing dashboards and when updating the config via the UI, the hui-root element is
-    // replaced. We therefore listen for its changes.
-    PageObjectManager.huiRoot.addDomNodeAddedCallback(() => {
-      void Config.readConfig();
-    });
-
-    await Config.readConfig();
-  }
-
-  public static registerConfigObserver(configObserver: ConfigObserver) {
-    Config.configObservers.push(configObserver);
-  }
-
-  public static unregisterConfigObserver(configObserver: ConfigObserver) {
-    const index = Config.configObservers.indexOf(configObserver);
-    if (index > -1) {
-      Config.configObservers.splice(index, 1);
-    } else {
-      Logger.loge(LOG_TAG, "Internal error while unregistering a configObserver: not found.");
-    }
-  }
 
   public getAnimate(): "none" | "swipe" | "fade" | "flip" {
     return this.animate;
@@ -88,40 +56,8 @@ class Config {
     return this.wrap;
   }
 
-  private static async readConfig() {
-    Logger.logd(LOG_TAG, "Attempting to read config...");
 
-    const rawConfig = await Config.getRawConfigOrNull();
-
-    if (JSON.stringify(rawConfig) == JSON.stringify(Config.rawConfig)) {
-      Logger.logd(LOG_TAG, "Config is identical.");
-      return;
-    }
-
-    // Save the new raw config.
-    Config.rawConfig = rawConfig;
-
-    const newConfig = Config.parseConfig(rawConfig);
-    if (newConfig == null) {
-      // Couldn't parse config, error already logged.
-      return;
-    }
-
-    if (JSON.stringify(newConfig) == JSON.stringify(Config.currentConfig)) {
-      Logger.logd(LOG_TAG, "Config is equivalent.");
-      return;
-    }
-
-    // Save the new config.
-    Config.currentConfig = newConfig;
-
-    // Notify all observers that the config has changed.
-    Config.configObservers.forEach((configObserver) => {
-      configObserver.callback();
-    });
-  }
-
-  private static parseConfig(rawConfig: unknown): Config | null {
+  public static parseConfig(rawConfig: unknown): Config | null {
     if (!instanceOfSwipeNavigationConfig(rawConfig)) {
       Logger.loge(LOG_TAG, "Found invalid configuration.");
       // TODO log why the config is wrong
@@ -178,44 +114,6 @@ class Config {
 
     return newConfig;
   }
-
-  /**
-   * Tries to get the raw config from the config file until it succeed or until a timeout is
-   * reached.
-   *
-   * @returns the swipe_nav raw config if the section can be read from the config file. An empty
-   * object if the swipe_nav section is missing in the config file. `null` if the config file cannot
-   * be read.
-   */
-  private static async getRawConfigOrNull(): Promise<unknown | null> {
-    const timeout = new Date(Date.now() + 15 * 1000);  // 15 seconds
-    let configContainer = null;
-
-    while (configContainer == null && Date.now() < timeout.getTime()) {
-      if (PageObjectManager.haPanelLovelace.getDomNode() != null) {
-        configContainer = (
-          (
-            PageObjectManager.haPanelLovelace.getDomNode() as (
-              HTMLElement & { lovelace: undefined | { config: undefined | { swipe_nav: unknown } } }
-            )
-          )?.lovelace?.config
-        ) ?? null;
-      }
-
-      if (configContainer == null) {
-        await new Promise(resolve => setTimeout(resolve, 1000));  // Sleep 1s
-      }
-    }
-
-    let rawConfig = null;
-    if (configContainer != null) {
-      rawConfig = configContainer.swipe_nav ?? {};
-    } else {
-      Logger.loge(LOG_TAG, "Can't find dashboard configuration");
-    }
-
-    return rawConfig;
-  }
 }
 
 const SwipeNavigationConfigSchema = z.object({
@@ -251,12 +149,4 @@ function instanceOfSwipeNavigationConfig(obj: unknown): obj is SwipeNavigationCo
   return SwipeNavigationConfigSchema.safeParse(obj).success;
 }
 
-class ConfigObserver {
-  callback: () => void;
-
-  constructor(callback: () => void) {
-    this.callback = callback;
-  }
-}
-
-export { Config, ConfigObserver };
+export { Config };

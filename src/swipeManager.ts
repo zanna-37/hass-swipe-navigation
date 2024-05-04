@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { ConfigManager } from "./configManager";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
@@ -40,7 +40,7 @@ class SwipeManager {
         (event) => { this.#handlePointerStart(event); },
         { signal: this.#pointerEventsAbortController.signal, passive: true }
       );
-      if (Config.current().getEnableMouseSwipe()) {
+      if (ConfigManager.current().getEnableMouseSwipe()) {
         haAppLayoutDomNode.addEventListener(
           "mousemove",
           (event) => { this.#handlePointerMove(event); },
@@ -67,7 +67,7 @@ class SwipeManager {
       throw new Error(`Unhandled case: ${eventCheck}`);
     }
 
-    if (Config.current().getEnable() == false) {
+    if (ConfigManager.current().getEnable() == false) {
       Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation is disabled in the config.");
       return; // Ignore swipe: Swipe is disabled in the config
     }
@@ -77,7 +77,7 @@ class SwipeManager {
       this.#yDown = null;
       Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": multiple touchpoints detected.");
       return; // Ignore swipe: Multitouch detected
-    } else if (event instanceof MouseEvent && !Config.current().getEnableMouseSwipe()) {
+    } else if (event instanceof MouseEvent && !ConfigManager.current().getEnableMouseSwipe()) {
       this.#xDown = null;
       this.#yDown = null;
       Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": swiping via mouse is disabled.");
@@ -126,7 +126,7 @@ class SwipeManager {
         throw new Error(`Unhandled case: ${eventCheck}`);
       }
 
-      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && Config.current().getPreventDefault()) event.preventDefault();
+      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && ConfigManager.current().getPreventDefault()) event.preventDefault();
     }
   }
 
@@ -136,7 +136,7 @@ class SwipeManager {
         Logger.logd(LOG_TAG, "Swipe ignored, vertical movement.");
 
       } else {  // Horizontal movement
-        if (Math.abs(this.#xDiff) < Math.abs(screen.width * Config.current().getSwipeAmount())) {
+        if (Math.abs(this.#xDiff) < Math.abs(screen.width * ConfigManager.current().getSwipeAmount())) {
           Logger.logd(LOG_TAG, "Swipe ignored, too short.");
 
         } else {
@@ -175,9 +175,9 @@ class SwipeManager {
         nextTabIndex += increment;
 
         if (nextTabIndex == -1) {
-          nextTabIndex = Config.current().getWrap() ? tabs.length - 1 : -1;
+          nextTabIndex = ConfigManager.current().getWrap() ? tabs.length - 1 : -1;
         } else if (nextTabIndex == tabs.length) {
-          nextTabIndex = Config.current().getWrap() ? 0 : -1;
+          nextTabIndex = ConfigManager.current().getWrap() ? 0 : -1;
         }
 
         if (nextTabIndex == activeTabIndex) {
@@ -196,10 +196,10 @@ class SwipeManager {
         stopReason == null
         && (
           // ...the current tab should be skipped or...
-          Config.current().getSkipTabs().includes(nextTabIndex)
+          ConfigManager.current().getSkipTabs().includes(nextTabIndex)
           || (
             // ...if skip hidden is enabled and the tab is hidden
-            Config.current().getSkipHidden()
+            ConfigManager.current().getSkipHidden()
             && getComputedStyle(tabs[nextTabIndex], null).display == "none"
           )
         )
@@ -226,12 +226,12 @@ class SwipeManager {
         Logger.loge(LOG_TAG, "view is null when attempting to change tab.");
 
       } else {
-        const configAnimate = Config.current().getAnimate();
+        const configAnimate = ConfigManager.current().getAnimate();
         if (configAnimate == "none") {
           tabs[index].dispatchEvent(new MouseEvent("click", { bubbles: false, cancelable: true }));
 
         } else {
-          const duration = Config.current().getAnimateDuration();
+          const duration = ConfigManager.current().getAnimateDuration();
           view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
 
           if (configAnimate == "swipe") {

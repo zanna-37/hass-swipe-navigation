@@ -1,6 +1,6 @@
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
-import { Config, ConfigObserver } from "./config";
+import { ConfigManager, ConfigObserver } from "./configManager";
 import { SwipeManager } from "./swipeManager";
 import { PageObjectManager } from "./pageObjectManager";
 
@@ -10,13 +10,13 @@ console.info("%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER", "color: #
 
 async function run() {
 
-  Logger.setLoggerLevel(Config.current().getLoggerLevel());
-  Config.registerConfigObserver(new ConfigObserver(() => {
-    Logger.setLoggerLevel(Config.current().getLoggerLevel());
+  Logger.setLoggerLevel(ConfigManager.current().getLoggerLevel());
+  ConfigManager.registerConfigObserver(new ConfigObserver(() => {
+    Logger.setLoggerLevel(ConfigManager.current().getLoggerLevel());
     Logger.logi(LOG_TAG, "New configuration loaded.");
   }));
 
-  await Config.readAndMonitorConfig();
+  await ConfigManager.readAndMonitorConfig();
 
   PageObjectManager.haAppLayout.addDomNodeAddedCallback(() => {
     SwipeManager.init();
