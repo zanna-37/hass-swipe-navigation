@@ -1,6 +1,9 @@
+import { HomeAssistant } from "./homeassistant";
+
 export interface PanelLovelace {
   route?: Route;
   lovelace?: Lovelace;
+  hass?: HomeAssistant;
 }
 
 export interface Route {
@@ -40,5 +43,10 @@ export interface LovelaceViewConfig {
   theme?: string,
   panel?: boolean,
   background?: string,
-  visible?: unknown,
+  visible?: boolean | ShowViewConfig[];
+  subview?: boolean;
+}
+
+export interface ShowViewConfig {
+  user?: string;
 }
