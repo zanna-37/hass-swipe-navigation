@@ -10,9 +10,9 @@ console.info("%c↔️ Swipe navigation ↔️ - VERSION_PLACEHOLDER", "color: #
 
 async function run() {
 
-  Logger.setLoggerLevel(ConfigManager.current().getLoggerLevel());
+  Logger.setLoggerLevel(ConfigManager.getCurrentConfig().getLoggerLevel());
   ConfigManager.registerConfigObserver(new ConfigObserver(() => {
-    Logger.setLoggerLevel(ConfigManager.current().getLoggerLevel());
+    Logger.setLoggerLevel(ConfigManager.getCurrentConfig().getLoggerLevel());
     Logger.logi(LOG_TAG, "New configuration loaded.");
   }));
 

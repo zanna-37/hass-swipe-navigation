@@ -1,5 +1,5 @@
 import { Config } from "./config";
-import { Lovelace, LovelaceConfig, PanelLovelace } from "./ha/data/lovelace";
+import { Lovelace, LovelaceConfig, LovelaceViewConfig, PanelLovelace } from "./ha/data/lovelace";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
@@ -18,11 +18,71 @@ export interface LovelaceConfigCustom extends LovelaceConfig {
 
 class ConfigManager {
   private static currentConfig: Config = new Config();
+  private static panel: string | null = null;
+  private static views: LovelaceViewConfig[] | null = null;
+  private static currentUserId: string | null = null;
+
   private static rawConfig: unknown | null = null;
   private static configObservers: ConfigObserver[] = [];
 
-  public static current(): Config {
+  public static getCurrentConfig(): Config {
     return ConfigManager.currentConfig;
+  }
+  public static getPanel(): string | null {
+    return ConfigManager.panel;
+  }
+  public static getViews(): LovelaceViewConfig[] | null {
+    return ConfigManager.views;
+  }
+  public static getCurrentViewName(): string | null {
+    const haPanelLovelace: (HTMLElement & PanelLovelaceCustom) | null = PageObjectManager.haPanelLovelace.getDomNode();
+    return haPanelLovelace?.route?.path?.replace("/", "") ?? null;
+  }
+  public static getCurrentViewIndex(): number | null {
+    const views = ConfigManager.views;
+    const currentViewName = ConfigManager.getCurrentViewName();
+
+    if (views == null || currentViewName == null) {
+      return null;
+    }
+
+    for (let i = 0; i < views.length; i++) {
+      if (views[i].path == null && String(i) == currentViewName) {
+        // If this view has no path, Home Assistant uses its index in the URL
+        return i;
+      }
+      if (views[i].path == currentViewName) {
+        return i;
+      }
+    }
+
+    return null;
+  }
+  public static isViewVisible(views:LovelaceViewConfig[], index: number): boolean {
+    const visibleOrEnabledUsers = views[index].visible;
+
+    if (visibleOrEnabledUsers == null || visibleOrEnabledUsers == true) {
+      return true;
+    }
+    if (visibleOrEnabledUsers == false) {
+      return false;
+    }
+
+    if (visibleOrEnabledUsers instanceof Array) {
+      for(const enabledUser of visibleOrEnabledUsers) {
+        if (enabledUser.user == ConfigManager.currentUserId) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    const exhaustiveCheck: never = visibleOrEnabledUsers;
+    throw new Error(`Unhandled case: ${exhaustiveCheck}`);
+  }
+
+  public static isViewHidden(views:LovelaceViewConfig[], index: number): boolean {
+    return !ConfigManager.isViewVisible(views, index);
   }
 
   public static async readAndMonitorConfig() {
@@ -54,11 +114,23 @@ class ConfigManager {
     const haPanelLovelace: (HTMLElement & PanelLovelaceCustom) | null = PageObjectManager.haPanelLovelace.getDomNode();
 
     const rawConfig = haPanelLovelace?.lovelace?.config?.swipe_nav ?? {};
-    // TODO const views = haPanelLovelace?.lovelace?.config?.views ?? [];
-    // TODO const currentView = haPanelLovelace?.route?.path;
-
     if (JSON.stringify(rawConfig) != JSON.stringify(ConfigManager.rawConfig)) {
       ConfigManager.saveConfig(rawConfig);
+    }
+
+    const panel = haPanelLovelace?.route?.prefix;
+    if (panel != null) {
+      ConfigManager.panel = panel.replace("/", "");
+    }
+
+    const views = haPanelLovelace?.lovelace?.config?.views;
+    if (views != null) {
+      ConfigManager.views = views;
+    }
+
+    const currentUserId = haPanelLovelace?.hass?.user?.id;
+    if (currentUserId != null) {
+      ConfigManager.currentUserId = currentUserId;
     }
   }
 
