@@ -23,3 +23,26 @@ views:
       - type: markdown
         title: View 4
         content: Content...
+
+  - title: Subview
+    subview: true
+    cards:
+      - type: markdown
+        title: Subview
+        content: Subview content...
+
+  - title: Hidden view
+    visible: false
+    cards:
+      - type: markdown
+        title: View 6
+        content: This should be skipped
+
+  - title: Hidden view
+    visible:
+      - user: 189a5c3583972bbd5c987c2c11d4002e
+      - user: 3315acd49aab93ca646bd619aa2699ba
+    cards:
+      - type: markdown
+        title: View 7
+        content: This should be skipped
