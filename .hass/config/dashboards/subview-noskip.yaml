@@ -1,0 +1,67 @@
+swipe_nav:
+  logger_level: verbose
+  skip_subviews: false
+
+views:
+
+  - title: View 1
+    cards:
+      - type: markdown
+        title: View 1
+        content: Content...
+      - type: button
+        name: Go to subview
+        icon: mdi:chevron-right
+        icon_height: 32px
+        show_name: true
+        show_icon: true
+        tap_action:
+          action: navigate
+          navigation_path: /subview-noskip/1
+
+
+  - title: Subview
+    subview: true
+    cards:
+      - type: markdown
+        title: Subview
+        content: Content...
+      - type: button
+        name: Go to subview
+        icon: mdi:subdirectory-arrow-right
+        icon_height: 32px
+        show_name: true
+        show_icon: true
+        tap_action:
+          action: navigate
+          navigation_path: /subview-noskip/1
+
+  - title: View 3
+    cards:
+      - type: markdown
+        title: View 3
+        content: Content...
+      - type: button
+        name: Go to subview
+        icon: mdi:chevron-right
+        icon_height: 32px
+        show_name: true
+        show_icon: true
+        tap_action:
+          action: navigate
+          navigation_path: /subview-noskip/1
+
+  - title: View 4
+    cards:
+      - type: markdown
+        title: View 4
+        content: Content...
+      - type: button
+        name: Go to subview
+        icon: mdi:chevron-right
+        icon_height: 32px
+        show_name: true
+        show_icon: true
+        tap_action:
+          action: navigate
+          navigation_path: /subview-noskip/1

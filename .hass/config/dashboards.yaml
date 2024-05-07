@@ -59,6 +59,20 @@
       show_in_sidebar: true
       filename: ./dashboards/enable-false.yaml
 
+    invisible-boolean:
+      mode: yaml
+      title: Invisible boolean
+      icon: mdi:eye-off
+      show_in_sidebar: true
+      filename: ./dashboards/invisible-boolean.yaml
+
+    invisible-user:
+      mode: yaml
+      title: Invisible user
+      icon: mdi:eye-off
+      show_in_sidebar: true
+      filename: ./dashboards/invisible-user.yaml
+
     no-wrap:
       mode: yaml
       title: No wrap
@@ -79,6 +93,20 @@
       icon: mdi:counter
       show_in_sidebar: true
       filename: ./dashboards/one-slider.yaml
+
+    subview-skip:
+      mode: yaml
+      title: Subview skip
+      icon: mdi:subdirectory-arrow-right
+      show_in_sidebar: true
+      filename: ./dashboards/subview-skip.yaml
+
+    subview-noskip:
+      mode: yaml
+      title: Subview no skip
+      icon: mdi:subdirectory-arrow-right
+      show_in_sidebar: true
+      filename: ./dashboards/subview-noskip.yaml
 
     one-tile:
       mode: yaml

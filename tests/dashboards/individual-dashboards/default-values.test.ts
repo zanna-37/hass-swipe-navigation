@@ -20,4 +20,14 @@ test("should change, using defaults", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/3");
   await SwipeHelper.swipeLeft(haAppLayout);
   await expect(page).toHaveURL(dashboardPath + "/0");
+
+  await page.goto(dashboardPath + "/4");
+  await page.getByText("Subview content...", { exact: true }).waitFor();
+  await SwipeHelper.swipeLeft(haAppLayout);
+  await expect(page).toHaveURL(dashboardPath + "/0");
+
+  await page.goto(dashboardPath + "/4");
+  await page.getByText("Subview content...", { exact: true }).waitFor();
+  await SwipeHelper.swipeRight(haAppLayout);
+  await expect(page).toHaveURL(dashboardPath + "/3");
 });
