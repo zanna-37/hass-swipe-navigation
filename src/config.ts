@@ -12,6 +12,7 @@ class Config {
   private logger_level: LogLevel = LogLevel.WARN;
   private prevent_default = false;
   private skip_hidden = true;
+  private skip_subviews = true;
   private skip_tabs: readonly number[] = [];
   private swipe_amount = 0.15;
   private wrap = true;
@@ -42,6 +43,10 @@ class Config {
 
   public getSkipHidden(): boolean {
     return this.skip_hidden;
+  }
+
+  public getSkipSubviews(): boolean {
+    return this.skip_subviews;
   }
 
   public getSkipTabs(): readonly number[] {
@@ -102,6 +107,7 @@ class Config {
     }
     if (rawConfig.prevent_default != null) { newConfig.prevent_default = rawConfig.prevent_default; }
     if (rawConfig.skip_hidden != null) { newConfig.skip_hidden = rawConfig.skip_hidden; }
+    if (rawConfig.skip_subviews != null) { newConfig.skip_subviews = rawConfig.skip_subviews; }
     if (rawConfig.skip_tabs != undefined) {
       newConfig.skip_tabs =
         String(rawConfig.skip_tabs)
@@ -138,6 +144,7 @@ const SwipeNavigationConfigSchema = z.object({
     .optional(),
   prevent_default: z.boolean().optional(),
   skip_hidden: z.boolean().optional(),
+  skip_subviews: z.boolean().optional(),
   skip_tabs: z.coerce.string().optional(),
   swipe_amount: z.number().optional(),
   wrap: z.boolean().optional()
