@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.14.0] - 2024-05-07
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.3...v1.14.0)
+
+### Added 🎉
+- You can now choose to don't skip subviews while swiping. Just set `skip_subviews: false` in the configuration ([`426b81d`](https://github.com/zanna-37/hass-swipe-navigation/commit/426b81de6f16d677a4f001c2dd58a41e25054b30))
+
+### Fixed 🐛
+- Swiping when inside a subview is now possible ([`843fb41`](https://github.com/zanna-37/hass-swipe-navigation/commit/843fb41e782a1d108078b30a84db75337a09f5f0), closes [`#68`](https://github.com/zanna-37/hass-swipe-navigation/issues/68))
+
+
 ## 🏷️ [v1.13.3] - 2024-03-24
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.2...v1.13.3)
 
