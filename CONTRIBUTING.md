@@ -22,7 +22,7 @@ Docker is the official and supported way to run the project. It is also the easi
 #### Plain Docker {#build-plain-docker}
 On the root of this repository, run the following command:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 This will start the project and expose port `3000`.
@@ -62,7 +62,7 @@ Now go to [use a test instance of Home Assistant](#use-hass).
 If you used [VSCode Remote Container compilation](#build-vscode), you need to start the test instance of Home Assistant manually.
 Open a new terminal in the root of the project of your file system (outside vscode container) and run
 ```bash
-docker-compose up hass
+docker compose up hass
 ```
 to start the test instance of Home Assistant.
 
@@ -101,7 +101,7 @@ If you prefer to use your own real installation of Home Assistant, you can do so
 #### Plain Docker
 To run tests use the following command:
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from tester
+docker compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from tester
 ```
 
 #### VSCode Remote Container {#test-vscode}
