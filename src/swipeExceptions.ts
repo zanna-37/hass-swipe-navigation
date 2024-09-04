@@ -58,6 +58,7 @@ const exceptions = [
   "#plotly g.draglayer",
   // Bubble Card button slider (https://github.com/Clooos/Bubble-Card)
   ".range-slider",
+  ".bubble-button-card",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
