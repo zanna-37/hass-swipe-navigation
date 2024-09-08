@@ -12,7 +12,9 @@ const exceptions = [
 
   // Dashboard tabs
   "ha-tabs",
-  // A draggable card when editing a "Sections" view type
+  "paper-tabs",
+  // Draggable elements when in editing mode
+  "hui-badge-edit-mode",
   "hui-card-edit-mode",
   ".section-actions .handle",
   // Map
