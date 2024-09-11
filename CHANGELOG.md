@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.14.1] - 2024-09-11
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.14.0...v1.14.1)
+
+### Fixed 🐛
+- New Home Assistant UI elements added to the exception list ([`4e67a71`](https://github.com/zanna-37/hass-swipe-navigation/commit/4e67a71b3e542cf7adb7a1e47d50fb643e544cb0))
+- Add an exception for Bubble card ([`#79`](https://github.com/zanna-37/hass-swipe-navigation/pull/79))
+
+
 ## 🏷️ [v1.14.0] - 2024-05-07
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.13.3...v1.14.0)
 
