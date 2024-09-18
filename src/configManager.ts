@@ -32,6 +32,12 @@ class ConfigManager {
     return ConfigManager.panel;
   }
   public static getViews(): LovelaceViewConfig[] | null {
+    const haPanelLovelace: (HTMLElement & PanelLovelaceCustom) | null = PageObjectManager.haPanelLovelace.getDomNode();
+    const views = haPanelLovelace?.lovelace?.config?.views;
+    if (views != null) {
+      ConfigManager.views = views;
+    }
+
     return ConfigManager.views;
   }
   public static getCurrentViewName(): string | null {
