@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.14.2] - 2024-09-22
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.14.1...v1.14.2)
+
+### Fixed 🐛
+- Refresh config before performing a swipe ([`6893189`](https://github.com/zanna-37/hass-swipe-navigation/commit/6893189c87294b24c5bb7cf42198357fbfa161e2))
+- Improve current tab detection mechanism ([`86ddd4a`](https://github.com/zanna-37/hass-swipe-navigation/commit/86ddd4a09fcfcb0a5fcd542a2c6d4754696a2c2e), closes [`#80`](https://github.com/zanna-37/hass-swipe-navigation/issues/80))
+
+
 ## 🏷️ [v1.14.1] - 2024-09-11
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.14.0...v1.14.1)
 
