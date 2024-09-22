@@ -210,7 +210,9 @@ class SwipeManager {
       Logger.logw(LOG_TAG, stopReason);
       return null;
     } else {
-      return views[nextTabIndex].path ?? String(nextTabIndex);
+      const nextPath = views[nextTabIndex].path;
+      const isPathEmpty = nextPath == null || nextPath.trim() == "";
+      return isPathEmpty ? String(nextTabIndex) : nextPath;
     }
   }
 

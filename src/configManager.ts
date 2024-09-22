@@ -53,11 +53,14 @@ class ConfigManager {
     }
 
     for (let i = 0; i < views.length; i++) {
-      if (views[i].path == null && String(i) == currentViewName) {
+      const currPath = views[i].path;
+      const isPathEmpty = currPath == null || currPath.trim() == "";
+
+      if (isPathEmpty && String(i) == currentViewName) {
         // If this view has no path, Home Assistant uses its index in the URL
         return i;
       }
-      if (views[i].path == currentViewName) {
+      if (currPath == currentViewName) {
         return i;
       }
     }
