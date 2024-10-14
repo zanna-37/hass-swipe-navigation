@@ -5,6 +5,7 @@ import { LOG_TAG } from "./loggerUtils";
 class Config {
   private animate: "none" | "swipe" | "fade" | "flip" = "none";
   private animate_duration = 200;
+  private disable_on_subviews = false;
   private enable = true;
   private enable_mouse_swipe = false;
   // Note that this is the level that is in force before the config is parsed.
@@ -23,6 +24,10 @@ class Config {
 
   public getAnimateDuration(): number {
     return this.animate_duration;
+  }
+
+  public getDisableOnSubviews(): boolean {
+    return this.disable_on_subviews;
   }
 
   public getEnable(): boolean {
@@ -75,6 +80,8 @@ class Config {
     if (rawConfig.animate != null) { newConfig.animate = rawConfig.animate; }
 
     if (rawConfig.animate_duration != null) { newConfig.animate_duration = rawConfig.animate_duration; }
+
+    if (rawConfig.disable_on_subviews != null) { newConfig.disable_on_subviews = rawConfig.disable_on_subviews; }
 
     if (rawConfig.enable != null) { newConfig.enable = rawConfig.enable; }
 
@@ -131,6 +138,7 @@ const SwipeNavigationConfigSchema = z.object({
       z.literal("flip"),
     ]).optional(),
   animate_duration: z.number().optional(),
+  disable_on_subviews: z.boolean().optional(),
   enable: z.boolean().optional(),
   enable_mouse_swipe: z.boolean().optional(),
   logger_level: z
