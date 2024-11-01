@@ -6,7 +6,7 @@ test("should change, using animation flip", async ({ page }) => {
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const haAppLayout = page.locator("div[id='view']");
+  const haAppLayout = page.locator("[id='view']");
 
   await SwipeHelper.swipeRight(haAppLayout);
   await expect(page).toHaveURL(dashboardPath + "/2");

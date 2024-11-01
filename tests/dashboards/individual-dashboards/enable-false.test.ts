@@ -11,7 +11,7 @@ test("shouldn't change, swipe navigation is disabled", async ({ page }) => {
     consoleLogs.push(message.text());
   });
 
-  const haAppLayout = page.locator("div[id='view']");
+  const haAppLayout = page.locator("[id='view']");
 
   await SwipeHelper.swipeRight(haAppLayout);
   await expect(page).toHaveURL(dashboardPath + "/0");
