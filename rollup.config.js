@@ -40,6 +40,7 @@ export default defineConfig(
       plugins: [
         typescript({
           sourceMap: isDevelopment,
+          outputToFilesystem: true,
         }),
         nodeResolve(),
         // Serve or Uglify based on develop or release
