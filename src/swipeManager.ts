@@ -72,6 +72,16 @@ class SwipeManager {
       return; // Ignore swipe: Swipe is disabled in the config
     }
 
+    if (ConfigManager.getCurrentConfig().getEnableOnSubviews() == false) {
+      const views = ConfigManager.getViews();
+      const activeTabIndex = ConfigManager.getCurrentViewIndex();
+
+      if (views != null && activeTabIndex != null && views[activeTabIndex].subview) {
+        Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation on subviews is disabled in the config.");
+        return; // Ignore swipe: Swipe on subviews is disabled in the config
+      }
+    }
+
     if (window.TouchEvent != null && event instanceof TouchEvent && event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;

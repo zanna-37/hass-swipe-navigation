@@ -54,19 +54,20 @@ If you want to modify the configuration, place it in the root of your dashboard 
 
 **Config Options:**
 
-| Name               |  Type   | Default | Description                                                                                                                                                           |
-|--------------------|:-------:|:-------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| animate            | string  | `none`  | Swipe animations. Can be: `none`, `swipe`, `fade`, `flip`. The swipe animation should be considered experimental and depending on your setup may appear buggy.        |
-| animate_duration   | number  |  `200`  | Swipe animation's duration in milliseconds.                                                                                                                           |
-| enable             | boolean | `true`  | Enable or disable the swipe navigation.                                                                                                                               |
-| enable_mouse_swipe | boolean | `false` | Enable or disable the swipe navigation via mouse.                                                                                                                     |
-| logger_level       | string  | `warn`  | Set logging level. Possible values are: `verbose`, `debug`, `info`, `warn`, `error`.                                                                                  |
-| prevent_default    | boolean | `false` | Prevent the browsers default horizontal swipe actions.                                                                                                                |
-| skip_subviews      | boolean | `true`  | Automatically skip subviews.                                                                                                                                          |
-| skip_tabs          | string  |         | A comma separated list of views to skip when swiping. e.g., `1,3,5`.<br>⚠️ _Note that tabs count starts at `0`, so the first is `0`, second is `1`, and so on._        |
-| swipe_amount       | number  |  `15`   | Minimum percent of screen needed to be swiped in order to navigate.                                                                                                   |
-| wrap               | boolean | `true`  | Wrap from first tab to last tab and vice versa.                                                                                                                       |
-| ~~skip_hidden~~    | boolean | `true`  | Automatically skip hidden tabs.<br>⚠️ _Setting this to `false` is deprecated and poses a security risk as it allows a user to reveal a tab they don't have access to._ |
+| Name               |  Type   | Default | Description                                                                                                                                                                  |
+|--------------------|:-------:|:-------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| animate            | string  | `none`  | Swipe animations. Can be: `none`, `swipe`, `fade`, `flip`. The swipe animation should be considered experimental and depending on your setup may appear buggy.               |
+| animate_duration   | number  |  `200`  | Swipe animation's duration in milliseconds.                                                                                                                                  |
+| enable             | boolean | `true`  | Enable or disable the swipe navigation.                                                                                                                                      |
+| enable_mouse_swipe | boolean | `false` | Enable or disable the swipe navigation via mouse.                                                                                                                            |
+| enable_on_subviews | boolean | `true`  | Enables swipe navigation while on subviews. <br>⚠️ _Note the difference between this and `skip_subviews`, which skips over subviews while navigating **from** regular views._ |
+| logger_level       | string  | `warn`  | Set logging level. Possible values are: `verbose`, `debug`, `info`, `warn`, `error`.                                                                                         |
+| prevent_default    | boolean | `false` | Prevent the browsers default horizontal swipe actions.                                                                                                                       |
+| skip_subviews      | boolean | `true`  | Automatically skip subviews.                                                                                                                                                 |
+| skip_tabs          | string  |         | A comma separated list of views to skip when swiping. e.g., `1,3,5`.<br>⚠️ _Note that tabs count starts at `0`, so the first is `0`, second is `1`, and so on._               |
+| swipe_amount       | number  |  `15`   | Minimum percent of screen needed to be swiped in order to navigate.                                                                                                          |
+| wrap               | boolean | `true`  | Wrap from first tab to last tab and vice versa.                                                                                                                              |
+| ~~skip_hidden~~    | boolean | `true`  | Automatically skip hidden tabs.<br>⚠️ _Setting this to `false` is deprecated and poses a security risk as it allows a user to reveal a tab they don't have access to._        |
 
 
 **Example:**

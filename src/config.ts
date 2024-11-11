@@ -7,6 +7,7 @@ class Config {
   private animate_duration = 200;
   private enable = true;
   private enable_mouse_swipe = false;
+  private enable_on_subviews = true;
   // Note that this is the level that is in force before the config is parsed.
   // This means that all logs below this level will be ignored until the config is parsed.
   private logger_level: LogLevel = LogLevel.WARN;
@@ -31,6 +32,10 @@ class Config {
 
   public getEnableMouseSwipe(): boolean {
     return this.enable_mouse_swipe;
+  }
+
+  public getEnableOnSubviews(): boolean {
+    return this.enable_on_subviews;
   }
 
   public getLoggerLevel(): LogLevel {
@@ -79,6 +84,8 @@ class Config {
     if (rawConfig.enable != null) { newConfig.enable = rawConfig.enable; }
 
     if (rawConfig.enable_mouse_swipe != null) { newConfig.enable_mouse_swipe = rawConfig.enable_mouse_swipe; }
+
+    if (rawConfig.enable_on_subviews != null) { newConfig.enable_on_subviews = rawConfig.enable_on_subviews; }
 
     switch (rawConfig.logger_level) {
       case "verbose":
@@ -133,6 +140,7 @@ const SwipeNavigationConfigSchema = z.object({
   animate_duration: z.number().optional(),
   enable: z.boolean().optional(),
   enable_mouse_swipe: z.boolean().optional(),
+  enable_on_subviews: z.boolean().optional(),
   logger_level: z
     .union([
       z.literal("verbose"),
