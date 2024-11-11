@@ -56,16 +56,6 @@ class SwipeManager {
   }
 
   static #handlePointerStart(event: TouchEvent | MouseEvent) {
-    let preventSubviewAction;
-    if (ConfigManager.getCurrentConfig().getDisableOnSubviews() == true) {
-      const views = ConfigManager.getViews();
-      const activeTabIndex = ConfigManager.getCurrentViewIndex();
-
-      if (views == null || activeTabIndex == null) return;
-
-      preventSubviewAction = views[activeTabIndex].subview;
-    }
-    
 
     let interactionType;
     if (window.TouchEvent != null && event instanceof TouchEvent) {
@@ -80,6 +70,16 @@ class SwipeManager {
     if (ConfigManager.getCurrentConfig().getEnable() == false) {
       Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation is disabled in the config.");
       return; // Ignore swipe: Swipe is disabled in the config
+    }
+
+    if (ConfigManager.getCurrentConfig().getEnableOnSubviews() == false) {
+      const views = ConfigManager.getViews();
+      const activeTabIndex = ConfigManager.getCurrentViewIndex();
+
+      if (views != null && activeTabIndex != null && views[activeTabIndex].subview) {
+        Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation on subviews is disabled in the config.");
+        return; // Ignore swipe: Swipe on subviews is disabled in the config
+      }
     }
 
     if (window.TouchEvent != null && event instanceof TouchEvent && event.touches.length > 1) {
@@ -101,7 +101,7 @@ class SwipeManager {
             // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
             break;
           } else {
-            if (element.matches && element.matches(exceptions) || preventSubviewAction) {
+            if (element.matches && element.matches(exceptions)) {
               Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on \""
                 + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
                 + "\".");
