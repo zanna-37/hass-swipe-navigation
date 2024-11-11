@@ -2,7 +2,6 @@
 
 # This file overrides the main docker-compose.yml
 
-version: "2.4"
 services:
 
   hass:
