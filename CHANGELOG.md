@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.0] - 2024-11-11
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.14.2...v1.15.0)
+
+### Added 🎉
+- Swipe can now be disabled when inside a subviews using `enable_on_subviews: false` in the configuration, thanks to [@breakthestatic](https://github.com/breakthestatic) ([`#84`](https://github.com/zanna-37/hass-swipe-navigation/pull/84))
+
+### Fixed 🐛
+- URL parameters are now preserved after a swipe, fixes a regression introduced in `v1.14.0`. ([`#87`](https://github.com/zanna-37/hass-swipe-navigation/pull/87), closes [`#85`](https://github.com/zanna-37/hass-swipe-navigation/issues/85))
+
+
 ## 🏷️ [v1.14.2] - 2024-09-22
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.14.1...v1.14.2)
 
