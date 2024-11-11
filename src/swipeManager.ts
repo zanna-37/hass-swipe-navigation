@@ -286,9 +286,16 @@ class SwipeManager {
   }
 
   private static navigateTo(viewName: string) {
+    const queryString = window.location.search;
+    const hashFragment = window.location.hash;
     const panelName = ConfigManager.getPanel();
-    window.history.pushState(null,"","/" + panelName + "/" + viewName);
-    window.dispatchEvent(new CustomEvent("location-changed"));
+
+    const targetUrl = "/" + panelName + "/" + viewName + queryString + hashFragment;
+
+    if (window.location.pathname + window.location.search + window.location.hash !== targetUrl) {
+      window.history.pushState(null,"",targetUrl);
+      window.dispatchEvent(new CustomEvent("location-changed"));
+    }
   }
 }
 
