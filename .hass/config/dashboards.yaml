@@ -108,6 +108,13 @@
       show_in_sidebar: true
       filename: ./dashboards/subview-noskip.yaml
 
+    subview-noswipe:
+      mode: yaml
+      title: Subview no swipe
+      icon: mdi:subdirectory-arrow-right
+      show_in_sidebar: true
+      filename: ./dashboards/subview-noswipe.yaml
+
     one-tile:
       mode: yaml
       title: One tile
