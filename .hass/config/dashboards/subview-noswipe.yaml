@@ -19,7 +19,6 @@ views:
           action: navigate
           navigation_path: /subview-noswipe/1
 
-
   - title: Subview
     subview: true
     cards:

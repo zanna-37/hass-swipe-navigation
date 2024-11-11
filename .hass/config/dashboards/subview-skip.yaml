@@ -48,3 +48,4 @@ views:
         show_icon: true
         tap_action:
           action: navigate
+          navigation_path: /subview-skip/1
