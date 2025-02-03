@@ -55,9 +55,11 @@ class PageObject {
     Logger.logv(LOG_TAG, "Recursively Getting DOM node " + index + " " + this.selectorPaths[index] + " in " + this.toString() + ".");
     const currentRootNode: Element | Document | ShadowRoot | null = (index == 0) ? document : this.getDomNodeAt(index - 1);
 
-    this.selectorPaths[index] == "$"
-      ? this.domNodes[index] = currentRootNode instanceof HTMLElement && currentRootNode.shadowRoot ? currentRootNode.shadowRoot : null
-      : this.domNodes[index] = currentRootNode?.querySelector(this.selectorPaths[index]) ?? null;
+    if (this.selectorPaths[index] == "$") {
+      this.domNodes[index] = currentRootNode instanceof HTMLElement && currentRootNode.shadowRoot ? currentRootNode.shadowRoot : null;
+    } else {
+      this.domNodes[index] = currentRootNode?.querySelector(this.selectorPaths[index]) ?? null;
+    }
 
     return this.domNodes[index];
   }
@@ -98,11 +100,13 @@ class PageObject {
       });
 
       this.observers[index]?.observe(
-        currentRootNode, {
+        currentRootNode,
+        {
           childList: true,
           // For performance reasons
           subtree: false
-        });
+        }
+      );
 
       if (index < this.observers.length - 1) {
         this.createNodeObserversFrom(index + 1);
