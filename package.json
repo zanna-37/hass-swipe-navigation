@@ -5,17 +5,17 @@
     "@commitlint/cz-commitlint": "^18.6.0",
     "@eslint/js": "^9.19.0",
     "@playwright/test": "^1.41.2",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
     "commitizen": "^4.3.0",
     "eslint": "^9.19.0",
     "husky": "^9.0.10",
-    "rollup": "^2.79.0",
-    "rollup-plugin-serve": "^2.0.1",
-    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-serve": "^2.0.3",
+    "rollup": "^4.34.1",
     "tslib": "^2.6.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.23.0"
+    "typescript-eslint": "^8.23.0",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "zod": "^3.22.4"

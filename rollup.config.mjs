@@ -1,8 +1,8 @@
-import { defineConfig } from 'rollup';
+import resolve from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 import typescript from "@rollup/plugin-typescript";
-import nodeResolve from "@rollup/plugin-node-resolve";
-import serve from "rollup-plugin-serve";
-import { terser } from 'rollup-plugin-terser';
+import { defineConfig } from 'rollup';
+import serve from 'rollup-plugin-serve';
 
 
 const isDevelopment = process.env.ROLLUP_WATCH ? true : false;
@@ -25,6 +25,8 @@ const terserOptions = {
 export default defineConfig(
   [
     {
+      strictDeprecations: true,
+
       input: "src/main.ts",
       output: {
         file: "dist/swipe-navigation.js",
@@ -42,7 +44,7 @@ export default defineConfig(
           sourceMap: isDevelopment,
           outputToFilesystem: true,
         }),
-        nodeResolve(),
+        resolve(),
         // Serve or Uglify based on develop or release
         isDevelopment ? serve(serveOptions) : terser(terserOptions),
       ]
