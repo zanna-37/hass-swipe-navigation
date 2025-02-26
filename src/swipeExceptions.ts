@@ -56,9 +56,10 @@ const exceptions = [
   "mwc-tab-bar",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
-  // Bubble Card button slider (https://github.com/Clooos/Bubble-Card)
+  // Bubble Card (https://github.com/Clooos/Bubble-Card)
   ".range-slider",
   ".bubble-button-card",
+  ".bubble-pop-up",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
