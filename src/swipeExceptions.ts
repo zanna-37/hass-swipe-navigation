@@ -48,6 +48,8 @@ const exceptions = [
   "history-explorer-card",
   // Bubble Card horizontal buttons stack (https://github.com/Clooos/Bubble-Card)
   ".horizontal-buttons-stack-container",
+  // Map Card (https://github.com/nathan-gs/ha-map-card)
+  "map-card",
   // my-cards (https://github.com/AnthonMS/my-cards)
   "my-slider",
   "my-slider-v2",
