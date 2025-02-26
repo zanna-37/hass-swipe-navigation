@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.1] - 2025-02-26
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.0...v1.15.1)
+
+### Fixed 🐛
+- Add an exception for Slide confirm ([`bef46d9`](https://github.com/zanna-37/hass-swipe-navigation/commit/bef46d92fdd3c961a4a2999fa4265c3233617d5a) closes [`#94`](https://github.com/zanna-37/hass-swipe-navigation/issues/94))
+- Add an exception for Bubble card (popups) ([`c0f9343`](https://github.com/zanna-37/hass-swipe-navigation/commit/c0f9343cfbf746036734f4d405843d25900b4da0), closes [`#93`](https://github.com/zanna-37/hass-swipe-navigation/issues/93))
+- Add an exception for Home Assistant Map Card ([`8cd1aba`](https://github.com/zanna-37/hass-swipe-navigation/commit/8cd1aba3f3fbb9606e50245a4d6f2742b8957f7f), closes [`#89`](https://github.com/zanna-37/hass-swipe-navigation/issues/89))
+
+
 ## 🏷️ [v1.15.0] - 2024-11-11
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.14.2...v1.15.0)
 
