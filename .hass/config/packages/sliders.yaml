@@ -3,3 +3,8 @@ input_number:
     name: Slider
     min: 0
     max: 100
+
+  light_slider:
+    name: Light slider
+    min: 0
+    max: 100

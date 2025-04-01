@@ -3,6 +3,19 @@ light:
     lights:
       main_light:
         friendly_name: "Main light"
+        level_template: "{{ (states('input_number.light_slider') | float / 100 * 255) | int }}"
         turn_on:
+          - service: input_number.set_value
+            data:
+              entity_id: input_number.light_slider
+              value: 100
         turn_off:
+          - service: input_number.set_value
+            data:
+              entity_id: input_number.light_slider
+              value: 0
         set_level:
+          - service: input_number.set_value
+            data_template:
+              entity_id: input_number.light_slider
+              value: "{{ (brightness / 255 * 100)|int }}"
