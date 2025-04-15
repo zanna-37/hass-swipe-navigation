@@ -76,12 +76,15 @@ const exceptions = [
   ".swiper",
   // Android TV Card touchpad (https://github.com/Nerwyn/android-tv-card)
   "toucharea",
+  // Vehicle Status Card (https://github.com/ngocjohn/vehicle-info-card)
+  "vehicle-info-card",
+  // Vehicle Status Card (https://github.com/ngocjohn/vehicle-status-card)
+  "vehicle-status-card",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
 
-
   // DEPRECATED
-  // will be removed after December 2023
+  // will be removed after December 2023s
 
   // 🍄 Mushroom (https://github.com/piitaya/lovelace-mushroom)
   "mushroom-slider", // it uses the same id as built-in slider
