@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.2] - 2025-04-16
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.1...v1.15.2)
+
+### Fixed 🐛
+- Add exceptions for "Vehicle info card" and "Vehicle status card", thanks to [@ngocjohn](https://github.com/ngocjohn) ([`#98`](https://github.com/zanna-37/hass-swipe-navigation/pull/98))
+
+
 ## 🏷️ [v1.15.1] - 2025-02-26
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.0...v1.15.1)
 
