@@ -63,6 +63,8 @@ const exceptions = [
   ".range-slider",
   ".bubble-button-card",
   ".bubble-pop-up",
+  // Universal Remote Card (https://github.com/Nerwyn/universal-remote-card)
+  "remote-touchpad",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
