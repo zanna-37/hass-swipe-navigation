@@ -10,12 +10,16 @@ function isNewerVersion(oldVersion: string, newVersion: string) {
   return false;
 }
 
-function isLessThan2023_4() {
-  const currentVersion = (
+function getCurrentHAVersion() {
+  return (
     document.getElementsByTagName("home-assistant")[0] as (
       HTMLElement & { hass: undefined | { config: undefined | { version: string } } }
     )
   )?.hass?.config?.version || null;
+}
+
+function isLessThan2023_4() {
+  const currentVersion = getCurrentHAVersion();
 
   return currentVersion == null
     ? false  // Assume newer if we can't determine the version
