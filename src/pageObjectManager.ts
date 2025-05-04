@@ -36,11 +36,6 @@ class PageObjectManager {
     "$",
     "[id=\"view\"]"
   ]);
-  public static tabsContainer = new PageObject([
-    ...PageObjectManager.huiRoot.getSelectorPaths(),
-    "$",
-    "ha-tabs,paper-tabs" // ha-tabs for standard mode and paper-tabs when in edit mode
-  ]);
 }
 
 export { PageObjectManager };

@@ -11,8 +11,9 @@ const exceptions = [
   // all symbols. Only consider letters and numbers.
 
   // Dashboard tabs
-  "ha-tabs",
-  "paper-tabs",
+  "ha-tabs", // removed in HA v2025.5
+  "paper-tabs", // removed in HA v2025.5
+  "sl-tab-group",
   // Draggable elements when in editing mode
   "hui-badge-edit-mode",
   "hui-card-edit-mode",
