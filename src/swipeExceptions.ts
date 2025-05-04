@@ -75,6 +75,8 @@ const exceptions = [
   "swipe-card",
   // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
   ".swiper",
+  // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
+  "#swiper",
   // Android TV Card touchpad (https://github.com/Nerwyn/android-tv-card)
   "toucharea",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-info-card)
