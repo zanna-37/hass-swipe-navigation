@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.3] - 2025-05-04
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.2...v1.15.3)
+
+### Fixed 🐛
+- Adapt to changes introduced by the Home Assistant 2025.5 release ([`aaa6f27`](https://github.com/zanna-37/hass-swipe-navigation/commit/aaa6f27fab4b148f283c14bcf4e2b32b20911c70) closes [`#101`](https://github.com/zanna-37/hass-swipe-navigation/issues/101))
+- Add exception for "Lunar Phase Card" ([`de0485b`](https://github.com/zanna-37/hass-swipe-navigation/commit/de0485b49c758418a958f5a38f58b67b91b46cb1) closes [`#100`](https://github.com/zanna-37/hass-swipe-navigation/issues/100))
+
+
 ## 🏷️ [v1.15.2] - 2025-04-16
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.1...v1.15.2)
 
