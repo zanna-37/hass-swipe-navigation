@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.4] - 2025-05-04
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.3...v1.15.4)
+
+### Fixed 🐛
+- Add exception for "Universal Remote Card" ([`3707ae8`](https://github.com/zanna-37/hass-swipe-navigation/commit/3707ae8d6ab3447159c82ddd5d6af88bc994ce01) closes [`#99`](https://github.com/zanna-37/hass-swipe-navigation/issues/99))
+
+
 ## 🏷️ [v1.15.3] - 2025-05-04
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.2...v1.15.3)
 
