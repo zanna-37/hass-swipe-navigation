@@ -10,6 +10,8 @@ const exceptions = [
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
 
+  // Badges scroll behavior
+  ".badges-scroll",
   // Dashboard tabs
   "ha-tabs", // removed in HA v2025.5
   "paper-tabs", // removed in HA v2025.5
