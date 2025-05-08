@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.5] - 2025-05-08
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.4...v1.15.5)
+
+### Fixed 🐛
+- Add exception for "Badges scroll" ([`260a86c`](https://github.com/zanna-37/hass-swipe-navigation/commit/260a86c78dba4160e070053e88dfc8ce04e0e0f0) closes [`#102`](https://github.com/zanna-37/hass-swipe-navigation/issues/102))
+
+
 ## 🏷️ [v1.15.4] - 2025-05-04
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.3...v1.15.4)
 
