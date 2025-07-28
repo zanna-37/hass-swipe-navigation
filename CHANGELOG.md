@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.6] - 2025-07-28
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.5...v1.15.6)
+
+### Fixed 🐛
+- Update the Bubble Card exception to reflect changes introduced in Bubble Card v3.0.0 (replaces `.bubble-button-card` with `.bubble-button-slider-container`), thanks to [@Jonsonmon](https://github.com/Jonsonmon) ([`#109`](https://github.com/zanna-37/hass-swipe-navigation/pull/109))
+- Add exception for "Simple Swipe Card" ([`8a386e6`](https://github.com/zanna-37/hass-swipe-navigation/commit/8a386e69fbb74ef3c4cb843297007422134e752d) closes [`#110`](https://github.com/zanna-37/hass-swipe-navigation/issues/110))
+
+
 ## 🏷️ [v1.15.5] - 2025-05-08
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.4...v1.15.5)
 
