@@ -73,6 +73,8 @@ const exceptions = [
   "sankey-chart",
   // Slide confirm (https://github.com/itsbrianburton/slide-confirm)
   ".slide-confirm",
+  // Simple Swipe Card (https://github.com/nutteloost/simple-swipe-card)
+  "simple-swipe-card",
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
   // Swipe Card (https://github.com/bramkragten/swipe-card)
