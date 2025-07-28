@@ -63,7 +63,7 @@ const exceptions = [
   "#plotly g.draglayer",
   // Bubble Card (https://github.com/Clooos/Bubble-Card)
   ".range-slider",
-  ".bubble-button-card",
+  ".bubble-button-slider-container",
   ".bubble-pop-up",
   // Universal Remote Card (https://github.com/Nerwyn/universal-remote-card)
   "remote-touchpad",
