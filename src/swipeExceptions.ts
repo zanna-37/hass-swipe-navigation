@@ -42,6 +42,8 @@ const exceptions = [
   "better-thermostat-ui-card",
   // Big Slider Card (https://github.com/nicufarmache/lovelace-big-slider-card)
   "big-slider-card",
+  // flex-table-card (https://github.com/custom-cards/flex-table-card)
+  "flex-table-card",
   // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
   "floor3d-card",
   // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
