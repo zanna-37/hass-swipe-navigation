@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.7] - 2025-09-30
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.6...v1.15.7)
+
+### Fixed 🐛
+- Update exceptions to reflect changes introduced in Home Assistant 2025.10.
+
+
 ## 🏷️ [v1.15.6] - 2025-07-28
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.5...v1.15.6)
 
