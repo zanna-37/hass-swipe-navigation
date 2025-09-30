@@ -36,6 +36,9 @@ jobs:
     #   uses: lhotari/action-upterm@v1
 
     - name: Spin up containers
+      env:
+        DOCKER_BUILDKIT: 1
+        BUILDKIT_PROGRESS: plain
       run: docker compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from tester
 
     - name: Stop containers
