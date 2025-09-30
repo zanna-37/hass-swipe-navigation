@@ -6,7 +6,7 @@ test("shouldn't change, tabs swiped ", async ({ page }) => {
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const tabsContainer = page.locator("sl-tab-group");
+  const tabsContainer = page.locator("ha-tab-group");
 
   const consoleLogs: string[] = [];
   page.on("console", (message) => {
@@ -19,7 +19,7 @@ test("shouldn't change, tabs swiped ", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "sl-tab-group".*/;
+  const regexp = /.*Ignoring touch on "ha-tab-group".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

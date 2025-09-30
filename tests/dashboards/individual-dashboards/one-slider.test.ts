@@ -9,7 +9,7 @@ test("shouldn't change, slider swiped", async ({ page }) => {
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const slider = page.locator("input[type=range]");
+  const slider = page.locator("div#slider");
   const mdCard = page.locator("hui-markdown-card");
 
   const consoleLogs: string[] = [];
@@ -33,7 +33,7 @@ test("shouldn't change, slider swiped", async ({ page }) => {
 
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "input".*/;
+  const regexp = /.*Ignoring touch on "div".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }
