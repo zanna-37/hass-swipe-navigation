@@ -15,7 +15,8 @@ const exceptions = [
   // Dashboard tabs
   "ha-tabs", // removed in HA v2025.5
   "paper-tabs", // removed in HA v2025.5
-  "sl-tab-group",
+  "sl-tab-group", // removed in HA v2025.10
+  "ha-tab-group",
   // Draggable elements when in editing mode
   "hui-badge-edit-mode",
   "hui-card-edit-mode",
@@ -27,8 +28,8 @@ const exceptions = [
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
-  "ha-slider", // Deprecated since HA v2023.11
-  "input[type=range]",
+  "ha-slider",
+  "input[type=range]", // Sliders no longer use this after HA v2025.10
   // Tile slider
   "#slider",
 
