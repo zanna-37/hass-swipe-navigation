@@ -86,8 +86,9 @@ const exceptions = [
   "#swiper",
   // Todo Swipe Card (https://github.com/nutteloost/todo-swipe-card)
   "todo-swipe-card",
-  // Android TV Card touchpad (https://github.com/Nerwyn/android-tv-card)
+  // Android TV Card touchpad (https://github.com/Nerwyn/universal-remote-card)
   "toucharea",
+  ".circlepad",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-info-card)
   "vehicle-info-card",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-status-card)
