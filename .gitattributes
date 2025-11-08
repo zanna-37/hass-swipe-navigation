@@ -1,5 +1,5 @@
-# Auto eol conversions
-* text=auto
+# Auto eol conversions - force LF line endings
+* text=auto eol=lf
 
 # Force batch scripts to always use CRLF line endings
 *.{cmd,[cC][mM][dD]} text eol=crlf
