@@ -36,14 +36,11 @@ jobs:
     #   uses: lhotari/action-upterm@v1
 
     - name: Spin up containers
-      env:
-        DOCKER_BUILDKIT: 1
-        BUILDKIT_PROGRESS: plain
-      run: docker compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from tester
+      run: docker compose --file docker-compose.yml --file docker-compose.test.yml up --quiet-pull --exit-code-from tester
 
     - name: Stop containers
       if: always()
-      run: docker compose -f docker-compose.yml -f docker-compose.test.yml down
+      run: docker compose --file docker-compose.yml --file docker-compose.test.yml down --remove-orphans
 
     - uses: actions/upload-artifact@v4
       if: always()
