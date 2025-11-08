@@ -84,6 +84,8 @@ const exceptions = [
   ".swiper",
   // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
   "#swiper",
+  // Todo Swipe Card (https://github.com/nutteloost/todo-swipe-card)
+  "todo-swipe-card",
   // Android TV Card touchpad (https://github.com/Nerwyn/android-tv-card)
   "toucharea",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-info-card)
