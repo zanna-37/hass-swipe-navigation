@@ -35,13 +35,12 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
   
 1. Copy [swipe-navigation.js](https://github.com/zanna-37/hass-swipe-navigation/releases/latest) from the latest release into `/www/hass-swipe-navigation/`
 
-2. Add the resource in `ui-lovelace.yaml` or in Dashboard Resources.
+2. Add the resource in Dashboard Resources.
 
 ```yaml
-resources:
-  # Increase the version number (`v=x.y.z`) at end of the URL after each update
-  - url: /local/hass-swipe-navigation/swipe-navigation.js?v=1.0.0
-    type: module
+# Increase the version number (`v=x.y.z`) at end of the URL after each update
+url: /local/hass-swipe-navigation/swipe-navigation.js?v=1.0.0
+type: module
 ```
 
 3. Refresh the page, may need to clear cache.

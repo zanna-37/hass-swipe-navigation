@@ -36,7 +36,6 @@ services:
       - .hass/hass-init.sh:/etc/cont-init.d/hass-init.sh:ro
       - .hass/config/configuration.yaml:/config/configuration.yaml:ro
       - .hass/config/dashboards.yaml:/config/dashboards.yaml:ro
-      - .hass/config/ui-lovelace.yaml:/config/ui-lovelace.yaml:ro
       - .hass/config/dashboards/:/config/dashboards
       - .hass/config/packages:/config/packages
       - .hass/config/www/touchpoints-visualizer.js:/config/www/touchpoints-visualizer.js:ro

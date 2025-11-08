@@ -19,6 +19,14 @@ async function globalSetup(config: FullConfig) {
     await page.locator("input[name='username']").fill("user");
     await page.locator("input[name='password']").fill("pass");
     await page.getByText("Log in", { exact: true }).click();
+    await page
+      .waitForURL("**/lovelace**", { timeout: 15 * 1000 /* 15 seconds*/ })
+      .catch(() => {
+        console.warn("[!] Default dashboard not present");
+      })
+      .finally(async () => {
+        await page.goto(baseURL + "/aa_tests");
+      });
 
     await page.getByText("This is a test instance.").waitFor({ timeout: 30 * 1000 /* 30 seconds*/ });
   } catch (e) {

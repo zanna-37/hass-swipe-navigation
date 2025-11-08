@@ -1,13 +1,6 @@
-  mode: yaml
-  resources:
-  - type: module
-    url: !env_var SWIPE_NAVIGATION_JS_URL http://localhost:3000/swipe-navigation.js
-  - type: module
-    url: /local/touchpoints-visualizer.js
+  mode: storage
 
   dashboards:
-    # config/ui-lovelace.yaml is included by default
-
     # Order dashboards alphabetically
 
     animate-fade:
