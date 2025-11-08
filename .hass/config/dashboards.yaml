@@ -80,6 +80,13 @@
       show_in_sidebar: true
       filename: ./dashboards/no-wrap.yaml
 
+    one-badges-scroll:
+      mode: yaml
+      title: One badges scroll
+      icon: mdi:medal-outline
+      show_in_sidebar: true
+      filename: ./dashboards/one-badges-scroll.yaml
+
     one-scrollbar:
       mode: yaml
       title: One scrollbar

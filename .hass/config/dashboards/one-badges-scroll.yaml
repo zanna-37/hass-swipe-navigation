@@ -1,0 +1,53 @@
+swipe_nav:
+  logger_level: verbose
+
+views:
+
+  - title: Badges Scroll
+    type: sections
+    header:
+      badges_position: top
+      badges_wrap: scroll
+    badges:
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+      - type: entity
+        entity: light.main_light
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            title: View 1
+            content: Content...
+
+  - title: View 2
+    cards:
+      - type: markdown
+        title: View 2
+        content: Content...
