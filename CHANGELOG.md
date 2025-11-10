@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.15.8] - 2025-11-10
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.7...v1.15.8)
+
+### Fixed 🐛
+- Add exception for "Todo Swipe Card" ([`31ab013`](https://github.com/zanna-37/hass-swipe-navigation/commit/31ab013) closes [`#115`](https://github.com/zanna-37/hass-swipe-navigation/issues/115))
+- Add exception for "Universal Remote Card" ([`3f56560`](https://github.com/zanna-37/hass-swipe-navigation/commit/3f56560bf290225be30a22167fe9861f52253384) closes [`#115`](https://github.com/zanna-37/hass-swipe-navigation/issues/115))
+
+### Changed 📝
+- Update npm dependencies to latest versions ([`bcea49d`](https://github.com/zanna-37/hass-swipe-navigation/commit/bcea49d))
+- Upgrade Ubuntu and Node versions in Docker environment ([`1faede2`](https://github.com/zanna-37/hass-swipe-navigation/commit/1faede2))
+- Add badges-scroll swipe exception test ([`402315e`](https://github.com/zanna-37/hass-swipe-navigation/commit/402315e))
+
+
 ## 🏷️ [v1.15.7] - 2025-09-30
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.6...v1.15.7)
 
