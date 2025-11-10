@@ -151,6 +151,11 @@ function create_storage_dashboard() {
   "key": "lovelace.aa_tests",
   "data": {
     "config": {
+      "swipe_nav": {
+        "enable_mouse_swipe": true,
+        "animate": "swipe",
+        "logger_level": "verbose"
+      },
       "views": [
         {
           "title": "Home",
