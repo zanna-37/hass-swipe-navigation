@@ -95,6 +95,8 @@ const exceptions = [
   "vehicle-status-card",
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
+  // CSS-Swipe-Card (https://github.com/Nemuritor01/css-swipe-card)
+  "css-swipe-card",
 ].join(",");
 
 export { exceptions };
