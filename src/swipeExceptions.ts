@@ -99,4 +99,22 @@ const exceptions = [
   "css-swipe-card",
 ].join(",");
 
-export { exceptions };
+/**
+ * Scoped exceptions prevent generic class selectors (e.g. ".forecast.daily") from accidentally
+ * matching elements in unrelated cards by requiring the element's shadow host to also match.
+ */
+interface ScopedExceptionEntry {
+  host: string;
+  selectors: string;
+}
+
+const scopedExceptions: ScopedExceptionEntry[] = [
+
+  // THIRD PARTIES
+  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
+  // all symbols. Only consider letters and numbers.
+];
+
+const allScopedSelectors = scopedExceptions.map(e => e.selectors).join(", ");
+
+export { exceptions, scopedExceptions, allScopedSelectors };

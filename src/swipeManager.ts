@@ -2,7 +2,7 @@ import { ConfigManager } from "./configManager";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
-import { exceptions } from "./swipeExceptions";
+import { exceptions, scopedExceptions, allScopedSelectors } from "./swipeExceptions";
 
 class SwipeManager {
   static #xDown: number | null;
@@ -106,6 +106,19 @@ class SwipeManager {
                 + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
                 + "\".");
               return; // Ignore swipe
+            }
+
+            if (allScopedSelectors && element.matches?.(allScopedSelectors)) {
+              const root = element.getRootNode();
+              if (root instanceof ShadowRoot) {
+                for (const scoped of scopedExceptions) {
+                  if (root.host.matches(scoped.host) && element.matches(scoped.selectors)) {
+                    Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on scoped exception \""
+                      + scoped.host + " >> " + scoped.selectors + "\".");
+                    return; // Ignore swipe (scoped exception)
+                  }
+                }
+              }
             }
           }
         }
