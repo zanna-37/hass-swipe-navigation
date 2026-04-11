@@ -2,7 +2,7 @@ import { ConfigManager } from "./configManager";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
-import { exceptions, scopedExceptions, allScopedSelectors } from "./swipeExceptions";
+import { exceptions, scopedExceptions, allScopedSelectors, scrollDependentExceptions } from "./swipeExceptions";
 
 class SwipeManager {
   static #xDown: number | null;
@@ -106,6 +106,14 @@ class SwipeManager {
                 + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
                 + "\".");
               return; // Ignore swipe
+            }
+
+            if (element.matches?.(scrollDependentExceptions)
+              && (element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth)) {
+              Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on scrollable \""
+                + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
+                + "\".");
+              return; // Ignore swipe: element is actually scrollable
             }
 
             if (allScopedSelectors && element.matches?.(allScopedSelectors)) {

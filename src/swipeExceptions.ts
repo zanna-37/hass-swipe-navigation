@@ -120,4 +120,12 @@ const scopedExceptions: ScopedExceptionEntry[] = [
 
 const allScopedSelectors = scopedExceptions.map(e => e.selectors).join(", ");
 
-export { exceptions, scopedExceptions, allScopedSelectors };
+/**
+ * Subset of exceptions that should only be honoured when the element is actually scrollable
+ * (i.e. its content overflows). Elements matching these selectors that do NOT overflow are
+ * allowed to initiate a swipe.
+ */
+const scrollDependentExceptions = [
+].join(",");
+
+export { exceptions, scopedExceptions, allScopedSelectors, scrollDependentExceptions };
