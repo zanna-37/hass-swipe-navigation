@@ -122,6 +122,13 @@
       show_in_sidebar: true
       filename: ./dashboards/one-tile.yaml
 
+    scroll-dependent:
+      mode: yaml
+      title: Scroll dependent
+      icon: mdi:pan-vertical
+      show_in_sidebar: true
+      filename: ./dashboards/scroll-dependent.yaml
+
     skip-all:
       mode: yaml
       title: Skip all

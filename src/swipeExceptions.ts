@@ -23,8 +23,6 @@ const exceptions = [
   ".section-actions .handle",
   // Map
   "hui-map-card",
-  // Scrollbar
-  ".ha-scrollbar",
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
@@ -126,6 +124,7 @@ const allScopedSelectors = scopedExceptions.map(e => e.selectors).join(", ");
  * allowed to initiate a swipe.
  */
 const scrollDependentExceptions = [
+  ".ha-scrollbar",
 ].join(",");
 
 export { exceptions, scopedExceptions, allScopedSelectors, scrollDependentExceptions };
