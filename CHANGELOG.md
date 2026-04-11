@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.16.0] - 2026-04-11
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.8...v1.16.0)
+
+### Added 🚀
+- Add scoped swipe exception support for shadow DOM components ([`ac4ab21`](https://github.com/zanna-37/hass-swipe-navigation/commit/ac4ab21f1c8b088479f5d80f1472a7e7744db227))
+- Add scroll-dependent swipe exception support ([`b861357`](https://github.com/zanna-37/hass-swipe-navigation/commit/b861357da763e55dce060f9ee0087d9db1e9ec49))
+- Move `.ha-scrollbar` to scroll-dependent exceptions — only block swipes when the element actually overflows ([`b50ff44`](https://github.com/zanna-37/hass-swipe-navigation/commit/b50ff447b58286e4569c7ea1bc9aa0e3ed563915) closes [`#132`](https://github.com/zanna-37/hass-swipe-navigation/issues/132))
+
+### Fixed 🐛
+- Add exception for "CSS-Swipe-Card", thanks to [@ndom91](https://github.com/ndom91) ([`#121`](https://github.com/zanna-37/hass-swipe-navigation/pull/121))
+- Add exception for "Weather Forecast Extended Card" ([`95e52e5`](https://github.com/zanna-37/hass-swipe-navigation/commit/95e52e5102f10489687e28d168385b1169789715) closes [`#133`](https://github.com/zanna-37/hass-swipe-navigation/issues/133))
+
+### Changed 📝
+- Bump dependencies ([`6204106`](https://github.com/zanna-37/hass-swipe-navigation/commit/6204106e656e492cce0c994c9ae8fb3c61a6e1b1))
+
+
 ## 🏷️ [v1.15.8] - 2025-11-10
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.7...v1.15.8)
 
