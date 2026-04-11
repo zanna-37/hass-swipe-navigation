@@ -113,6 +113,9 @@ const scopedExceptions: ScopedExceptionEntry[] = [
   // THIRD PARTIES
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
+
+  // Weather Forecast Extended Card (https://github.com/Thyraz/weather-forecast-extended)
+  { host: "weather-forecast-extended-card", selectors: ".forecast.daily, .forecast.hourly, .header-pages" },
 ];
 
 const allScopedSelectors = scopedExceptions.map(e => e.selectors).join(", ");
