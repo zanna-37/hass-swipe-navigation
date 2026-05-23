@@ -240,16 +240,13 @@ class SwipeManager {
 
     const incrementStep = directionLeft ? -1 : 1;
 
-    let found = false;
-
-    while (!found) {
+    while (true) {
       nextTabIndex += incrementStep;
 
       if (nextTabIndex == -1 || nextTabIndex == views.length) {
         if (ConfigManager.getCurrentConfig().getWrap()) {
           nextTabIndex = (nextTabIndex + views.length) % views.length;
         } else {
-          found = true;
           nextTabIndex = -1;
           stopReason = "Edge has been reached and wrap is disabled.";
           break;
@@ -258,7 +255,6 @@ class SwipeManager {
 
       if (nextTabIndex == activeTabIndex) {
         // A complete cycle has been done. Stop to avoid infinite loop.
-        found = true;
         nextTabIndex = -1;
         stopReason = "Error, no viable tabs found for swiping.";
         break;
@@ -274,7 +270,7 @@ class SwipeManager {
         continue;
       }
 
-      found = true;
+      break;
     }
 
     if (stopReason != null) {
