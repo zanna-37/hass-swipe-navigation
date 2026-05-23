@@ -10,6 +10,12 @@ class SwipeManager {
   static #xDiff: number | null;
   static #yDiff: number | null;
 
+  // Per-axis blocks from scroll-dependent exceptions. A non-null log marks
+  // that axis as blocked; it is decided at pointer start from overflow, and
+  // emitted at pointer end if the user's swipe direction matches the axis.
+  static #blockedHorizontalLog: string | null = null;
+  static #blockedVerticalLog: string | null = null;
+
   static #pointerEventsAbortController: AbortController | null = null;
 
   static init() {
@@ -94,6 +100,9 @@ class SwipeManager {
       return;
     }
 
+    this.#blockedHorizontalLog = null;
+    this.#blockedVerticalLog = null;
+
     if (typeof event.composedPath() == "object") {
       for (const element of event.composedPath()) {
         if (element instanceof Element) {
@@ -101,19 +110,20 @@ class SwipeManager {
             // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
             break;
           } else {
+            const nodeName = element.nodeName == null ? "unknown" : element.nodeName.toLowerCase();
+
             if (element.matches && element.matches(exceptions)) {
-              Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on \""
-                + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
-                + "\".");
+              Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on \"" + nodeName + "\".");
               return; // Ignore swipe
             }
 
-            if (element.matches?.(scrollDependentExceptions)
-              && (element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth)) {
-              Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on scrollable \""
-                + (element.nodeName != null ? element.nodeName.toLowerCase() : "unknown")
-                + "\".");
-              return; // Ignore swipe: element is actually scrollable
+            if (element.matches?.(scrollDependentExceptions)) {
+              if (this.#blockedHorizontalLog == null && element.scrollWidth > element.clientWidth) {
+                this.#blockedHorizontalLog = "Ignoring " + interactionType + " on horizontally scrollable \"" + nodeName + "\".";
+              }
+              if (this.#blockedVerticalLog == null && element.scrollHeight > element.clientHeight) {
+                this.#blockedVerticalLog = "Ignoring " + interactionType + " on vertically scrollable \"" + nodeName + "\".";
+              }
             }
 
             if (allScopedSelectors && element.matches?.(allScopedSelectors)) {
@@ -132,6 +142,7 @@ class SwipeManager {
         }
       }
     }
+
     if (window.TouchEvent != null && event instanceof TouchEvent) {
       this.#xDown = event.touches[0].clientX;
       this.#yDown = event.touches[0].clientY;
@@ -157,19 +168,43 @@ class SwipeManager {
         throw new Error(`Unhandled case: ${eventCheck}`);
       }
 
-      if (Math.abs(this.#xDiff) > Math.abs(this.#yDiff) && ConfigManager.getCurrentConfig().getPreventDefault()) event.preventDefault();
+      if (
+        Math.abs(this.#xDiff) > Math.abs(this.#yDiff)
+        && this.#blockedHorizontalLog == null // --> not blocked
+        && ConfigManager.getCurrentConfig().getPreventDefault()
+      ) {
+        event.preventDefault();
+      }
     }
   }
 
   static #handlePointerEnd() {
     if (this.#xDiff != null && this.#yDiff != null) {
-      if (Math.abs(this.#xDiff) < Math.abs(this.#yDiff)) {
-        Logger.logd(LOG_TAG, "Swipe ignored, vertical movement.");
+      const isVerticalMovement = Math.abs(this.#xDiff) < Math.abs(this.#yDiff);
+      const isHorizontalMovement = !isVerticalMovement;
 
-      } else {  // Horizontal movement
-        if (Math.abs(this.#xDiff) < Math.abs(screen.width * ConfigManager.getCurrentConfig().getSwipeAmount())) {
-          Logger.logd(LOG_TAG, "Swipe ignored, too short.");
+      const swipeMagnitude = Math.abs(isVerticalMovement ? this.#yDiff : this.#xDiff);
+      const screenSize = isVerticalMovement ? screen.height : screen.width;
+      const isShortSwipe = swipeMagnitude < screenSize * ConfigManager.getCurrentConfig().getSwipeAmount();
 
+      const blockedVerticalLog = this.#blockedVerticalLog;
+      const blockedHorizontalLog = this.#blockedHorizontalLog;
+      const blockVertical = blockedVerticalLog != null;
+      const blockHorizontal = blockedHorizontalLog != null;
+
+      if (isShortSwipe) {
+        Logger.logd(LOG_TAG, "Swipe ignored, too short.");
+
+      } else if (isVerticalMovement) {
+        if (blockVertical) {
+          Logger.logd(LOG_TAG, blockedVerticalLog);
+        } else {
+          Logger.logd(LOG_TAG, "Swipe ignored, vertical movement.");
+        }
+
+      } else if (isHorizontalMovement) {
+        if (blockHorizontal) {
+          Logger.logd(LOG_TAG, blockedHorizontalLog);
         } else {
           const directionLeft = this.#xDiff < 0;
 
@@ -181,6 +216,11 @@ class SwipeManager {
             this.animatedNavigateTo(nextViewName, directionLeft);
           }
         }
+
+      } else {
+        // TypeScript will error at compile-time if a case is missing
+        const exhaustiveCheck: never = isVerticalMovement;
+        throw new Error(`Unhandled case: ${exhaustiveCheck}`);
       }
     }
     this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
@@ -324,7 +364,7 @@ class SwipeManager {
     const targetUrl = "/" + panelName + "/" + viewName + queryString + hashFragment;
 
     if (window.location.pathname + window.location.search + window.location.hash !== targetUrl) {
-      window.history.pushState(null,"",targetUrl);
+      window.history.pushState(null, "", targetUrl);
       window.dispatchEvent(new CustomEvent("location-changed"));
     }
   }

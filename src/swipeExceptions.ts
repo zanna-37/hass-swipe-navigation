@@ -119,9 +119,10 @@ const scopedExceptions: ScopedExceptionEntry[] = [
 const allScopedSelectors = scopedExceptions.map(e => e.selectors).join(", ");
 
 /**
- * Subset of exceptions that should only be honoured when the element is actually scrollable
- * (i.e. its content overflows). Elements matching these selectors that do NOT overflow are
- * allowed to initiate a swipe.
+ * Subset of exceptions that block swipe navigation only on the axes on which the matched
+ * element actually overflows. An element that overflows horizontally blocks horizontal
+ * swipes; one that overflows vertically blocks vertical swipes. Elements that do not
+ * overflow on a given axis are allowed to initiate a swipe in that direction.
  */
 const scrollDependentExceptions = [
   ".ha-scrollbar",

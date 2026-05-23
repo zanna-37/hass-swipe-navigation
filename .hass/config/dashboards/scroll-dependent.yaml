@@ -1,4 +1,5 @@
 swipe_nav:
+  swipe_amount: 1
   logger_level: verbose
 
 views:
@@ -37,7 +38,16 @@ views:
             title: Non-Scrollable
             entities:
               - entity: sun.sun
+
+          - type: entities
+            title: Horizontally Scrollable
+            entities:
               - entity: sun.sun
+            header:
+              type: buttons
+              entities:
+                - entity: light.main_light
+                  name: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
   - title: View 2
     type: sections
