@@ -77,6 +77,18 @@ export class SwipeHelper {
     await this.swipe(box.x + box.width * 0.1, box.x + box.width * 0.9, box.y + box.height / 2, box.y + box.height / 2, target);
   }
 
+  static async swipeUp(target: Locator, reference: Locator | null = null) {
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.9, box.y + box.height * 0.1, target);
+  }
+
+  static async swipeDown(target: Locator, reference: Locator | null = null) {
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.1, box.y + box.height * 0.9, target);
+  }
+
   static async swipeLeftMouse(page: Page, target: Locator, reference: Locator | null = null) {
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
@@ -92,6 +104,24 @@ export class SwipeHelper {
     await page.mouse.move(box.x + box.width * 0.1, box.y + box.height / 2);
     await page.mouse.down();
     await page.mouse.move(box.x + box.width * 0.9, box.y + box.height / 2);
+    await page.mouse.up();
+  }
+
+  static async swipeUpMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.9);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.1);
+    await page.mouse.up();
+  }
+
+  static async swipeDownMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.1);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.9);
     await page.mouse.up();
   }
 }
