@@ -1,10 +1,33 @@
 /**
- * Ignore swipes when initiated on elements that match at least one of these CSS selectors.
+ * Ignore swipes when initiated on elements that match one of these entries.
+ *
+ * Each entry can be:
+ * - A bare CSS selector string. Matches block swipes unconditionally.
+ * - An object with `selector` plus optional modifiers:
+ *   - `host`: require the matched element's shadow-root host to also match
+ *     this selector. Use this to keep generic class names (e.g. `.forecast`)
+ *     from leaking into unrelated cards.
+ *   - `scrollDependent: true`: only block the swipe on the axes on which the
+ *     matched element actually overflows. An element that overflows
+ *     horizontally blocks horizontal swipes; one that overflows vertically
+ *     blocks vertical swipes.
+ *
+ * `host` and `scrollDependent` are independent and can be combined: use both
+ * when a generically-named scrollable inside a specific card should only block
+ * on actual overflow.
  *
  * Learn more on CSS selectors
  * [here](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors).
  */
-const exceptions = [
+interface Exception {
+  selector: string;
+  host?: string;
+  scrollDependent?: boolean;
+}
+
+type ExceptionEntry = string | Exception;
+
+const exceptions: ExceptionEntry[] = [
 
   // INTERNALS
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
@@ -23,6 +46,8 @@ const exceptions = [
   ".section-actions .handle",
   // Map
   "hui-map-card",
+  // Scrollbar (used on many elements that may or may not actually overflow)
+  { selector: ".ha-scrollbar", scrollDependent: true },
   // Sidebar (contains dashboards)
   "ha-sidebar",
   // Slider
@@ -42,6 +67,9 @@ const exceptions = [
   "big-slider-card",
   // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
   "floor3d-card",
+  // Weather Forecast Extended Card (https://github.com/Thyraz/weather-forecast-extended)
+  { selector: ".forecast.daily, .forecast.hourly, .header-pages",
+    host: "weather-forecast-extended-card" },
   // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
   "gallery-card",
   // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
@@ -95,37 +123,59 @@ const exceptions = [
   "xiaomi-vacuum-map-card",
   // CSS-Swipe-Card (https://github.com/Nemuritor01/css-swipe-card)
   "css-swipe-card",
-].join(",");
-
-/**
- * Scoped exceptions prevent generic class selectors (e.g. ".forecast.daily") from accidentally
- * matching elements in unrelated cards by requiring the element's shadow host to also match.
- */
-interface ScopedExceptionEntry {
-  host: string;
-  selectors: string;
-}
-
-const scopedExceptions: ScopedExceptionEntry[] = [
-
-  // THIRD PARTIES
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
-
-  // Weather Forecast Extended Card (https://github.com/Thyraz/weather-forecast-extended)
-  { host: "weather-forecast-extended-card", selectors: ".forecast.daily, .forecast.hourly, .header-pages" },
 ];
 
-const allScopedSelectors = scopedExceptions.map(e => e.selectors).join(", ");
+/**
+ * Pre-compiled buckets, computed once at module load. Per-element matching in
+ * `swipeManager` uses these so the cost stays constant as the exceptions list
+ * grows.
+ */
+interface CompiledScopedException {
+  selector: string;
+  host: string;
+  scrollDependent: boolean;
+}
+
+const _plain: string[] = [];
+const _scrollDependent: string[] = [];
+const _scoped: string[] = [];
+const _scopedCompiled: CompiledScopedException[] = [];
+
+for (const entry of exceptions) {
+  if (typeof entry === "string") {
+    _plain.push(entry);
+  } else if (entry.host != null && entry.host.trim() !== "") {
+    _scoped.push(entry.selector);
+    _scopedCompiled.push({
+      selector: entry.selector,
+      host: entry.host,
+      scrollDependent: entry.scrollDependent === true,
+    });
+  } else if (entry.scrollDependent === true) {
+    _scrollDependent.push(entry.selector);
+  } else {
+    _plain.push(entry.selector);
+  }
+}
+
+const plainSelectors = _plain.join(",");
+const scrollDependentSelectors = _scrollDependent.join(",");
+const allScopedSelectors = _scoped.join(",");
+const scopedExceptions: ReadonlyArray<CompiledScopedException> = _scopedCompiled;
 
 /**
- * Subset of exceptions that block swipe navigation only on the axes on which the matched
- * element actually overflows. An element that overflows horizontally blocks horizontal
- * swipes; one that overflows vertically blocks vertical swipes. Elements that do not
- * overflow on a given axis are allowed to initiate a swipe in that direction.
+ * Union of all three bucket selectors. Used as a fast early-out per element:
+ * if the element doesn't match this combined selector, no further per-bucket
+ * matching is needed.
  */
-const scrollDependentExceptions = [
-  ".ha-scrollbar",
-].join(",");
+const anyExceptionSelector = [plainSelectors, scrollDependentSelectors, allScopedSelectors]
+  .filter(s => s.length > 0)
+  .join(",");
 
-export { exceptions, scopedExceptions, allScopedSelectors, scrollDependentExceptions };
+export {
+  plainSelectors,
+  scrollDependentSelectors,
+  allScopedSelectors,
+  scopedExceptions,
+  anyExceptionSelector,
+};

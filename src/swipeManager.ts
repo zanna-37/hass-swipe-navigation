@@ -2,7 +2,13 @@ import { ConfigManager } from "./configManager";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
-import { exceptions, scopedExceptions, allScopedSelectors, scrollDependentExceptions } from "./swipeExceptions";
+import {
+  plainSelectors,
+  scrollDependentSelectors,
+  allScopedSelectors,
+  scopedExceptions,
+  anyExceptionSelector,
+} from "./swipeExceptions";
 
 class SwipeManager {
   static #xDown: number | null;
@@ -61,6 +67,24 @@ class SwipeManager {
     }
   }
 
+  static #areBothAxesBlocked() {
+    return this.#blockedHorizontalLog != null && this.#blockedVerticalLog != null;
+  }
+
+  static #applyScrollDependentBlock(
+    element: Element,
+    interactionType: string,
+    scopeSuffix: string = "",
+  ) {
+    const nodeName = element.nodeName.toLowerCase();
+    if (this.#blockedHorizontalLog == null && element.scrollWidth > element.clientWidth) {
+      this.#blockedHorizontalLog = `Ignoring ${interactionType} on horizontally scrollable "${nodeName}"${scopeSuffix}.`;
+    }
+    if (this.#blockedVerticalLog == null && element.scrollHeight > element.clientHeight) {
+      this.#blockedVerticalLog = `Ignoring ${interactionType} on vertically scrollable "${nodeName}"${scopeSuffix}.`;
+    }
+  }
+
   static #handlePointerStart(event: TouchEvent | MouseEvent) {
 
     let interactionType;
@@ -74,7 +98,7 @@ class SwipeManager {
     }
 
     if (ConfigManager.getCurrentConfig().getEnable() == false) {
-      Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation is disabled in the config.");
+      Logger.logd(LOG_TAG, `Ignoring ${interactionType}: Swipe navigation is disabled in the config.`);
       return; // Ignore swipe: Swipe is disabled in the config
     }
 
@@ -83,7 +107,7 @@ class SwipeManager {
       const activeTabIndex = ConfigManager.getCurrentViewIndex();
 
       if (views != null && activeTabIndex != null && views[activeTabIndex].subview) {
-        Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": Swipe navigation on subviews is disabled in the config.");
+        Logger.logd(LOG_TAG, `Ignoring ${interactionType}: Swipe navigation on subviews is disabled in the config.`);
         return; // Ignore swipe: Swipe on subviews is disabled in the config
       }
     }
@@ -91,51 +115,53 @@ class SwipeManager {
     if (window.TouchEvent != null && event instanceof TouchEvent && event.touches.length > 1) {
       this.#xDown = null;
       this.#yDown = null;
-      Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": multiple touchpoints detected.");
+      Logger.logd(LOG_TAG, `Ignoring ${interactionType}: multiple touchpoints detected.`);
       return; // Ignore swipe: Multitouch detected
     } else if (event instanceof MouseEvent && !ConfigManager.getCurrentConfig().getEnableMouseSwipe()) {
       this.#xDown = null;
       this.#yDown = null;
-      Logger.logd(LOG_TAG, "Ignoring " + interactionType + ": swiping via mouse is disabled.");
+      Logger.logd(LOG_TAG, `Ignoring ${interactionType}: swiping via mouse is disabled.`);
       return;
     }
 
     this.#blockedHorizontalLog = null;
     this.#blockedVerticalLog = null;
 
-    if (typeof event.composedPath() == "object") {
-      for (const element of event.composedPath()) {
-        if (element instanceof Element) {
-          if (element.nodeName == "HUI-VIEW") {
-            // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
-            break;
-          } else {
-            const nodeName = element.nodeName == null ? "unknown" : element.nodeName.toLowerCase();
+    const path = event.composedPath();
+    if (typeof path == "object") {
+      for (const element of path) {
+        if (!(element instanceof Element)) continue;
+        if (element.nodeName == "HUI-VIEW") {
+          // hui-view is the root element of the Home Assistant dashboard, so we can stop here.
+          break;
+        }
 
-            if (element.matches && element.matches(exceptions)) {
-              Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on \"" + nodeName + "\".");
-              return; // Ignore swipe
-            }
+        // Fast early-out: if the element doesn't match any exception selector,
+        // skip the per-bucket checks entirely.
+        if (!anyExceptionSelector || !element.matches(anyExceptionSelector)) continue;
 
-            if (element.matches?.(scrollDependentExceptions)) {
-              if (this.#blockedHorizontalLog == null && element.scrollWidth > element.clientWidth) {
-                this.#blockedHorizontalLog = "Ignoring " + interactionType + " on horizontally scrollable \"" + nodeName + "\".";
-              }
-              if (this.#blockedVerticalLog == null && element.scrollHeight > element.clientHeight) {
-                this.#blockedVerticalLog = "Ignoring " + interactionType + " on vertically scrollable \"" + nodeName + "\".";
-              }
-            }
+        if (plainSelectors && element.matches(plainSelectors)) {
+          Logger.logd(LOG_TAG, `Ignoring ${interactionType} on "${element.nodeName.toLowerCase()}".`);
+          return; // Ignore swipe
+        }
 
-            if (allScopedSelectors && element.matches?.(allScopedSelectors)) {
-              const root = element.getRootNode();
-              if (root instanceof ShadowRoot) {
-                for (const scoped of scopedExceptions) {
-                  if (root.host.matches(scoped.host) && element.matches(scoped.selectors)) {
-                    Logger.logd(LOG_TAG, "Ignoring " + interactionType + " on scoped exception \""
-                      + scoped.host + " >> " + scoped.selectors + "\".");
-                    return; // Ignore swipe (scoped exception)
-                  }
-                }
+        if (!this.#areBothAxesBlocked() && scrollDependentSelectors && element.matches(scrollDependentSelectors)) {
+          this.#applyScrollDependentBlock(element, interactionType);
+        }
+
+        if (allScopedSelectors && element.matches(allScopedSelectors)) {
+          const root = element.getRootNode();
+          if (root instanceof ShadowRoot) {
+            for (const scoped of scopedExceptions) {
+              if (!root.host.matches(scoped.host)) continue;
+              if (!element.matches(scoped.selector)) continue;
+
+              if (scoped.scrollDependent) {
+                if (this.#areBothAxesBlocked()) continue;
+                this.#applyScrollDependentBlock(element, interactionType, ` scoped to "${scoped.host}"`);
+              } else {
+                Logger.logd(LOG_TAG, `Ignoring ${interactionType} on scoped exception "${scoped.host} >> ${scoped.selector}".`);
+                return; // Ignore swipe (scoped exception)
               }
             }
           }
