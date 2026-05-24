@@ -73,7 +73,7 @@ If you want to modify the configuration, place it in the root of your dashboard 
 | swipe_amount       | number  |  `15`   | Minimum percent of screen needed to be swiped in order to navigate.                                                                                                          |
 | wrap               | boolean | `true`  | Wrap from first tab to last tab and vice versa.                                                                                                                              |
 | ~~skip_hidden~~    | boolean | `true`  | Automatically skip hidden tabs.<br>⚠️ _Setting this to `false` is deprecated and poses a security risk as it allows a user to reveal a tab they don't have access to._        |
-| indicator          | boolean | `true`  | Show the bottom slide indicator (dots).                                                                                                                                      |
+| indicator          | boolean | `false` | Show the bottom slide indicator (dots).                                                                                                                                      |
 | indicator_duration | number  | `1500`  | How long (ms) the indicator remains visible after the swipe ends. Should be at least animate_duration + indicator_resync_buffer to avoid flickering.                         |
 | indicator_resync_buffer | number | `50` | Extra buffer (ms) added to `animate_duration` before the indicator resyncs after a swipe. Increase on slower devices/themes to avoid flicker.                              |
 

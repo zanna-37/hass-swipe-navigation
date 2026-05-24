@@ -17,7 +17,7 @@ class Config {
   private skip_tabs: readonly number[] = [];
   private swipe_amount = 0.15;
   private wrap = true;
-  private indicator = true;               // default: true
+  private indicator = false;
   private indicator_duration = 1500;      // default: 2000
   private indicator_resync_buffer = 120;    // default: 120
 
