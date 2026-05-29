@@ -28,6 +28,7 @@ rules:
                                         'core',
                                         'docker',
                                         'swipe-exception',
+                                        'tests'
                                     ]
                                 ]
     scope-case:                 [2, always, 'lower-case']

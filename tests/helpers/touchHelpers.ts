@@ -1,6 +1,20 @@
 import { JSHandle, Locator, Page } from "@playwright/test";
 
 export class SwipeHelper {
+  // Settle before dispatching a swipe:
+  // - Wait for the view to actually have rendered children (proxy for "HA
+  //   has loaded the dashboard's lovelace config and the dashboard is
+  //   visible"). Without this the first swipe can land before swipe-nav has
+  //   even read the config.
+  // - Sleep a beat so MutationObservers in swipe-navigation have run (which
+  //   is when it attaches its pointer listeners) and any in-flight view
+  //   animation (fade/flip/swipe transition) has finished.
+  private static async waitForReady(target: Locator) {
+    const page = target.page();
+    await page.locator("[id='view'] > *").first().waitFor({ state: "attached", timeout: 10000 });
+    await page.waitForTimeout(500);
+  }
+
   private static async getTouchEventInit(x: number, y: number, touchId: number, element: Locator) {
     const touchEvent = await element.evaluateHandle(
       (element: Element, [x, y, touchId]: number[]) => {
@@ -66,30 +80,35 @@ export class SwipeHelper {
   }
 
   static async swipeLeft(target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await this.swipe(box.x + box.width * 0.9, box.x + box.width * 0.1, box.y + box.height / 2, box.y + box.height / 2, target);
   }
 
   static async swipeRight(target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await this.swipe(box.x + box.width * 0.1, box.x + box.width * 0.9, box.y + box.height / 2, box.y + box.height / 2, target);
   }
 
   static async swipeUp(target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.9, box.y + box.height * 0.1, target);
   }
 
   static async swipeDown(target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.1, box.y + box.height * 0.9, target);
   }
 
   static async swipeLeftMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await page.mouse.move(box.x + box.width * 0.9, box.y + box.height / 2);
@@ -99,6 +118,7 @@ export class SwipeHelper {
   }
 
   static async swipeRightMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await page.mouse.move(box.x + box.width * 0.1, box.y + box.height / 2);
@@ -108,6 +128,7 @@ export class SwipeHelper {
   }
 
   static async swipeUpMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.9);
@@ -117,6 +138,7 @@ export class SwipeHelper {
   }
 
   static async swipeDownMouse(page: Page, target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
     await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.1);
