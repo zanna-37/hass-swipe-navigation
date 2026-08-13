@@ -100,4 +100,4 @@ Big thanks to:
 * [@maykar](https://github.com/maykar) The original author of this project.
 
 ## Star History
-[![Star History Chart](https://api.star-history.com/svg?repos=zanna-37/hass-swipe-navigation&type=Date)](https://star-history.com/#zanna-37/hass-swipe-navigation&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=zanna-37/hass-swipe-navigation&type=Date)](https://star-history.dera.page/#zanna-37/hass-swipe-navigation&Date)
