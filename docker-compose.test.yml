@@ -25,7 +25,6 @@ services:
       - nodemodules_tester:/project/node_modules
 
       # Sync time with host
-      - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
 
     working_dir: /project

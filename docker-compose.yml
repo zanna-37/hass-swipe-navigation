@@ -15,7 +15,6 @@ services:
       - nodemodules_builder:/project/node_modules
 
       # Sync time with host
-      - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
 
     working_dir: /project
@@ -41,7 +40,6 @@ services:
       - .hass/config/www/touchpoints-visualizer.js:/config/www/touchpoints-visualizer.js:ro
 
       # Sync time with host
-      - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
 
     stop_grace_period: 1m
