@@ -33,7 +33,7 @@ test("shouldn't change, slider swiped", async ({ page }) => {
 
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "div".*/;
+  const regexp = /.*Ignoring touch on "div[^"]*".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

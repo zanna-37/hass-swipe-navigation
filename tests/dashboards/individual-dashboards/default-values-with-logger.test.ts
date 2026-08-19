@@ -19,7 +19,7 @@ test("shouldn't change, tabs swiped ", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "ha-tab-group".*/;
+  const regexp = /.*Ignoring touch on "ha-tab-group[^"]*".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

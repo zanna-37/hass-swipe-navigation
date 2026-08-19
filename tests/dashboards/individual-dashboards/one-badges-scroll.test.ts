@@ -26,7 +26,7 @@ test("shouldn't change, badges-scroll swiped", async ({ page }) => {
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on "div".*/;
+  const regexp = /.*Ignoring touch on "div[^"]*".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }

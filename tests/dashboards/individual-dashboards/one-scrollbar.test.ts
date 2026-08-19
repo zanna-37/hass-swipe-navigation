@@ -29,7 +29,7 @@ test("scrollbar swipe behavior depends on overflow", async ({ page, isMobile }) 
     await expect(page).toHaveURL(dashboardPath + "/0");
 
     let matches = 0;
-    const regexp = /.*Ignoring touch on horizontally scrollable "ha-chip-set".*/;
+    const regexp = /.*Ignoring touch on horizontally scrollable "ha-chip-set[^"]*".*/;
     for (const log of consoleLogs) {
       if (regexp.test(log)) { matches++; }
     }
@@ -42,7 +42,7 @@ test("scrollbar swipe behavior depends on overflow", async ({ page, isMobile }) 
     await expect(page).toHaveURL(dashboardPath + "/0");
 
     let matches = 0;
-    const regexp = /.*Ignoring touch on (?:horizontally scrollable )?"ha-chip-set".*/;
+    const regexp = /.*Ignoring touch on (?:horizontally scrollable )?"ha-chip-set[^"]*".*/;
     for (const log of consoleLogs) {
       if (regexp.test(log)) { matches++; }
     }

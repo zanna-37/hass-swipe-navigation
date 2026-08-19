@@ -10,6 +10,10 @@ import {
   anyExceptionSelector,
 } from "./swipeExceptions";
 
+// Cap on how many classes reach the logs, so that a single debug line stays
+// readable when an element stacks a long list of them.
+const MAX_LOGGED_CLASSES = 4;
+
 class SwipeManager {
   static #xDown: number | null;
   static #yDown: number | null;
@@ -71,17 +75,38 @@ class SwipeManager {
     return this.#blockedHorizontalLog != null && this.#blockedVerticalLog != null;
   }
 
+  /**
+   * Renders an element the way the exception list is written — node name, id and
+   * classes concatenated into a CSS selector — so that a log line can be matched
+   * against the entries of swipeExceptions.ts.
+   *
+   * At most MAX_LOGGED_CLASSES classes are listed; the rest are only counted.
+   */
+  static #describeElement(element: Element) {
+    const nodeName = element.nodeName.toLowerCase();
+    const id = element.id ? `#${element.id}` : "";
+
+    // classList, not className: on SVG elements the latter is an
+    // SVGAnimatedString rather than a string.
+    const classes = Array.from(element.classList);
+    const listedClasses = classes.slice(0, MAX_LOGGED_CLASSES).map((c) => `.${c}`).join("");
+    const omittedClasses = classes.length - MAX_LOGGED_CLASSES;
+    const omittedSuffix = omittedClasses > 0 ? ` (+${omittedClasses} more)` : "";
+
+    return `${nodeName}${id}${listedClasses}${omittedSuffix}`;
+  }
+
   static #applyScrollDependentBlock(
     element: Element,
     interactionType: string,
     scopeSuffix: string = "",
   ) {
-    const nodeName = element.nodeName.toLowerCase();
+    const description = this.#describeElement(element);
     if (this.#blockedHorizontalLog == null && element.scrollWidth > element.clientWidth) {
-      this.#blockedHorizontalLog = `Ignoring ${interactionType} on horizontally scrollable "${nodeName}"${scopeSuffix}.`;
+      this.#blockedHorizontalLog = `Ignoring ${interactionType} on horizontally scrollable "${description}"${scopeSuffix}.`;
     }
     if (this.#blockedVerticalLog == null && element.scrollHeight > element.clientHeight) {
-      this.#blockedVerticalLog = `Ignoring ${interactionType} on vertically scrollable "${nodeName}"${scopeSuffix}.`;
+      this.#blockedVerticalLog = `Ignoring ${interactionType} on vertically scrollable "${description}"${scopeSuffix}.`;
     }
   }
 
@@ -141,7 +166,7 @@ class SwipeManager {
         if (!anyExceptionSelector || !element.matches(anyExceptionSelector)) continue;
 
         if (plainSelectors && element.matches(plainSelectors)) {
-          Logger.logd(LOG_TAG, `Ignoring ${interactionType} on "${element.nodeName.toLowerCase()}".`);
+          Logger.logd(LOG_TAG, `Ignoring ${interactionType} on "${this.#describeElement(element)}".`);
           return; // Ignore swipe
         }
 
@@ -160,7 +185,7 @@ class SwipeManager {
                 if (this.#areBothAxesBlocked()) continue;
                 this.#applyScrollDependentBlock(element, interactionType, ` scoped to "${scoped.host}"`);
               } else {
-                Logger.logd(LOG_TAG, `Ignoring ${interactionType} on scoped exception "${scoped.host} >> ${scoped.selector}".`);
+                Logger.logd(LOG_TAG, `Ignoring ${interactionType} on "${this.#describeElement(element)}", matching scoped exception "${scoped.host} >> ${scoped.selector}".`);
                 return; // Ignore swipe (scoped exception)
               }
             }

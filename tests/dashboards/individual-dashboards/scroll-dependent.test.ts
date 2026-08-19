@@ -32,7 +32,7 @@ test("should swipe horizontally on vertically scrollable .ha-scrollbar", async (
   await expect(page).toHaveURL(dashboardPath + "/1");
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on (?:horizontally|vertically) scrollable "div".*/;
+  const regexp = /.*Ignoring touch on (?:horizontally|vertically) scrollable "div[^"]*".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }
@@ -65,7 +65,7 @@ test("should allow horizontal/vertical swipe on non-scrollable .ha-scrollbar", a
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let blockedMatches = 0;
-  const blockedRegexp = /.*Ignoring touch on (?:horizontally|vertically) scrollable "div".*/;
+  const blockedRegexp = /.*Ignoring touch on (?:horizontally|vertically) scrollable "div[^"]*".*/;
   for (const log of consoleLogs) {
     if (blockedRegexp.test(log)) { blockedMatches++; }
   }
@@ -106,7 +106,7 @@ test("should block horizontal swipe on horizontally scrollable .ha-scrollbar", a
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   let matches = 0;
-  const regexp = /.*Ignoring touch on horizontally scrollable "ha-chip-set".*/;
+  const regexp = /.*Ignoring touch on horizontally scrollable "ha-chip-set[^"]*".*/;
   for (const log of consoleLogs) {
     if (regexp.test(log)) { matches++; }
   }
