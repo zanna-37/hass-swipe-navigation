@@ -120,8 +120,9 @@ const exceptions: ExceptionEntry[] = [
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-status-card)
   "vehicle-status-card",
   // Weather Forecast Card (https://github.com/troinine/ha-weather-forecast-card)
-  { selector: ".is-scrollable",
-    host: "weather-forecast-card" },
+  { selector: ".wfc-scroll-container",
+    host: "weather-forecast-card",
+    scrollDependent: true },
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
   // CSS-Swipe-Card (https://github.com/Nemuritor01/css-swipe-card)
