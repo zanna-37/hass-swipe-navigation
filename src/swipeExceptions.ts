@@ -106,6 +106,8 @@ const exceptions: ExceptionEntry[] = [
   "slider-button-card",
   // Swipe Card (https://github.com/bramkragten/swipe-card)
   "swipe-card",
+  // Swipe Navigation Card (https://github.com/Tjstock/swipe-navigation-card)
+  "swipe-navigation-card",
   // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
   ".swiper",
   // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
