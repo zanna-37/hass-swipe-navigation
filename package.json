@@ -1,5 +1,5 @@
 {
-  "name": "lovelace-swipe-navigation",
+  "name": "hass-swipe-navigation",
   "scripts": {
     "build": "rollup --config",
     "build:watch": "rollup --config --watch"
