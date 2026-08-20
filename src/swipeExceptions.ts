@@ -64,6 +64,11 @@ const exceptions: ExceptionEntry[] = [
   // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
   // all symbols. Only consider letters and numbers.
 
+  // Advanced Camera Card (https://github.com/dermotduffy/advanced-camera-card)
+  //   Carousels are dragged with transforms behind an `overflow: hidden` viewport, so
+  //   overflow can't be measured and the whole card must be excluded.
+  "advanced-camera-card",
+  "frigate-card", // pre-v7 name, still registered as an alias by the same bundle
   // UI Card for Better Thermostat (https://github.com/KartoffelToby/better-thermostat-ui-card)
   "better-thermostat-ui-card",
   // Big Slider Card (https://github.com/nicufarmache/lovelace-big-slider-card)
