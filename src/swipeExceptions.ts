@@ -34,6 +34,9 @@ const exceptions: ExceptionEntry[] = [
   // all symbols. Only consider letters and numbers.
 
   // Badges scroll behavior
+  { selector: ".badges",
+    host: "hui-heading-card",
+    scrollDependent: true },
   ".badges-scroll",
   // Dashboard tabs
   "ha-tabs", // removed in HA v2025.5
