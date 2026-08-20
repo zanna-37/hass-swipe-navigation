@@ -101,6 +101,9 @@ const exceptions: ExceptionEntry[] = [
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
   "sankey-chart",
+  // Statistics Graph Chart Card (https://github.com/cataseven/Statistics-Graph-Chart-Card)
+  { selector: ".sgc-plot-wrap",
+    host: "statistics-graph-chart-card" },
   // Slide confirm (https://github.com/itsbrianburton/slide-confirm)
   ".slide-confirm",
   // Simple Swipe Card (https://github.com/nutteloost/simple-swipe-card)
