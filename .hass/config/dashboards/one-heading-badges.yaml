@@ -1,0 +1,63 @@
+swipe_nav:
+  swipe_amount: 1
+  logger_level: verbose
+
+views:
+
+  - title: Heading Badges
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          # Enough badges to overflow the strip on both the desktop and the
+          # mobile viewports, so the swipe is blocked regardless of the project.
+          - type: heading
+            heading: Overflowing
+            heading_style: title
+            badges:
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+              - type: entity
+                entity: light.main_light
+
+          # A single badge never overflows, so the swipe must still go through.
+          - type: heading
+            heading: Not overflowing
+            heading_style: subtitle
+            badges:
+              - type: entity
+                entity: light.main_light
+
+          - type: markdown
+            title: Control
+            content: Content...
+
+  - title: View 2
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            title: View 2
+            content: Content...
