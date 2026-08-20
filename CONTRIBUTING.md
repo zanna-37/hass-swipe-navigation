@@ -86,10 +86,7 @@ Remember also to disable the network cache in your browser to make sure you are 
 ## Use your own real installation of Home Assistant {#use-real-hass}
 If you prefer to use your own real installation of Home Assistant, you can do so by following these steps:
 - Remove the official plugin from HACS (or any other place you installed it from)
-- You have to add the resource to Home Assistant UI:
-  - Enable `Advanced Mode` in your profile page
-  - Go to Dashboard Resources and add the resource `http://localhost:3000/swipe-navigation.js`:
-    - _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add Resource_ → Set _URL_ as `http://localhost:3000/swipe-navigation.js` → Set _Resource type_ as `JavaScript Module`.
+- Add the resource in the Home Assistant UI: _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add resource_ → Set _URL_ as `http://localhost:3000/swipe-navigation.js` → Set _Resource type_ as `JavaScript module`.
 - Remember also to disable the network cache in your browser to make sure you are using the latest version of the compiled `swipe-navigation.js` file.
 - Remember to remove the resource when you are done.
 

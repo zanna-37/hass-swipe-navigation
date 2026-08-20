@@ -23,11 +23,17 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
 **Follow only one of these installation methods.**
 
 <details>
-  <summary><b>Installation and tracking with HACS:</b></summary>
+  <summary><b>Installation and tracking with HACS (recommended):</b></summary>
 
-1. In "Frontend" hit the plus button at the bottom right, search for "Home Assistant swipe navigation", and install.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=zanna-37&repository=hass-swipe-navigation&category=plugin)
 
-2. Refresh the Dashboard page. You might need to clear the cache.
+1. Open the badge above to jump straight to this repository in HACS.
+   Alternatively, open HACS from the Home Assistant sidebar and search for `Swipe Navigation`: the entry is listed as _Home Assistant Swipe Navigation_.
+
+2. On the repository page, select _Download_ in the bottom right corner.
+   HACS adds the dashboard resource automatically; if your dashboards are in YAML mode, the dialog shows the resource entry to add by hand instead.
+
+3. Confirm when HACS asks to reload the browser.
 </details>
 
 <details>
@@ -35,7 +41,7 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
   
 1. Copy [swipe-navigation.js](https://github.com/zanna-37/hass-swipe-navigation/releases/latest) from the latest release into `/www/hass-swipe-navigation/`
 
-2. Add the resource in Dashboard Resources.
+2. Add the resource in _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add resource_ → Set _URL_ as the path below → Set _Resource type_ as `JavaScript module`.
 
 ```yaml
 # Increase the version number (`v=x.y.z`) at end of the URL after each update
