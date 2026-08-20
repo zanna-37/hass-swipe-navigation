@@ -96,6 +96,8 @@ const exceptions: ExceptionEntry[] = [
   // @material/mwc-tab-bar (https://www.npmjs.com/package/@material/mwc-tab-bar)
   //   Used by: Tabbed Card (https://github.com/kinghat/tabbed-card)
   "mwc-tab-bar",
+  // Navbar Card (https://github.com/joseluis9595/lovelace-navbar-card)
+  "navbar-card",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
   // Bubble Card (https://github.com/Clooos/Bubble-Card)
