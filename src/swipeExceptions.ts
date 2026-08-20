@@ -68,6 +68,13 @@ const exceptions: ExceptionEntry[] = [
   "better-thermostat-ui-card",
   // Big Slider Card (https://github.com/nicufarmache/lovelace-big-slider-card)
   "big-slider-card",
+  // Paper Buttons Row (https://github.com/jcwillox/lovelace-paper-buttons-row)
+  //   The card ships no scrolling of its own: .flex-box becomes scrollable only through
+  //   custom CSS, from the card's `styles` option or card-mod. The host can't be the
+  //   target: with no `:host` rule it stays `display: inline` and measures zero.
+  { selector: ".flex-box",
+    host: "paper-buttons-row",
+    scrollDependent: true },
   // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
   "floor3d-card",
   // Weather Forecast Extended Card (https://github.com/Thyraz/weather-forecast-extended)
