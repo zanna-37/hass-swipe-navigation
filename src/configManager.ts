@@ -29,6 +29,16 @@ class ConfigManager {
     return ConfigManager.currentConfig;
   }
   public static getPanel(): string | null {
+    // Read the panel prefix fresh from the current route, mirroring
+    // getCurrentViewName(). On the HA 2026.9 shell the dashboard mounts after
+    // the plugin has loaded, so the value cached by the early readConfig() run
+    // can be stale (null). Reading it here keeps navigateTo() from building
+    // "/null/<view>" URLs. The cached value is kept as a fallback.
+    const haPanelLovelace: (HTMLElement & PanelLovelaceCustom) | null = PageObjectManager.haPanelLovelace.getDomNode();
+    const panel = haPanelLovelace?.route?.prefix;
+    if (panel != null) {
+      ConfigManager.panel = panel.replace("/", "");
+    }
     return ConfigManager.panel;
   }
   public static getViews(): LovelaceViewConfig[] | null {

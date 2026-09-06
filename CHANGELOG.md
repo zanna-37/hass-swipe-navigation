@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [Unreleased]
+
+### Fixed 🐛
+- Fix swipe navigation being silently dead on Home Assistant 2026.9: the dashboard shell mounts after the plugin loads and its `childList` MutationObservers no longer fire when the nodes are (re)added, so `SwipeManager.init()` never attached its listeners and `ConfigManager` kept a stale (null) panel, making navigation build `/null/<view>` URLs. Added a bounded polling fallback in `PageObject` so the added-callbacks still run, and made `ConfigManager.getPanel()` read the panel prefix fresh from the current route.
+
+
 ## 🏷️ [v1.16.0] - 2026-04-11
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.8...v1.16.0)
 

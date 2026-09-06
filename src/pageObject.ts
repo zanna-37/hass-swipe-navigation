@@ -2,12 +2,29 @@ import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 
 
+// Polling fallback (see `startNodePollingFallback`). On the Home Assistant
+// 2026.9 shell some `childList` MutationObservers below no longer fire when the
+// dashboard nodes are (re)added, so the added-callbacks that features rely on to
+// (re)initialize would never run. We therefore also poll `getDomNode()` for a
+// bounded window and fire the callbacks if the target node appears without the
+// observer noticing.
+const NODE_POLL_INTERVAL_MS = 100;
+const NODE_POLL_MAX_ATTEMPTS = 50; // ~5 seconds
+
+
 class PageObject {
   private selectorPaths: string[];
   private domNodes: (Element | ShadowRoot | null)[] = [];
   private observers: (MutationObserver | null)[] = [];
   private domNodeAddedCallbacks: ((domNode: (Element | ShadowRoot)) => void)[] = [];
   private domNodeRemovedCallbacks: (() => void)[] = [];
+
+  // Last node for which the added-callbacks were delivered (by either the
+  // observers or the polling fallback). Used to avoid delivering the same node
+  // twice when both paths detect the same appearance.
+  private lastNotifiedNode: Element | ShadowRoot | null = null;
+  private nodePollTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private nodePollAttempts = 0;
 
   constructor(selectorsPaths: string[]) {
     this.selectorPaths = selectorsPaths;
@@ -26,6 +43,49 @@ class PageObject {
     // Push callbacks after creating the observers to avoid invoking the callback for the current
     // state of the DOM.
     this.domNodeAddedCallbacks.push(callback);
+
+    // Observers alone are not reliable on newer HA shells (see the note on the
+    // polling constants above), so back them up with a bounded poll.
+    this.startNodePollingFallback();
+  }
+
+  /**
+   * Bounded fallback for when the MutationObservers do not fire (observed on the
+   * HA 2026.9 shell). Periodically re-resolves the target node and, if it
+   * appears without having been reported by the observers, delivers the
+   * added-callbacks. Mirrors the observers' contract of not invoking callbacks
+   * for the node that is already present when the callback is registered.
+   */
+  private startNodePollingFallback(): void {
+    // Extend the polling window whenever a new consumer registers.
+    this.nodePollAttempts = 0;
+
+    if (this.nodePollTimeoutId != null) {
+      // A poll loop is already running; the reset above is enough.
+      return;
+    }
+
+    // Baseline: treat the currently present node (if any) as already notified so
+    // the poll only fires for nodes that appear from now on.
+    this.lastNotifiedNode = this.getDomNode();
+    this.scheduleNodePoll();
+  }
+
+  private scheduleNodePoll(): void {
+    this.nodePollTimeoutId = setTimeout(() => {
+      this.nodePollTimeoutId = null;
+      this.nodePollAttempts++;
+
+      const currentNode = this.getDomNode();
+      if (currentNode != null && currentNode !== this.lastNotifiedNode) {
+        Logger.logd(LOG_TAG, "DOM node detected via polling fallback: \"" + currentNode.nodeName.toLowerCase() + "\".");
+        this.invokeDomNodeAddedCallbacks(currentNode);
+      }
+
+      if (this.nodePollAttempts < NODE_POLL_MAX_ATTEMPTS) {
+        this.scheduleNodePoll();
+      }
+    }, NODE_POLL_INTERVAL_MS);
   }
 
   public toString(): string {
@@ -139,6 +199,8 @@ class PageObject {
   }
 
   private invokeDomNodeAddedCallbacks(domNode: Element | ShadowRoot): void {
+    // Record the node so the polling fallback does not deliver it a second time.
+    this.lastNotifiedNode = domNode;
     for (const callback of this.domNodeAddedCallbacks) {
       callback(domNode);
     }
