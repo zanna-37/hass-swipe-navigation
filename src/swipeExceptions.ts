@@ -105,6 +105,7 @@ const exceptions: ExceptionEntry[] = [
   "navbar-card",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
+  "#plotly .gl-container", // 3D plots: the WebGL scene canvas lives here, outside the SVG drag layer
   // Bubble Card (https://github.com/Clooos/Bubble-Card)
   ".range-slider",
   ".bubble-button-slider-container",
