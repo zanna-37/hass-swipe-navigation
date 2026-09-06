@@ -5,6 +5,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.16.1] - 2026-09-06
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.16.0...v1.16.1)
+
+### Added 🚀
+- Make scroll-dependent exceptions per-axis, so an element that only scrolls vertically no longer blocks horizontal swipes ([`97e4901`](https://github.com/zanna-37/hass-swipe-navigation/commit/97e49015a080806dcb19bcb1d93edc9506504548))
+- Log the id and the classes of the element that blocks a swipe, so a debug log points straight at the exception that matched ([`d2a91cf`](https://github.com/zanna-37/hass-swipe-navigation/commit/d2a91cf7af1d3d83699d0514402d98bd5596d58d))
+
+### Fixed 🐛
+- Add exception for "Weather Forecast Card", thanks to [@martkopecky](https://github.com/martkopecky) ([`#145`](https://github.com/zanna-37/hass-swipe-navigation/pull/145), [`7dda066`](https://github.com/zanna-37/hass-swipe-navigation/commit/7dda06621777a967e0c40aa2c10ad415f3c6b1d3))
+- Add exception for "Swipe Navigation Card" ([`013c490`](https://github.com/zanna-37/hass-swipe-navigation/commit/013c490142ab0c70f3b268d76880f1603e36ed1e) closes [`#141`](https://github.com/zanna-37/hass-swipe-navigation/issues/141))
+- Add exception for the badges of the Heading card ([`9ecf5af`](https://github.com/zanna-37/hass-swipe-navigation/commit/9ecf5af797f984121f5cf5c6b8a8f48553083f31) closes [`#140`](https://github.com/zanna-37/hass-swipe-navigation/issues/140))
+- Add exception for "Statistics Graph Chart Card" ([`cd48996`](https://github.com/zanna-37/hass-swipe-navigation/commit/cd4899666eae140585e2c1bcaf8a7fe6d244b0a0) closes [`#142`](https://github.com/zanna-37/hass-swipe-navigation/issues/142))
+- Add exception for "Paper Buttons Row" ([`997c311`](https://github.com/zanna-37/hass-swipe-navigation/commit/997c311c77c99142570e6e99c7642a2a12e561bb) closes [`#119`](https://github.com/zanna-37/hass-swipe-navigation/issues/119))
+- Add exception for "Navbar Card" ([`722af25`](https://github.com/zanna-37/hass-swipe-navigation/commit/722af250948a7c93df76d7bd43dd3c7c73a845a4))
+- Add exception for "Advanced Camera Card", including its former `frigate-card` name ([`2e5197d`](https://github.com/zanna-37/hass-swipe-navigation/commit/2e5197d59556102af5879001b43d4be3fe88d51c) closes [`#138`](https://github.com/zanna-37/hass-swipe-navigation/issues/138))
+- Add exception for the 3D scenes of "Plotly Graph Card" ([`b4e5dc4`](https://github.com/zanna-37/hass-swipe-navigation/commit/b4e5dc49e92c24f374358e3b92942eb652fdcec5) closes [`#150`](https://github.com/zanna-37/hass-swipe-navigation/issues/150))
+- Add exception for "Slide Toggle Card" ([`f33fc80`](https://github.com/zanna-37/hass-swipe-navigation/commit/f33fc803d0c7d36899551ff9173ea51c501ed488) closes [`#149`](https://github.com/zanna-37/hass-swipe-navigation/issues/149))
+
+### Changed 📝
+- Stop mounting `/etc/timezone` into the development containers ([`60e3052`](https://github.com/zanna-37/hass-swipe-navigation/commit/60e3052c86045da62aa50f1b6687312ddf2c9a69))
+
+
 ## 🏷️ [v1.16.0] - 2026-04-11
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.15.8...v1.16.0)
 
