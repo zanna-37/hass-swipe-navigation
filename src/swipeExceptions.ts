@@ -138,6 +138,11 @@ const exceptions: ExceptionEntry[] = [
   // Android TV Card touchpad (https://github.com/Nerwyn/universal-remote-card)
   "toucharea",
   ".circlepad",
+  // Slide Toggle Card (https://github.com/ChadH360/slide-toggle-card)
+  //   The whole slider track, not only the knob: it is the visible slide affordance and the
+  //   card sets `touch-action: none` on it. The id is generic, hence the host gate.
+  { selector: "#track",
+    host: "slide-toggle-card" },
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-info-card)
   "vehicle-info-card",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-status-card)
