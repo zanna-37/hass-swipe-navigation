@@ -16,10 +16,9 @@ There are 4 steps to start this project:
 ## How to build the project {#build}
 There are different ways to run the project based on your preferences.
 
-### Using Docker
+### Using Docker {#build-docker}
 Docker is the official and supported way to run the project. It is also the easiest to get started.
 
-#### Plain Docker {#build-plain-docker}
 On the root of this repository, run the following command:
 ```bash
 docker compose up
@@ -29,13 +28,10 @@ This will start the project and expose port `3000`.
 The compiled `swipe-navigation.js` file at `http://localhost:3000/swipe-navigation.js`.
 The files is continuously compiled as you make changes to the source code.
 
-Now go to [start a test instance of Home Assistant in plain Docker](#start-hass-plain-docker) or [use your own real installation of Home Assistant](#use-real-hass).
+Now go to [start a test instance of Home Assistant with Docker](#start-hass-docker) or [use your own real installation of Home Assistant](#use-real-hass).
 
-#### VSCode Remote Container {#build-vscode}
-If you prefer to use vscode to develop, you can use the [Remote Containers](https://code.visualstudio.com/docs/remote/containers) extension to run the project in a container.
-
-Select `Remote-Containers: Reopen in Container` from the command palette.
-Open a new terminal inside vscode and run 
+### Native compilation {#build-native}
+Open a terminal in the root of this repository and run
 ```bash
 ./scripts/build.sh --serve
 ```
@@ -43,24 +39,20 @@ to enable the continuous compilation of the source code.
 
 The compiled `swipe-navigation.js` file at `http://localhost:3000/swipe-navigation.js`.
 
-Now go to [start a test instance of Home Assistant with VSCode Remote Container](#start-hass-vscode) or [use your own real installation of Home Assistant](#use-real-hass).
-
-### Native compilation
-Follow the same steps of the [VSCode Remote Container section](#build-vscode), but execute the commands in your system terminal instead of using the container's one.
+Now go to [start a test instance of Home Assistant for native compilation](#start-hass-native) or [use your own real installation of Home Assistant](#use-real-hass).
 
 -----
 
 ## Start a test instance of Home Assistant {#start-hass}
 
-### Using Docker
-#### Plain Docker {#start-hass-plain-docker}
-If you used [plain Docker compilation](#build-plain-docker), the test instance of Home Assistant is already running on port `8123`.
+### Using Docker {#start-hass-docker}
+If you used [Docker compilation](#build-docker), the test instance of Home Assistant is already running on port `8123`.
 
 Now go to [use a test instance of Home Assistant](#use-hass).
 
-#### VSCode Remote Container {#start-hass-vscode}
-If you used [VSCode Remote Container compilation](#build-vscode), you need to start the test instance of Home Assistant manually.
-Open a new terminal in the root of the project of your file system (outside vscode container) and run
+### Native compilation {#start-hass-native}
+If you used [native compilation](#build-native), you need to start the test instance of Home Assistant manually.
+Open a new terminal in the root of the project and run
 ```bash
 docker compose up hass
 ```
@@ -95,26 +87,20 @@ If you prefer to use your own real installation of Home Assistant, you can do so
 ## Run the tests {#test}
 
 ### Using Docker
-#### Plain Docker
 To run tests use the following command:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from tester
 ```
 
-#### VSCode Remote Container {#test-vscode}
-If you're using VSCode Remote Container you can run the tests directly from the container.
+### Native compilation
+[Ensure that you are serving `swipe-navigation.js`](#build-native).
+[Ensure that the test instance of Home Assistant is running](#start-hass-native).
 
-[Ensure that you are serving `swipe-navigation.js`](#build-vscode).
-[Ensure that the test instance of Home Assistant is running](#start-hass-vscode).
-
-Open a new terminal inside vscode and run
+Open a terminal in the root of this repository and run
 ```bash
 ./scripts/run-playwright.sh
 ```
 to run the tests.
-
-### Native compilation
-Follow the same steps of the [VSCode Remote Container section](#test-vscode), but execute the commands in your system terminal instead of using the container's one.
 
 -----
 
