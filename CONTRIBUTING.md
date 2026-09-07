@@ -1,108 +1,84 @@
 # Contributing
-⚠️ **This file is a draft. Please open an issue if you find difficult to follow the instruction or if you have ideas to improve it.**
 
-First of all, thank you for taking the time to contribute to this project. It is very much appreciated.
-This document helps you get started to make your contribution as smooth as possible.
+Thank you for taking the time to contribute. If anything in this guide is unclear, please open an issue.
 
-There are 4 steps to start this project:
-- [Build the project](#build)
-- (Optional) [Start a test instance of Home Assistant](#start-hass)
-- (Optional) [Use a test instance of Home Assistant](#use-hass)
-- (Optional) [Use your real Home Assistant instance](#use-real-hass)
-- (Optional) [Run the tests](#test)
+Pick one of the two setups below, then jump to [Use the test instance](#use-the-test-instance) or [Run the tests](#run-the-tests).
 
 -----
 
-## How to build the project {#build}
-There are different ways to run the project based on your preferences.
+## Setup with Docker (recommended)
 
-### Using Docker {#build-docker}
-Docker is the official and supported way to run the project. It is also the easiest to get started.
-
-On the root of this repository, run the following command:
+From the repository root run:
 ```bash
 docker compose up
 ```
 
-This will start the project and expose port `3000`.
-The compiled `swipe-navigation.js` file at `http://localhost:3000/swipe-navigation.js`.
-The files is continuously compiled as you make changes to the source code.
+This starts two containers:
+- `builder` rebuilds `swipe-navigation.js` on every source change and serves it at `http://localhost:3000/swipe-navigation.js`.
+- `hass` is a test instance of Home Assistant on `http://localhost:8123`, already configured to load the served file.
 
-Now go to [start a test instance of Home Assistant with Docker](#start-hass-docker) or [use your own real installation of Home Assistant](#use-real-hass).
+-----
 
-### Native compilation {#build-native}
-Open a terminal in the root of this repository and run
+## Native setup
+
+Requires Node.js (the Docker image uses version 24). Docker is still needed for the Home Assistant test instance.
+
+Build and serve the file (installs dependencies, lints, then rebuilds on every source change):
 ```bash
 ./scripts/build.sh --serve
 ```
-to enable the continuous compilation of the source code.
 
-The compiled `swipe-navigation.js` file at `http://localhost:3000/swipe-navigation.js`.
-
-Now go to [start a test instance of Home Assistant for native compilation](#start-hass-native) or [use your own real installation of Home Assistant](#use-real-hass).
-
------
-
-## Start a test instance of Home Assistant {#start-hass}
-
-### Using Docker {#start-hass-docker}
-If you used [Docker compilation](#build-docker), the test instance of Home Assistant is already running on port `8123`.
-
-Now go to [use a test instance of Home Assistant](#use-hass).
-
-### Native compilation {#start-hass-native}
-If you used [native compilation](#build-native), you need to start the test instance of Home Assistant manually.
-Open a new terminal in the root of the project and run
+In a second terminal, start the Home Assistant test instance:
 ```bash
 docker compose up hass
 ```
-to start the test instance of Home Assistant.
-
-Now go to [use a test instance of Home Assistant](#use-hass).
 
 -----
 
-## Use a test instance of Home Assistant {#use-hass}
-You can access the test instance of Home Assistant at `http://localhost:8123`.
-- Default credentials are
-  - username: `user`
-  - password: `pass`
+## Use the test instance
 
-This test instance is already configured to use the compiled `swipe-navigation.js` file.
+Open `http://localhost:8123` and log in with username `user` and password `pass`.
+The instance already loads `swipe-navigation.js` from port `3000` and ships with a few test dashboards.
 
-Remember to enable to "mobile" mode in your browser to simulate touch events, unless you have a native touch display of course.
-Remember also to disable the network cache in your browser to make sure you are using the latest version of the compiled `swipe-navigation.js` file.
+Tips:
+- Enable your browser's mobile/touch emulation to simulate touch events, unless you have a touch screen.
+- Disable the browser cache (DevTools → Network → _Disable cache_) so you always get the latest build.
 
 -----
 
-## Use your own real installation of Home Assistant {#use-real-hass}
-If you prefer to use your own real installation of Home Assistant, you can do so by following these steps:
-- Remove the official plugin from HACS (or any other place you installed it from)
-- Add the resource in the Home Assistant UI: _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add resource_ → Set _URL_ as `http://localhost:3000/swipe-navigation.js` → Set _Resource type_ as `JavaScript module`.
-- Remember also to disable the network cache in your browser to make sure you are using the latest version of the compiled `swipe-navigation.js` file.
-- Remember to remove the resource when you are done.
+## Use your own Home Assistant instead
+
+You can point a real Home Assistant installation at the locally served file.
+Open Home Assistant in a browser on the same machine that runs the build, because the resource URL points to `localhost`.
+
+1. Remove the plugin installed via HACS (or however you installed it), so the two copies don't conflict.
+2. Add a resource: _Settings_ → _Dashboards_ → _More options_ (⋮) → _Resources_ → _Add resource_, with URL `http://localhost:3000/swipe-navigation.js` and type _JavaScript module_.
+3. Disable the browser cache as described above.
+4. Remove the resource when you are done.
 
 -----
 
-## Run the tests {#test}
+## Run the tests
 
-### Using Docker
-To run tests use the following command:
+The tests are Playwright end-to-end tests that run against the Home Assistant test instance.
+
+### With Docker
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from tester
 ```
+The command starts the containers it needs, runs the tests, then stops **every** container of the project.
 
-### Native compilation
-[Ensure that you are serving `swipe-navigation.js`](#build-native).
-[Ensure that the test instance of Home Assistant is running](#start-hass-native).
+> ⚠️ **This interrupts a running `docker compose up`.** The dev `hass` container is killed right away and recreated with the test configuration; `builder` keeps running during the tests but is stopped when they finish. Run `docker compose up` again afterwards to resume developing.
 
-Open a terminal in the root of this repository and run
+### Native
+With `./scripts/build.sh --serve` and `docker compose up hass` running, run:
 ```bash
 ./scripts/run-playwright.sh
 ```
-to run the tests.
+The script installs the Playwright browsers on first run and waits for both services to be reachable.
 
 -----
 
 ## Troubleshooting
-If the compiled code doesn't update, try to delete the `/dist/` folder.
+
+- The served file doesn't update: delete the `dist/` folder and restart the build.
