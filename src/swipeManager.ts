@@ -9,6 +9,7 @@ import {
   scopedExceptions,
   anyExceptionSelector,
 } from "./swipeExceptions";
+import { SwipeIndicator } from "./swipeIndicator";
 
 // Cap on how many classes reach the logs, so that a single debug line stays
 // readable when an element stacks a long list of them.
@@ -204,9 +205,11 @@ class SwipeManager {
       const eventCheck/*: never*/ = event; // Firefox doesn't always set TouchEvent type
       throw new Error(`Unhandled case: ${eventCheck}`);
     }
+    SwipeIndicator.onPointerStart();
   }
 
   static #handlePointerMove(event: TouchEvent | MouseEvent) {
+    SwipeIndicator.onPointerMove();
     if (this.#xDown && this.#yDown) {
       if (window.TouchEvent != null && event instanceof TouchEvent) {
         this.#xDiff = this.#xDown - event.touches[0].clientX;
@@ -275,6 +278,7 @@ class SwipeManager {
       }
     }
     this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
+    SwipeIndicator.onPointerEnd();
   }
 
   static #getNextViewName(directionLeft: boolean): string | null {
