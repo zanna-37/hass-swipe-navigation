@@ -42,7 +42,8 @@ class ConfigManager {
   }
   public static getCurrentViewName(): string | null {
     const haPanelLovelace: (HTMLElement & PanelLovelaceCustom) | null = PageObjectManager.haPanelLovelace.getDomNode();
-    return haPanelLovelace?.route?.path?.replace("/", "") ?? null;
+    const segment = haPanelLovelace?.route?.path?.split("/")[1];
+    return segment != null && segment !== "" ? segment : null;
   }
   public static getCurrentViewIndex(): number | null {
     const views = ConfigManager.views;
