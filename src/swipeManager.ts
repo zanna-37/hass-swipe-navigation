@@ -149,6 +149,22 @@ class SwipeManager {
       return;
     }
 
+    const edgeMargin = ConfigManager.getCurrentConfig().getEdgeMargin();
+    if (edgeMargin > 0) {
+      let startX: number | null = null;
+      if (window.TouchEvent != null && event instanceof TouchEvent) {
+        startX = event.touches[0].clientX;
+      } else if (event instanceof MouseEvent) {
+        startX = event.clientX;
+      }
+      if (startX != null && (startX < edgeMargin || startX > window.innerWidth - edgeMargin)) {
+        this.#xDown = null;
+        this.#yDown = null;
+        Logger.logd(LOG_TAG, `Ignoring ${interactionType}: started within ${edgeMargin}px of the screen edge.`);
+        return; // Ignore swipe: leave edge gestures (e.g. opening the sidebar) to the browser and Home Assistant
+      }
+    }
+
     this.#blockedHorizontalLog = null;
     this.#blockedVerticalLog = null;
 
