@@ -2,6 +2,7 @@ import { ConfigManager } from "./configManager";
 import { Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 import { PageObjectManager } from "./pageObjectManager";
+import { pinnedSelector } from "./pinnedElements";
 import {
   plainSelectors,
   scrollDependentSelectors,
@@ -27,6 +28,9 @@ class SwipeManager {
   static #blockedVerticalLog: string | null = null;
 
   static #pointerEventsAbortController: AbortController | null = null;
+
+  // Set while a `slide` animation is running; further swipes are ignored until it ends.
+  static #slideInProgress = false;
 
   static init() {
     this.#pointerEventsAbortController?.abort();
@@ -345,6 +349,9 @@ class SwipeManager {
       if (configAnimate == "none") {
         SwipeManager.navigateTo(viewName);
 
+      } else if (configAnimate == "slide") {
+        SwipeManager.slideNavigateTo(view, viewName, directionLeft);
+
       } else {
         const duration = ConfigManager.getCurrentConfig().getAnimateDuration();
         view.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
@@ -401,6 +408,182 @@ class SwipeManager {
         }
       }
     }
+  }
+
+  /**
+   * Slide the outgoing view out and the incoming view in, keeping pinned
+   * elements (see `pinnedElements.ts`) in place.
+   *
+   * Only `translate` is animated, so the animation runs on the compositor.
+   * It is applied to the siblings of the path from the view to the pinned
+   * element, never to the path itself: a transform on an ancestor would become
+   * the containing block of the pinned element's `position: fixed` content.
+   */
+  private static slideNavigateTo(view: HTMLElement, viewName: string, directionLeft: boolean) {
+    if (SwipeManager.#slideInProgress) {
+      Logger.logd(LOG_TAG, "Ignoring swipe: a slide animation is still running.");
+      return;
+    }
+    SwipeManager.#slideInProgress = true;
+    // Safety net, in case the animation is interrupted before it can clean up.
+    const inProgressGuard = setTimeout(() => { SwipeManager.#slideInProgress = false; }, 3000);
+
+    const duration = ConfigManager.getCurrentConfig().getAnimateDuration();
+    const haAppLayoutDomNode = PageObjectManager.haAppLayout.getDomNode();
+    if (haAppLayoutDomNode != null) {
+      // Clip horizontally, and keep it clipped after the animation: WebKit keeps the scrollable overflow of the
+      // off-screen positions after the (compositor-driven) slide, so once unclipped the page would stay wider than
+      // the screen, and the Home Assistant iOS app would hand left screen-edge pans to page scrolling instead of
+      // opening the sidebar. `clip` does not create a scroll container, so sticky headers keep working.
+      haAppLayoutDomNode.style.overflowX = "clip";
+    }
+
+    const outX = (directionLeft ? 1 : -1) * window.innerWidth;
+    const inX = -outX;
+    const savedStyles = new Map<HTMLElement, [string, string, string]>();
+    const setTranslate = (elements: HTMLElement[], x: number, transition: string) => {
+      for (const element of elements) {
+        if (!savedStyles.has(element)) {
+          savedStyles.set(element, [element.style.translate, element.style.transition, element.style.opacity]);
+        }
+        element.style.transition = transition;
+        element.style.translate = `${x}px 0px`;
+      }
+    };
+    const restoreStyles = (elements: HTMLElement[]) => {
+      for (const element of elements) {
+        const saved = savedStyles.get(element);
+        if (saved != null) {
+          [element.style.translate, element.style.transition, element.style.opacity] = saved;
+          savedStyles.delete(element);
+        }
+      }
+    };
+
+    const oldView = view.lastElementChild;
+    const oldMovers = oldView instanceof HTMLElement ? SwipeManager.getSlideMovers(oldView) : [];
+    setTranslate(oldMovers, 0, "none");
+    void view.offsetWidth; // Commit the start position so that the transition runs.
+    setTranslate(oldMovers, outX, `translate ${duration}ms ease-in`);
+
+    setTimeout(() => {
+      // Park the view container off-screen, so that the incoming view is rendered out of sight while Home Assistant
+      // swaps it in (pinned `position: fixed` content is not affected by `left`). The outgoing elements are
+      // counter-shifted to stay off-screen, and hidden with `opacity` because, unlike `visibility`, descendants
+      // cannot override it.
+      // The container is always parked to the left, whatever the direction: parking it to the right broke the
+      // left screen-edge gesture of the Home Assistant iOS app on the incoming view.
+      const parkX = -window.innerWidth;
+      for (const element of oldMovers) {
+        element.style.transition = "none";
+        element.style.translate = `${outX - parkX}px 0px`;
+        element.style.opacity = "0";
+      }
+      view.style.transition = "none";
+      view.style.left = `${parkX}px`;
+      // The view background is a child of the container too: counter-shift it so that it stays on screen, otherwise
+      // whatever is behind it (usually a different color) shows through until the incoming view slides in.
+      // A `position: fixed` background is not affected by `left`.
+      const background = view.firstElementChild;
+      const parkedBackground =
+        background instanceof HTMLElement &&
+        background.localName == "hui-view-background" &&
+        getComputedStyle(background).position != "fixed"
+          ? [background]
+          : [];
+      setTranslate(parkedBackground, -parkX, "none");
+
+      let slideInStarted = false;
+      const slideIn = () => {
+        if (slideInStarted) return;
+        slideInStarted = true;
+        observer.disconnect();
+        clearTimeout(swapTimeout);
+
+        // Give the incoming view a couple of frames to render.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          restoreStyles(oldMovers);
+
+          const newView = view.lastElementChild;
+          const newMovers = newView instanceof HTMLElement ? SwipeManager.getSlideMovers(newView) : [];
+          setTranslate(newMovers, inX, "none");
+          view.style.left = "";
+          restoreStyles(parkedBackground);
+          void view.offsetWidth; // Commit the start position so that the transition runs.
+          setTranslate(newMovers, 0, `translate ${duration}ms ease-out`);
+
+          setTimeout(() => {
+            restoreStyles(newMovers);
+            view.style.transition = "";
+            clearTimeout(inProgressGuard);
+            SwipeManager.#slideInProgress = false;
+          }, duration + 50);
+        }));
+      };
+
+      // Home Assistant swaps the view asynchronously, so wait for it instead of guessing a delay.
+      const observer = new MutationObserver(() => {
+        if (view.lastElementChild !== oldView) slideIn();
+      });
+      observer.observe(view, { childList: true });
+      const swapTimeout = setTimeout(slideIn, 500);
+
+      SwipeManager.navigateTo(viewName);
+    }, duration + 10);
+  }
+
+  /**
+   * Return the elements to move so that the view slides while its pinned elements stay in place: the siblings,
+   * in the flat tree, of every element on the path from `viewElement` to the first pinned element. If the view
+   * has no pinned element, the whole view is returned.
+   */
+  private static getSlideMovers(viewElement: HTMLElement): HTMLElement[] {
+    const path = SwipeManager.findPinnedPath(viewElement, 0);
+    if (path == null) return [viewElement];
+
+    const onPath = new Set<Element>(path);
+    const movers: HTMLElement[] = [];
+    const addMover = (element: Element) => {
+      const display = getComputedStyle(element).display;
+      if (display == "contents") {
+        // A `display: contents` element has no box to transform, move its children instead.
+        for (const child of SwipeManager.getFlatChildren(element)) addMover(child);
+      } else if (display != "none" && element instanceof HTMLElement) {
+        movers.push(element);
+      }
+    };
+    for (const element of path.slice(0, -1)) {
+      for (const child of SwipeManager.getFlatChildren(element)) {
+        if (!onPath.has(child)) addMover(child);
+      }
+    }
+    return movers;
+  }
+
+  private static findPinnedPath(element: Element, depth: number): Element[] | null {
+    if (element.matches(pinnedSelector)) return [element];
+    if (depth > 60) return null;
+    for (const child of SwipeManager.getFlatChildren(element)) {
+      const path = SwipeManager.findPinnedPath(child, depth + 1);
+      if (path != null) {
+        path.unshift(element);
+        return path;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Children as rendered: an element's shadow root content replaces its light DOM children, and a slot is replaced
+   * by the elements assigned to it.
+   */
+  private static getFlatChildren(element: Element): Element[] {
+    if (element.shadowRoot != null) return Array.from(element.shadowRoot.children);
+    if (element instanceof HTMLSlotElement) {
+      const assigned = element.assignedElements({ flatten: true });
+      return assigned.length > 0 ? assigned : Array.from(element.children);
+    }
+    return Array.from(element.children);
   }
 
   private static navigateTo(viewName: string) {
