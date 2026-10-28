@@ -85,3 +85,38 @@ test("should keep pinned elements in place, using animation slide", async ({ pag
   expect(positions.length).toBeGreaterThan(0);
   expect(new Set(positions)).toEqual(new Set([`${Math.round(navbarBox.x)},${Math.round(navbarBox.y)}`]));
 });
+
+test("should keep the view background in place, using animation slide", async ({ page }) => {
+  const dashboardPath = "/animate-slide";
+  await page.goto(dashboardPath);
+  await expect(page).toHaveURL(dashboardPath + "/0");
+  await expect(page.locator("hui-view-background")).toBeAttached();
+
+  // Record, on every frame, where the view background is drawn.
+  await page.evaluate(() => {
+    const positions: number[] = [];
+    (window as unknown as { backgroundPositions: number[] }).backgroundPositions = positions;
+    const sample = () => {
+      const background = document.querySelector("home-assistant")?.shadowRoot
+        ?.querySelector("home-assistant-main")?.shadowRoot
+        ?.querySelector("ha-panel-lovelace")?.shadowRoot
+        ?.querySelector("hui-root")?.shadowRoot
+        ?.querySelector("hui-view-background");
+      if (background != null) positions.push(Math.round(background.getBoundingClientRect().x));
+      requestAnimationFrame(sample);
+    };
+    requestAnimationFrame(sample);
+  });
+
+  const haAppLayout = page.locator("[id='view']");
+  await SwipeHelper.swipeLeft(haAppLayout);
+  await expect(page).toHaveURL(dashboardPath + "/1");
+  await SwipeHelper.swipeRight(haAppLayout);
+  await expect(page).toHaveURL(dashboardPath + "/0");
+  await page.waitForTimeout(1000);
+
+  const positions = await page.evaluate(() => (window as unknown as { backgroundPositions: number[] }).backgroundPositions);
+  expect(positions.length).toBeGreaterThan(0);
+  // Whatever the layout puts it at, it must never move.
+  expect(new Set(positions).size).toBe(1);
+});

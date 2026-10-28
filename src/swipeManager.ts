@@ -481,6 +481,17 @@ class SwipeManager {
       }
       view.style.transition = "none";
       view.style.left = `${parkX}px`;
+      // The view background is a child of the container too: counter-shift it so that it stays on screen, otherwise
+      // whatever is behind it (usually a different color) shows through until the incoming view slides in.
+      // A `position: fixed` background is not affected by `left`.
+      const background = view.firstElementChild;
+      const parkedBackground =
+        background instanceof HTMLElement &&
+        background.localName == "hui-view-background" &&
+        getComputedStyle(background).position != "fixed"
+          ? [background]
+          : [];
+      setTranslate(parkedBackground, -parkX, "none");
 
       let slideInStarted = false;
       const slideIn = () => {
@@ -497,6 +508,7 @@ class SwipeManager {
           const newMovers = newView instanceof HTMLElement ? SwipeManager.getSlideMovers(newView) : [];
           setTranslate(newMovers, inX, "none");
           view.style.left = "";
+          restoreStyles(parkedBackground);
           void view.offsetWidth; // Commit the start position so that the transition runs.
           setTranslate(newMovers, 0, `translate ${duration}ms ease-out`);
 
