@@ -81,6 +81,9 @@ test("should allow horizontal/vertical swipe on non-scrollable .ha-scrollbar", a
 
 test("should block horizontal swipe on horizontally scrollable .ha-scrollbar", async ({ page }) => {
   const dashboardPath = "/scroll-dependent";
+  // The entities-card header wraps its chips onto new lines on wide viewports and only
+  // scrolls horizontally on narrow ones, so every project runs this test at phone width.
+  await page.setViewportSize({ width: 400, height: 800 });
   await page.goto(dashboardPath);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
@@ -98,8 +101,9 @@ test("should block horizontal swipe on horizontally scrollable .ha-scrollbar", a
   await SwipeHelper.swipeRight(mdCard);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  // The header chip-set has a single long-named chip that forces horizontal overflow
-  // regardless of viewport, so swipe must be blocked on both desktop and mobile.
+  // The header chip-set holds more chips than fit in one row. A single long-named chip
+  // would not do: chips are capped at the container width and truncate their label.
+  await chipSet.scrollIntoViewIfNeeded();
   await SwipeHelper.swipeLeft(chipSet);
   await expect(page).toHaveURL(dashboardPath + "/0");
   await SwipeHelper.swipeRight(chipSet);

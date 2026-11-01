@@ -47,7 +47,35 @@ views:
               type: buttons
               entities:
                 - entity: light.main_light
-                  name: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                  name: Button 1
+                - entity: light.main_light
+                  name: Button 2
+                - entity: light.main_light
+                  name: Button 3
+                - entity: light.main_light
+                  name: Button 4
+                - entity: light.main_light
+                  name: Button 5
+                - entity: light.main_light
+                  name: Button 6
+                - entity: light.main_light
+                  name: Button 7
+                - entity: light.main_light
+                  name: Button 8
+                - entity: light.main_light
+                  name: Button 9
+                - entity: light.main_light
+                  name: Button 10
+                - entity: light.main_light
+                  name: Button 11
+                - entity: light.main_light
+                  name: Button 12
+                - entity: light.main_light
+                  name: Button 13
+                - entity: light.main_light
+                  name: Button 14
+                - entity: light.main_light
+                  name: Button 15
 
   - title: View 2
     type: sections
