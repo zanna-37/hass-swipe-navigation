@@ -17,6 +17,9 @@ class Config {
   private skip_tabs: readonly number[] = [];
   private swipe_amount = 0.15;
   private wrap = true;
+  private indicator = false;
+  private indicator_duration = 1500;      // default: 2000
+  private indicator_resync_buffer = 120;    // default: 120
 
   public getAnimate(): "none" | "swipe" | "fade" | "flip" {
     return this.animate;
@@ -64,6 +67,18 @@ class Config {
 
   public getWrap(): boolean {
     return this.wrap;
+  }
+
+  public getIndicator(): boolean {
+    return this.indicator;
+  }
+
+  public getIndicatorResyncBuffer(): number {
+    return this.indicator_resync_buffer;
+  }
+
+  public getIndicatorDuration(): number {
+    return this.indicator_duration;
   }
 
 
@@ -124,6 +139,10 @@ class Config {
     }
     if (rawConfig.swipe_amount != null) { newConfig.swipe_amount = rawConfig.swipe_amount / 100.0; }
     if (rawConfig.wrap != null) { newConfig.wrap = rawConfig.wrap; }
+    
+    if (rawConfig.indicator != null) { newConfig.indicator = rawConfig.indicator; }
+    if (rawConfig.indicator_duration != null) { newConfig.indicator_duration = rawConfig.indicator_duration; }
+    if (rawConfig.indicator_resync_buffer != null) { newConfig.indicator_resync_buffer = rawConfig.indicator_resync_buffer; }
 
     return newConfig;
   }
@@ -155,7 +174,10 @@ const SwipeNavigationConfigSchema = z.object({
   skip_subviews: z.boolean().optional(),
   skip_tabs: z.coerce.string().optional(),
   swipe_amount: z.number().optional(),
-  wrap: z.boolean().optional()
+  wrap: z.boolean().optional(),
+  indicator: z.boolean().optional(),
+  indicator_duration: z.number().optional(),
+  indicator_resync_buffer: z.number().optional(),
 });
 
 type SwipeNavigationConfig = z.infer<typeof SwipeNavigationConfigSchema>;
