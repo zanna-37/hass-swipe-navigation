@@ -1,5 +1,12 @@
 import { JSHandle, Locator, Page } from "@playwright/test";
 
+/**
+ * How a synthetic swipe ends. `touchend` is the normal case, `touchcancel` is the browser
+ * taking the gesture over, and `none` leaves the gesture hanging, like a card that stops
+ * `touchend` from bubbling would.
+ */
+export type SwipeEnding = "touchend" | "touchcancel" | "none";
+
 export class SwipeHelper {
   // Settle before dispatching a swipe:
   // - Wait for the view to actually have rendered children (proxy for "HA
@@ -46,7 +53,7 @@ export class SwipeHelper {
     return touchEvent;
   }
 
-  static async swipe(startX: number, endX: number, startY: number, endY: number, element: Locator) {
+  static async swipe(startX: number, endX: number, startY: number, endY: number, element: Locator, ending: SwipeEnding = "touchend") {
     const touchId = Date.now();
     const steps = Math.max(
       3,
@@ -62,7 +69,9 @@ export class SwipeHelper {
         await this.getTouchEventInit(startX + ((endX - startX) * progressPct), startY + ((endY - startY) * progressPct), touchId, element)
       ]);
     }
-    events.push(["touchend", await this.getTouchEventInit(endX, endY, touchId, element)]);
+    if (ending !== "none") {
+      events.push([ending, await this.getTouchEventInit(endX, endY, touchId, element)]);
+    }
 
     // Dispatch events
     const swipeDuration = 500;
@@ -79,32 +88,32 @@ export class SwipeHelper {
     }
   }
 
-  static async swipeLeft(target: Locator, reference: Locator | null = null) {
+  static async swipeLeft(target: Locator, reference: Locator | null = null, ending: SwipeEnding = "touchend") {
     await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
-    await this.swipe(box.x + box.width * 0.9, box.x + box.width * 0.1, box.y + box.height / 2, box.y + box.height / 2, target);
+    await this.swipe(box.x + box.width * 0.9, box.x + box.width * 0.1, box.y + box.height / 2, box.y + box.height / 2, target, ending);
   }
 
-  static async swipeRight(target: Locator, reference: Locator | null = null) {
+  static async swipeRight(target: Locator, reference: Locator | null = null, ending: SwipeEnding = "touchend") {
     await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
-    await this.swipe(box.x + box.width * 0.1, box.x + box.width * 0.9, box.y + box.height / 2, box.y + box.height / 2, target);
+    await this.swipe(box.x + box.width * 0.1, box.x + box.width * 0.9, box.y + box.height / 2, box.y + box.height / 2, target, ending);
   }
 
-  static async swipeUp(target: Locator, reference: Locator | null = null) {
+  static async swipeUp(target: Locator, reference: Locator | null = null, ending: SwipeEnding = "touchend") {
     await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
-    await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.9, box.y + box.height * 0.1, target);
+    await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.9, box.y + box.height * 0.1, target, ending);
   }
 
-  static async swipeDown(target: Locator, reference: Locator | null = null) {
+  static async swipeDown(target: Locator, reference: Locator | null = null, ending: SwipeEnding = "touchend") {
     await this.waitForReady(target);
     const box = await (reference ?? target).boundingBox();
     if (box == null) { throw new Error("element doesn't have a bounding box"); }
-    await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.1, box.y + box.height * 0.9, target);
+    await this.swipe(box.x + box.width / 2, box.x + box.width / 2, box.y + box.height * 0.1, box.y + box.height * 0.9, target, ending);
   }
 
   static async swipeLeftMouse(page: Page, target: Locator, reference: Locator | null = null) {
@@ -145,5 +154,16 @@ export class SwipeHelper {
     await page.mouse.down();
     await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.9);
     await page.mouse.up();
+  }
+
+  static async tap(target: Locator, reference: Locator | null = null) {
+    await this.waitForReady(target);
+    const box = await (reference ?? target).boundingBox();
+    if (box == null) { throw new Error("element doesn't have a bounding box"); }
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    const touchId = Date.now();
+    await target.dispatchEvent("touchstart", await this.getTouchEventInit(x, y, touchId, target));
+    await target.dispatchEvent("touchend", await this.getTouchEventInit(x, y, touchId, target));
   }
 }

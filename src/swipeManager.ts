@@ -52,6 +52,11 @@ class SwipeManager {
         { signal: this.#pointerEventsAbortController.signal, passive: true }
       );
       haAppLayoutDomNode.addEventListener(
+        "touchcancel",
+        () => { this.#handlePointerCancel(); },
+        { signal: this.#pointerEventsAbortController.signal, passive: true }
+      );
+      haAppLayoutDomNode.addEventListener(
         "mousedown",
         (event) => { this.#handlePointerStart(event); },
         { signal: this.#pointerEventsAbortController.signal, passive: true }
@@ -110,7 +115,21 @@ class SwipeManager {
     }
   }
 
+  static #resetGestureState() {
+    this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
+    this.#blockedHorizontalLog = this.#blockedVerticalLog = null;
+  }
+
+  static #handlePointerCancel() {
+    Logger.logd(LOG_TAG, "Ignoring touch: cancelled by the browser.");
+    this.#resetGestureState();
+  }
+
   static #handlePointerStart(event: TouchEvent | MouseEvent) {
+    // The previous gesture may never have reached #handlePointerEnd: a descendant can stop
+    // `touchend` from bubbling this far. Start from a clean slate so that its leftover
+    // coordinates can't turn this gesture into a spurious navigation.
+    this.#resetGestureState();
 
     let interactionType;
     if (window.TouchEvent != null && event instanceof TouchEvent) {
@@ -138,19 +157,12 @@ class SwipeManager {
     }
 
     if (window.TouchEvent != null && event instanceof TouchEvent && event.touches.length > 1) {
-      this.#xDown = null;
-      this.#yDown = null;
       Logger.logd(LOG_TAG, `Ignoring ${interactionType}: multiple touchpoints detected.`);
       return; // Ignore swipe: Multitouch detected
     } else if (event instanceof MouseEvent && !ConfigManager.getCurrentConfig().getEnableMouseSwipe()) {
-      this.#xDown = null;
-      this.#yDown = null;
       Logger.logd(LOG_TAG, `Ignoring ${interactionType}: swiping via mouse is disabled.`);
       return;
     }
-
-    this.#blockedHorizontalLog = null;
-    this.#blockedVerticalLog = null;
 
     const path = event.composedPath();
     if (typeof path == "object") {
@@ -274,7 +286,7 @@ class SwipeManager {
         throw new Error(`Unhandled case: ${exhaustiveCheck}`);
       }
     }
-    this.#xDown = this.#yDown = this.#xDiff = this.#yDiff = null;
+    this.#resetGestureState();
   }
 
   static #getNextViewName(directionLeft: boolean): string | null {
