@@ -94,6 +94,13 @@
       show_in_sidebar: true
       filename: ./dashboards/one-scrollbar.yaml
 
+    one-scrubber:
+      mode: yaml
+      title: One scrubber
+      icon: mdi:palette
+      show_in_sidebar: true
+      filename: ./dashboards/one-scrubber.yaml
+
     one-slider:
       mode: yaml
       title: One slider

@@ -18,3 +18,21 @@ template:
             data:
               entity_id: input_number.light_slider
               value: "{{ (brightness / 255 * 100)|int }}"
+      - name: "Scrubber test light"
+        unique_id: scrubber_test_light
+        hs: "{{ [states('input_number.light_hue') | float(180), 100] }}"
+        turn_on:
+          - action: input_number.set_value
+            data:
+              entity_id: input_number.light_hue
+              value: 180
+        turn_off:
+          - action: input_number.set_value
+            data:
+              entity_id: input_number.light_hue
+              value: 0
+        set_hs:
+          - action: input_number.set_value
+            data:
+              entity_id: input_number.light_hue
+              value: "{{ hs[0] }}"

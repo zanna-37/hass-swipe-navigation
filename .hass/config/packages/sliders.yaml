@@ -8,3 +8,9 @@ input_number:
     name: Light slider
     min: 0
     max: 100
+
+  light_hue:
+    name: Light hue
+    min: 0
+    max: 360
+    step: 1
