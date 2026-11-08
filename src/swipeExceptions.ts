@@ -65,14 +65,21 @@ const exceptions: ExceptionEntry[] = [
   // all symbols. Only consider letters and numbers.
 
   // Advanced Camera Card (https://github.com/dermotduffy/advanced-camera-card)
-  //   Carousels are dragged with transforms behind an `overflow: hidden` viewport, so
-  //   overflow can't be measured and the whole card must be excluded.
-  "advanced-camera-card",
-  "frigate-card", // pre-v7 name, still registered as an alias by the same bundle
+  //   The timeline pans on horizontal drag. The media carousels are covered by the
+  //   `.embla__container` entry below.
+  "advanced-camera-card-timeline-core",
   // UI Card for Better Thermostat (https://github.com/KartoffelToby/better-thermostat-ui-card)
   "better-thermostat-ui-card",
   // Big Slider Card (https://github.com/nicufarmache/lovelace-big-slider-card)
   "big-slider-card",
+  // Advanced Camera Card (https://github.com/dermotduffy/advanced-camera-card)
+  //   One camera or many, the media sits in the same Embla carousel, so the container is
+  //   excluded only while its slides actually overflow. The class is Embla's default, hence
+  //   the host gate. Don't widen this to the whole card: its menu and status chrome are not
+  //   gesture surfaces and must keep navigating.
+  { selector: ".embla__container",
+    host: "advanced-camera-card-carousel",
+    scrollDependent: true },
   // Paper Buttons Row (https://github.com/jcwillox/lovelace-paper-buttons-row)
   //   The card ships no scrolling of its own: .flex-box becomes scrollable only through
   //   custom CSS, from the card's `styles` option or card-mod. The host can't be the
