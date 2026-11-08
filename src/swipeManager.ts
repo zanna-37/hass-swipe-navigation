@@ -207,7 +207,7 @@ class SwipeManager {
   }
 
   static #handlePointerMove(event: TouchEvent | MouseEvent) {
-    if (this.#xDown && this.#yDown) {
+    if (this.#xDown != null && this.#yDown != null) {
       if (window.TouchEvent != null && event instanceof TouchEvent) {
         this.#xDiff = this.#xDown - event.touches[0].clientX;
         this.#yDiff = this.#yDown - event.touches[0].clientY;
