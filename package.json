@@ -3,7 +3,8 @@
   "scripts": {
     "build": "rollup --config",
     "build:watch": "rollup --config --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests *.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
@@ -14,6 +15,7 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.2",
     "@rollup/plugin-typescript": "^12.3.1",
+    "@types/node": "^26.6.6",
     "commitizen": "^4.3.2",
     "eslint": "^10.14.0",
     "globals": "^17.13.0",
