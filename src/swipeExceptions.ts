@@ -103,6 +103,11 @@ const exceptions: ExceptionEntry[] = [
   "css-swipe-card",
   // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
   "floor3d-card",
+  // Floor3D Pro Card (https://github.com/levonisyas/floor3dpro-card)
+  //   Only the three.js canvas, where the model is rotated. The card header and the level, zoom
+  //   and selection buttons are not gesture surfaces. The tag is generic, hence the host gate.
+  { selector: "canvas",
+    host: "floor3dpro-card" },
   // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
   "gallery-card",
   // Google FindMy Device Card (https://github.com/BSkando/GoogleFindMy-Card)
