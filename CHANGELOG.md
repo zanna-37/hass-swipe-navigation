@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.16.2] - 2026-11-09
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.16.1...v1.16.2)
+
+### Fixed 🐛
+- Narrow the exception for "Advanced Camera Card" to its timeline and its carousels ([`4a771d1`](https://github.com/zanna-37/hass-swipe-navigation/commit/4a771d1df1281f004fdb07d259120619f508f5eb))
+- Add exception for the forecast strip of the built-in Weather forecast card ([`1213e42`](https://github.com/zanna-37/hass-swipe-navigation/commit/1213e427b3fcf9abb9ea5258e8f8752a46d3cb97) closes [`#161`](https://github.com/zanna-37/hass-swipe-navigation/issues/161))
+- Narrow the "Badges scroll" exception to the scrolling badges row of the view header: a swipe on the header's title changes view again, and a badges row that fits no longer blocks ([`e95d116`](https://github.com/zanna-37/hass-swipe-navigation/commit/e95d1166ecf9d13bc5c13fed4f0da5e19916b000))
+- Add exception for "Tile scrubber", thanks to [@GhislainC](https://github.com/GhislainC) ([`#166`](https://github.com/zanna-37/hass-swipe-navigation/pull/166))
+- Add exception for "Clock Weather Card" ([`ba2580c`](https://github.com/zanna-37/hass-swipe-navigation/commit/ba2580c87791efb7d26054c1c7d233482a5a585b) closes [`#163`](https://github.com/zanna-37/hass-swipe-navigation/issues/163))
+- Add exception for "JellyHA Library Card" ([`b3ceba4`](https://github.com/zanna-37/hass-swipe-navigation/commit/b3ceba48e24eb0d4245629bb99b9554688b312f6) closes [`#165`](https://github.com/zanna-37/hass-swipe-navigation/issues/165))
+- Add exception for "Google FindMy Device Card" ([`f7bc409`](https://github.com/zanna-37/hass-swipe-navigation/commit/f7bc4093cb4d2369844c5c8319bc3ed8c9f3db43) closes [`#162`](https://github.com/zanna-37/hass-swipe-navigation/issues/162))
+- Add exception for "Floor3D Pro Card" ([`c4cef53`](https://github.com/zanna-37/hass-swipe-navigation/commit/c4cef53af06a4e691964c8c57f8975b9597fae66) closes [`#157`](https://github.com/zanna-37/hass-swipe-navigation/issues/157))
+- Narrow the "floor3d-card" exception to its 3D view: a swipe on the card header or on the level, zoom and selection buttons changes view again ([`1a30695`](https://github.com/zanna-37/hass-swipe-navigation/commit/1a30695c3c7ba5c5d10d98427843bdea193843cf))
+- Fix the swipe doing nothing on a view opened through a URL that ends with a slash, thanks to [@dajiaohuang](https://github.com/dajiaohuang) ([`ae895f9`](https://github.com/zanna-37/hass-swipe-navigation/commit/ae895f9048b3760646ba0ed610fc8b6ff572d8d6) closes [`#153`](https://github.com/zanna-37/hass-swipe-navigation/issues/153))
+
+
 ## 🏷️ [v1.16.1] - 2026-09-06
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.16.0...v1.16.1)
 
