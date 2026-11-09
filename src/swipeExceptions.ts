@@ -107,6 +107,12 @@ const exceptions: ExceptionEntry[] = [
   "gallery-card",
   // History explorer card (https://github.com/alexarch21/history-explorer-card)
   "history-explorer-card",
+  // JellyHA Library Card (https://github.com/zupancicmarko/JellyHA)
+  //   Every layout flips pages on a horizontal swipe, through touch handlers on its wrapper, even
+  //   when nothing overflows: hence no scrollDependent. The classes are generic, hence the host
+  //   gate. Don't widen this to the whole card: its title and search bar are not gesture surfaces.
+  { selector: ".carousel-wrapper, .grid-wrapper, .list-wrapper, .featured-wrapper",
+    host: "jellyha-library-card" },
   // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
   "#swiper",
   // Map Card (https://github.com/nathan-gs/ha-map-card)
