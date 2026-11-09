@@ -61,25 +61,52 @@ const exceptions: ExceptionEntry[] = [
 
 
   // THIRD PARTIES
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
+  // 💡 Please keep this list sorted alphabetically by the card's custom element name, after
+  // removing all symbols. Keep all the selectors of one card together, under one comment.
 
   // Advanced Camera Card (https://github.com/dermotduffy/advanced-camera-card)
-  //   The timeline pans on horizontal drag. The media carousels are covered by the
-  //   `.embla__container` entry below.
+  //   The timeline pans on horizontal drag. One camera or many, the media sits in the same Embla
+  //   carousel, so the container is excluded only while its slides actually overflow. The class is
+  //   Embla's default, hence the host gate. Don't widen this to the whole card: its menu and status
+  //   chrome are not gesture surfaces and must keep navigating.
   "advanced-camera-card-timeline-core",
+  { selector: ".embla__container",
+    host: "advanced-camera-card-carousel",
+    scrollDependent: true },
+  // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
+  "#graph-wrapper svg.apexcharts-svg",
   // UI Card for Better Thermostat (https://github.com/KartoffelToby/better-thermostat-ui-card)
   "better-thermostat-ui-card",
   // Big Slider Card (https://github.com/nicufarmache/lovelace-big-slider-card)
   "big-slider-card",
-  // Advanced Camera Card (https://github.com/dermotduffy/advanced-camera-card)
-  //   One camera or many, the media sits in the same Embla carousel, so the container is
-  //   excluded only while its slides actually overflow. The class is Embla's default, hence
-  //   the host gate. Don't widen this to the whole card: its menu and status chrome are not
-  //   gesture surfaces and must keep navigating.
-  { selector: ".embla__container",
-    host: "advanced-camera-card-carousel",
-    scrollDependent: true },
+  // Bubble Card (https://github.com/Clooos/Bubble-Card)
+  ".range-slider",
+  ".bubble-button-slider-container",
+  ".bubble-pop-up",
+  //   Horizontal buttons stack
+  ".horizontal-buttons-stack-container",
+  // CSS-Swipe-Card (https://github.com/Nemuritor01/css-swipe-card)
+  "css-swipe-card",
+  // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
+  "floor3d-card",
+  // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
+  "gallery-card",
+  // History explorer card (https://github.com/alexarch21/history-explorer-card)
+  "history-explorer-card",
+  // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
+  "#swiper",
+  // Map Card (https://github.com/nathan-gs/ha-map-card)
+  "map-card",
+  // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
+  ".swiper",
+  // @material/mwc-tab-bar (https://www.npmjs.com/package/@material/mwc-tab-bar)
+  //   Used by: Tabbed Card (https://github.com/kinghat/tabbed-card)
+  "mwc-tab-bar",
+  // my-cards (https://github.com/AnthonMS/my-cards)
+  "my-slider",
+  "my-slider-v2",
+  // Navbar Card (https://github.com/joseluis9595/lovelace-navbar-card)
+  "navbar-card",
   // Paper Buttons Row (https://github.com/jcwillox/lovelace-paper-buttons-row)
   //   The card ships no scrolling of its own: .flex-box becomes scrollable only through
   //   custom CSS, from the card's `styles` option or card-mod. The host can't be the
@@ -87,69 +114,38 @@ const exceptions: ExceptionEntry[] = [
   { selector: ".flex-box",
     host: "paper-buttons-row",
     scrollDependent: true },
-  // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
-  "floor3d-card",
-  // Weather Forecast Extended Card (https://github.com/Thyraz/weather-forecast-extended)
-  { selector: ".forecast.daily, .forecast.hourly, .header-pages",
-    host: "weather-forecast-extended-card" },
-  // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
-  "gallery-card",
-  // ApexCharts Card by RomRider (https://github.com/RomRider/apexcharts-card)
-  "#graph-wrapper svg.apexcharts-svg",
-  // History explorer card (https://github.com/alexarch21/history-explorer-card)
-  "history-explorer-card",
-  // Bubble Card horizontal buttons stack (https://github.com/Clooos/Bubble-Card)
-  ".horizontal-buttons-stack-container",
-  // Map Card (https://github.com/nathan-gs/ha-map-card)
-  "map-card",
-  // my-cards (https://github.com/AnthonMS/my-cards)
-  "my-slider",
-  "my-slider-v2",
-  // @material/mwc-tab-bar (https://www.npmjs.com/package/@material/mwc-tab-bar)
-  //   Used by: Tabbed Card (https://github.com/kinghat/tabbed-card)
-  "mwc-tab-bar",
-  // Navbar Card (https://github.com/joseluis9595/lovelace-navbar-card)
-  "navbar-card",
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
   "#plotly .gl-container", // 3D plots: the WebGL scene canvas lives here, outside the SVG drag layer
-  // Bubble Card (https://github.com/Clooos/Bubble-Card)
-  ".range-slider",
-  ".bubble-button-slider-container",
-  ".bubble-pop-up",
-  // Universal Remote Card (https://github.com/Nerwyn/universal-remote-card)
-  "remote-touchpad",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
   "sankey-chart",
-  // Statistics Graph Chart Card (https://github.com/cataseven/Statistics-Graph-Chart-Card)
-  { selector: ".sgc-plot-wrap",
-    host: "statistics-graph-chart-card" },
-  // Slide confirm (https://github.com/itsbrianburton/slide-confirm)
-  ".slide-confirm",
   // Simple Swipe Card (https://github.com/nutteloost/simple-swipe-card)
   "simple-swipe-card",
+  // Slide confirm (https://github.com/itsbrianburton/slide-confirm)
+  ".slide-confirm",
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
-  // Swipe Card (https://github.com/bramkragten/swipe-card)
-  "swipe-card",
-  // Swipe Navigation Card (https://github.com/Tjstock/swipe-navigation-card)
-  "swipe-navigation-card",
-  // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
-  ".swiper",
-  // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
-  "#swiper",
-  // Todo Swipe Card (https://github.com/nutteloost/todo-swipe-card)
-  "todo-swipe-card",
-  // Android TV Card touchpad (https://github.com/Nerwyn/universal-remote-card)
-  "toucharea",
-  ".circlepad",
   // Slide Toggle Card (https://github.com/ChadH360/slide-toggle-card)
   //   The whole slider track, not only the knob: it is the visible slide affordance and the
   //   card sets `touch-action: none` on it. The id is generic, hence the host gate.
   { selector: "#track",
     host: "slide-toggle-card" },
+  // Statistics Graph Chart Card (https://github.com/cataseven/Statistics-Graph-Chart-Card)
+  { selector: ".sgc-plot-wrap",
+    host: "statistics-graph-chart-card" },
+  // Swipe Card (https://github.com/bramkragten/swipe-card)
+  "swipe-card",
+  // Swipe Navigation Card (https://github.com/Tjstock/swipe-navigation-card)
+  "swipe-navigation-card",
+  // Todo Swipe Card (https://github.com/nutteloost/todo-swipe-card)
+  "todo-swipe-card",
+  // Universal Remote Card (https://github.com/Nerwyn/universal-remote-card)
+  "remote-touchpad",
+  //   Android TV Card touchpad
+  "toucharea",
+  ".circlepad",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-info-card)
   "vehicle-info-card",
   // Vehicle Status Card (https://github.com/ngocjohn/vehicle-status-card)
@@ -158,10 +154,11 @@ const exceptions: ExceptionEntry[] = [
   { selector: ".wfc-scroll-container",
     host: "weather-forecast-card",
     scrollDependent: true },
+  // Weather Forecast Extended Card (https://github.com/Thyraz/weather-forecast-extended)
+  { selector: ".forecast.daily, .forecast.hourly, .header-pages",
+    host: "weather-forecast-extended-card" },
   // Lovelace Vacuum Map card (https://github.com/PiotrMachowski/lovelace-xiaomi-vacuum-map-card)
   "xiaomi-vacuum-map-card",
-  // CSS-Swipe-Card (https://github.com/Nemuritor01/css-swipe-card)
-  "css-swipe-card",
 ];
 
 /**
