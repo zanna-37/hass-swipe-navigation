@@ -2,7 +2,8 @@
   "name": "hass-swipe-navigation",
   "scripts": {
     "build": "rollup --config",
-    "build:watch": "rollup --config --watch"
+    "build:watch": "rollup --config --watch",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
