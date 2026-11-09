@@ -34,11 +34,10 @@ async function globalSetup(config: FullConfig) {
     throw (e);
   }
   // Save signed-in state
-  await page.context().storageState({ path: storageState });
+  const savedState = await page.context().storageState({ path: storageState });
 
   // Ensure credentials are persisted
-  const storageStateFile = require("./" + storageState);
-  expect(storageStateFile.origins.length, "Credentials were not persisted").toBeGreaterThan(0);
+  expect(savedState.origins.length, "Credentials were not persisted").toBeGreaterThan(0);
 
   // Check that the Swipe navigation js is loaded
   let matches = 0;
