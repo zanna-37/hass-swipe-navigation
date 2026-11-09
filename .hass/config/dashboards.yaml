@@ -108,27 +108,6 @@
       show_in_sidebar: true
       filename: ./dashboards/one-slider.yaml
 
-    subview-skip:
-      mode: yaml
-      title: Subview skip
-      icon: mdi:subdirectory-arrow-right
-      show_in_sidebar: true
-      filename: ./dashboards/subview-skip.yaml
-
-    subview-noskip:
-      mode: yaml
-      title: Subview no skip
-      icon: mdi:subdirectory-arrow-right
-      show_in_sidebar: true
-      filename: ./dashboards/subview-noskip.yaml
-
-    subview-noswipe:
-      mode: yaml
-      title: Subview no swipe
-      icon: mdi:subdirectory-arrow-right
-      show_in_sidebar: true
-      filename: ./dashboards/subview-noswipe.yaml
-
     one-tile:
       mode: yaml
       title: One tile
@@ -164,6 +143,13 @@
       show_in_sidebar: true
       filename: ./dashboards/skip-one-tab.yaml
 
+    skip-tabs:
+      mode: yaml
+      title: Skip tabs
+      icon: mdi:transit-skip
+      show_in_sidebar: true
+      filename: ./dashboards/skip-tabs.yaml
+
     skip-tabs-no-wrap:
       mode: yaml
       title: Skip tabs no wrap
@@ -171,12 +157,26 @@
       show_in_sidebar: true
       filename: ./dashboards/skip-tabs-no-wrap.yaml
 
-    skip-tabs:
+    subview-noskip:
       mode: yaml
-      title: Skip tabs
-      icon: mdi:transit-skip
+      title: Subview no skip
+      icon: mdi:subdirectory-arrow-right
       show_in_sidebar: true
-      filename: ./dashboards/skip-tabs.yaml
+      filename: ./dashboards/subview-noskip.yaml
+
+    subview-noswipe:
+      mode: yaml
+      title: Subview no swipe
+      icon: mdi:subdirectory-arrow-right
+      show_in_sidebar: true
+      filename: ./dashboards/subview-noswipe.yaml
+
+    subview-skip:
+      mode: yaml
+      title: Subview skip
+      icon: mdi:subdirectory-arrow-right
+      show_in_sidebar: true
+      filename: ./dashboards/subview-skip.yaml
 
     two-maps:
       mode: yaml
