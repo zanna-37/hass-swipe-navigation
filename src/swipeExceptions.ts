@@ -93,6 +93,12 @@ const exceptions: ExceptionEntry[] = [
   ".bubble-pop-up",
   //   Horizontal buttons stack
   ".horizontal-buttons-stack-container",
+  // Clock Weather Card (https://github.com/pkissling/clock-weather-card)
+  //   Only the forecast strip: it scrolls natively, and only when its items don't fit. The class
+  //   is generic, hence the host gate.
+  { selector: ".strip",
+    host: "clock-weather-card",
+    scrollDependent: true },
   // CSS-Swipe-Card (https://github.com/Nemuritor01/css-swipe-card)
   "css-swipe-card",
   // floor3d-card aka Your Home Digital Twin (https://github.com/adizanni/floor3d-card)
