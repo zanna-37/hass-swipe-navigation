@@ -7,6 +7,7 @@ test("light hue scrubber blocks swipes but surrounding chrome navigates", async 
   await expect(page).toHaveURL(dashboardPath + "/0");
 
   const scrubber = page.locator("ha-control-scrubber");
+  const tileInfo = page.locator("hui-tile-card ha-tile-info");
   const mdCard = page.locator("hui-markdown-card");
   const consoleLogs: string[] = [];
   page.on("console", (message) => {
@@ -20,11 +21,17 @@ test("light hue scrubber blocks swipes but surrounding chrome navigates", async 
   await SwipeHelper.swipeLeft(mdCard);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
+  // Only the scrubber is a gesture surface: the rest of the tile keeps navigating
+  await SwipeHelper.swipeRight(tileInfo);
+  await expect(page).toHaveURL(dashboardPath + "/1");
+  await SwipeHelper.swipeLeft(mdCard);
+  await expect(page).toHaveURL(dashboardPath + "/0");
+
   await SwipeHelper.swipeLeft(scrubber);
   await expect(page).toHaveURL(dashboardPath + "/0");
   await SwipeHelper.swipeRight(scrubber);
   await expect(page).toHaveURL(dashboardPath + "/0");
 
-  const matches = consoleLogs.filter((log) => /Ignoring touch on ".*"/.test(log)).length;
+  const matches = consoleLogs.filter((log) => /Ignoring touch on "ha-control-scrubber[^"]*"/.test(log)).length;
   expect(matches).toBe(2);
 });

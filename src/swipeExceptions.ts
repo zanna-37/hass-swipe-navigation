@@ -60,7 +60,6 @@ const exceptions: ExceptionEntry[] = [
   "input[type=range]", // Sliders no longer use this after HA v2025.10
   // Tile scrubber
   "ha-control-scrubber",
-  "#scrubber",
   // Tile slider
   "#slider",
   // Weather forecast card (forecast strip, scrolls horizontally only when its slots don't fit)
