@@ -1,4 +1,5 @@
 swipe_nav:
+  swipe_amount: 1
   logger_level: verbose
 
 views:
@@ -6,8 +7,16 @@ views:
   - title: Badges Scroll
     type: sections
     header:
+      # The heading shares the header layout with the badges row, so a swipe on
+      # it must still go through.
+      card:
+        type: markdown
+        text_only: true
+        content: "# Badges Scroll"
       badges_position: top
       badges_wrap: scroll
+    # Enough badges to overflow the row on both the desktop and the mobile
+    # viewports, so the swipe is blocked regardless of the project.
     badges:
       - type: entity
         entity: light.main_light
@@ -47,7 +56,16 @@ views:
             content: Content...
 
   - title: View 2
-    cards:
-      - type: markdown
-        title: View 2
-        content: Content...
+    type: sections
+    header:
+      badges_wrap: scroll
+    # A single badge never overflows, so the swipe must still go through.
+    badges:
+      - type: entity
+        entity: light.main_light
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            title: View 2
+            content: Content...

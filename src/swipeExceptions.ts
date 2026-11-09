@@ -37,7 +37,9 @@ const exceptions: ExceptionEntry[] = [
   { selector: ".badges",
     host: "hui-heading-card",
     scrollDependent: true },
-  ".badges-scroll",
+  { selector: ".badges.scroll",
+    host: "hui-view-header",
+    scrollDependent: true },
   // Dashboard tabs
   "ha-tabs", // removed in HA v2025.5
   "paper-tabs", // removed in HA v2025.5

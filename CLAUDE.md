@@ -24,7 +24,7 @@ Do not add the card's root tag (e.g. `weather-forecast-extended-card`, `entities
 In order of preference:
 1. The custom element name of the **sub-component** (e.g. `remote-touchpad`, `round-slider`, `mwc-tab-bar`).
 2. An `id` (`#swiper`, `#slider`, `#graph-wrapper svg.chart-svg`).
-3. A stable class (`.circlepad`, `.badges-scroll`, `.bubble-pop-up`).
+3. A stable class (`.circlepad`, `.slide-confirm`, `.bubble-pop-up`).
 
 Avoid generic class names (`.slider`, `.scroll`, `.forecast`, `.header`) — they leak into unrelated cards. If the only available selector is generic, add the `host` modifier (see below).
 
