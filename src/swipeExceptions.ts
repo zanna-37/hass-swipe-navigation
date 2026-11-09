@@ -105,6 +105,11 @@ const exceptions: ExceptionEntry[] = [
   "floor3d-card",
   // Gallery Card (https://github.com/TarheelGrad1998/gallery-card)
   "gallery-card",
+  // Google FindMy Device Card (https://github.com/BSkando/GoogleFindMy-Card)
+  //   Only the Leaflet map. The header, the filter panel and the device list float over it as
+  //   siblings and must keep navigating. The id is generic, hence the host gate.
+  { selector: "#leaflet-map",
+    host: "googlefindmy-card" },
   // History explorer card (https://github.com/alexarch21/history-explorer-card)
   "history-explorer-card",
   // JellyHA Library Card (https://github.com/zupancicmarko/JellyHA)
