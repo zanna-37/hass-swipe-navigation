@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { SwipeHelper } from "../helpers/touchHelpers";
 
 test("should update config", async ({ page, isMobile }) => {
-  test.skip(isMobile ?? false, 'Sidebar is hidden on mobile, can\'t click easily');
+  test.skip(isMobile ?? false, "Sidebar is hidden on mobile, can't click easily");
 
   // Use default config
   await page.goto("/default-values");

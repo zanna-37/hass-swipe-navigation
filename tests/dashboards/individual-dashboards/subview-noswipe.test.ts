@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { SwipeHelper } from "../../helpers/touchHelpers";
 
 test("shouldn't change, no swipe on subview", async ({ page }) => {
-  const dashboardPath = "/subview-noswipe"
+  const dashboardPath = "/subview-noswipe";
   await page.goto(dashboardPath + "/1");
   await expect(page).toHaveURL(dashboardPath + "/1");
 
