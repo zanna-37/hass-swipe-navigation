@@ -29,6 +29,7 @@ npm-debug.log*
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/storageState.json
 
 # Local, machine-specific notes
 /CLAUDE.local.md
