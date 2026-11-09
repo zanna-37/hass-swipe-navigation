@@ -30,8 +30,8 @@ type ExceptionEntry = string | Exception;
 const exceptions: ExceptionEntry[] = [
 
   // INTERNALS
-  // 💡 Please keep this list sorted alphabetically. Consider the selector as the key after removing
-  // all symbols. Only consider letters and numbers.
+  // 💡 Name each group after its UI element (e.g. "Map", "Tile slider") and keep the list sorted
+  // alphabetically by that name. Keep all the selectors of one element under one comment.
 
   // Badges scroll behavior
   { selector: ".badges",
