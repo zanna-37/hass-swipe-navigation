@@ -8,7 +8,7 @@ export interface HomeAssistant {
   devices?: { [id: string]: unknown };
   areas?: { [id: string]: unknown };
   services?: unknown;
-  config?: unknown;
+  config?: HassConfig;
   themes?: unknown;
   selectedTheme?: unknown | null;
   panels?: unknown;
@@ -57,6 +57,10 @@ export interface HomeAssistant {
   formatEntityState?(stateObj: unknown, state?: string): string;
   formatEntityAttributeValue?(stateObj: unknown, attribute: string, value?: string): string;
   formatEntityAttributeName?(stateObj: unknown, attribute: string): string;
+}
+
+export interface HassConfig {
+  version?: string;
 }
 
 export interface CurrentUser {

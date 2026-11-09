@@ -1,3 +1,5 @@
+import { HomeAssistant } from "./ha/data/homeassistant";
+
 function isNewerVersion(oldVersion: string, newVersion: string) {
   const oldParts = oldVersion.split(".");
   const newParts = newVersion.split(".");
@@ -11,11 +13,9 @@ function isNewerVersion(oldVersion: string, newVersion: string) {
 }
 
 function getCurrentHAVersion() {
-  return (
-    document.getElementsByTagName("home-assistant")[0] as (
-      HTMLElement & { hass: undefined | { config: undefined | { version: string } } }
-    )
-  )?.hass?.config?.version || null;
+  const homeAssistant: (Element & { hass?: HomeAssistant }) | undefined =
+    document.getElementsByTagName("home-assistant")[0];
+  return homeAssistant?.hass?.config?.version || null;
 }
 
 function isLessThan2023_4() {

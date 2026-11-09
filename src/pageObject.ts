@@ -35,7 +35,8 @@ class PageObject {
   public getDomNode(): HTMLElement | null {
     const last = this.domNodes.length - 1;
     Logger.logv(LOG_TAG, "Getting DOM node " + this.toString() + ".");
-    return this.getDomNodeAt(last) as HTMLElement; // TODO change
+    const domNode = this.getDomNodeAt(last);
+    return domNode instanceof HTMLElement ? domNode : null;
   }
 
   /**
