@@ -1,0 +1,19 @@
+template:
+  - weather:
+      - name: "Main weather"
+        unique_id: main_weather
+        condition: "sunny"
+        temperature: "20"
+        humidity: "50"
+        # One entry per day, starting at midnight tonight
+        forecast_daily: >-
+          {%- set ns = namespace(days=[]) -%}
+          {%- for day in range(1, 15) -%}
+            {%- set ns.days = ns.days + [{
+              "datetime": (today_at() + timedelta(days=day)).isoformat(),
+              "condition": "sunny",
+              "temperature": 20,
+              "templow": 10
+            }] -%}
+          {%- endfor -%}
+          {{ ns.days }}

@@ -129,6 +129,13 @@
       show_in_sidebar: true
       filename: ./dashboards/one-tile.yaml
 
+    one-weather-forecast:
+      mode: yaml
+      title: One weather forecast
+      icon: mdi:weather-partly-cloudy
+      show_in_sidebar: true
+      filename: ./dashboards/one-weather-forecast.yaml
+
     scroll-dependent:
       mode: yaml
       title: Scroll dependent

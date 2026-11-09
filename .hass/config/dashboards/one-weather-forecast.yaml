@@ -1,0 +1,39 @@
+swipe_nav:
+  swipe_amount: 1
+  logger_level: verbose
+
+views:
+
+  - title: Weather Forecast
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          # More slots than fit in the card on both the desktop and the mobile
+          # viewports, so the strip overflows and the swipe is blocked regardless
+          # of the project. The entity's forecast must hold at least this many days.
+          - type: weather-forecast
+            entity: weather.main_weather
+            forecast_type: daily
+            forecast_slots: 12
+
+          # Few enough slots to fit, so the strip doesn't scroll and the swipe
+          # must still go through.
+          - type: weather-forecast
+            entity: weather.main_weather
+            forecast_type: daily
+            forecast_slots: 2
+
+          - type: markdown
+            title: Control
+            content: Content...
+
+  - title: View 2
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            title: View 2
+            content: Content...
