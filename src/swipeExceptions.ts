@@ -160,6 +160,11 @@ const exceptions: ExceptionEntry[] = [
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
   "#plotly .gl-container", // 3D plots: the WebGL scene canvas lives here, outside the SVG drag layer
+  //   Plotly's own controls, drawn outside the drag layer and dragged horizontally: the range
+  //   slider under the x axis, `layout.sliders`, and the scrollbar of a scrolling dropdown menu.
+  "#plotly g.rangeslider-container",
+  "#plotly g.slider-container",
+  "#plotly rect.scrollbar-horizontal",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
