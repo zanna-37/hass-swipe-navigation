@@ -5,6 +5,19 @@ services:
     build:
       context: ./docker/builder/
 
+    environment:
+      # @rollup/plugin-typescript compiles through its own TypeScript watcher and, on
+      # each rebuild, waits only briefly for it before reusing the previous output.
+      # Host edits on a Windows bind mount never reach that watcher through inotify,
+      # so TypeScript polls every file at its fastest rate instead. Do not switch to
+      # PriorityPollingInterval: it shares fs.watchFile with rollup's chokidar, which
+      # drops TypeScript's listener after the first change.
+      - TSC_WATCHFILE=DynamicPriorityPolling
+      # Larger than the number of files in the program, so each poll covers all of them
+      - TSC_WATCH_POLLINGCHUNKSIZE_LOW=10000
+      # Never demote an idle file to the slower polling queues
+      - TSC_WATCH_UNCHANGEDPOLLTHRESHOLDS_LOW=2147483647
+
     ports:
       - 3000:3000
 
