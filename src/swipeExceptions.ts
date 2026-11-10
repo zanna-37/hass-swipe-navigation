@@ -76,8 +76,11 @@ const exceptions: ExceptionEntry[] = [
   //   The timeline pans on horizontal drag. One camera or many, the media sits in the same Embla
   //   carousel, so the container is excluded only while its slides actually overflow. The class is
   //   Embla's default, hence the host gate. Don't widen this to the whole card: its menu and status
-  //   chrome are not gesture surfaces and must keep navigating.
+  //   chrome are not gesture surfaces and must keep navigating. The previous and next buttons are
+  //   the exception: they only show when there is something to slide to and lie over the sides of
+  //   the carousel, outside of its container, right where a slide gesture starts.
   "advanced-camera-card-timeline-core",
+  "advanced-camera-card-next-previous-control",
   { selector: ".embla__container",
     host: "advanced-camera-card-carousel",
     scrollDependent: true },
