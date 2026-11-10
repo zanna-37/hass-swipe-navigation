@@ -175,7 +175,11 @@ const exceptions: ExceptionEntry[] = [
   // Simple Swipe Card (https://github.com/nutteloost/simple-swipe-card)
   "simple-swipe-card",
   // Slide confirm (https://github.com/itsbrianburton/slide-confirm)
-  ".slide-confirm",
+  //   Since v2 only the handle is dragged: the rest of the track, its text and the header are
+  //   not gesture surfaces. The class is generic, hence the host gate.
+  ".slide-confirm", // the track row before v2
+  { selector: ".handle",
+    host: "slide-confirm-slider" },
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
   // Slide Toggle Card (https://github.com/ChadH360/slide-toggle-card)
