@@ -1,0 +1,21 @@
+swipe_nav:
+  enable_mouse_swipe: true
+  logger_level: verbose
+
+views:
+
+  - title: View 1
+    cards:
+      - type: markdown
+        title: View 1
+        content: Content...
+
+      - type: entities
+        entities:
+          - entity: light.main_light
+
+  - title: View 2
+    cards:
+      - type: markdown
+        title: View 2
+        content: Content...

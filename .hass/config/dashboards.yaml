@@ -157,6 +157,13 @@
       show_in_sidebar: true
       filename: ./dashboards/skip-tabs-no-wrap.yaml
 
+    stopped-pointer-events:
+      mode: yaml
+      title: Stopped pointer events
+      icon: mdi:hand-back-left-off
+      show_in_sidebar: true
+      filename: ./dashboards/stopped-pointer-events.yaml
+
     subview-noskip:
       mode: yaml
       title: Subview no skip
