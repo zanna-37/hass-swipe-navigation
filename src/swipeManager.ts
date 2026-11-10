@@ -36,41 +36,46 @@ class SwipeManager {
     if (haAppLayoutDomNode != null) {
       Logger.logd(LOG_TAG, "Initializing SwipeManger...");
 
+      // Every listener runs in the capture phase, so that a descendant that stops the propagation
+      // of a pointer event can't hide part of a gesture. Home Assistant itself does so: an
+      // entities row that holds a control stops `touchend` at its slot. The swipe exceptions are
+      // therefore the only way to keep an element out of the navigation.
+
       haAppLayoutDomNode.addEventListener(
         "touchstart",
         (event) => { this.#handlePointerStart(event); },
-        { signal: this.#pointerEventsAbortController.signal, passive: true }
+        { signal: this.#pointerEventsAbortController.signal, passive: true, capture: true }
       );
       haAppLayoutDomNode.addEventListener(
         "touchmove",
         (event) => { this.#handlePointerMove(event); },
-        { signal: this.#pointerEventsAbortController.signal, passive: false }
+        { signal: this.#pointerEventsAbortController.signal, passive: false, capture: true }
       );
       haAppLayoutDomNode.addEventListener(
         "touchend",
         () => { this.#handlePointerEnd(); },
-        { signal: this.#pointerEventsAbortController.signal, passive: true }
+        { signal: this.#pointerEventsAbortController.signal, passive: true, capture: true }
       );
       haAppLayoutDomNode.addEventListener(
         "touchcancel",
         () => { this.#handlePointerCancel(); },
-        { signal: this.#pointerEventsAbortController.signal, passive: true }
+        { signal: this.#pointerEventsAbortController.signal, passive: true, capture: true }
       );
       haAppLayoutDomNode.addEventListener(
         "mousedown",
         (event) => { this.#handlePointerStart(event); },
-        { signal: this.#pointerEventsAbortController.signal, passive: true }
+        { signal: this.#pointerEventsAbortController.signal, passive: true, capture: true }
       );
       if (ConfigManager.getCurrentConfig().getEnableMouseSwipe()) {
         haAppLayoutDomNode.addEventListener(
           "mousemove",
           (event) => { this.#handlePointerMove(event); },
-          { signal: this.#pointerEventsAbortController.signal, passive: false }
+          { signal: this.#pointerEventsAbortController.signal, passive: false, capture: true }
         );
         haAppLayoutDomNode.addEventListener(
           "mouseup",
           () => { this.#handlePointerEnd(); },
-          { signal: this.#pointerEventsAbortController.signal, passive: true }
+          { signal: this.#pointerEventsAbortController.signal, passive: true, capture: true }
         );
       }
     }
@@ -126,8 +131,8 @@ class SwipeManager {
   }
 
   static #handlePointerStart(event: TouchEvent | MouseEvent) {
-    // The previous gesture may never have reached #handlePointerEnd: a descendant can stop
-    // `touchend` from bubbling this far. Start from a clean slate so that its leftover
+    // The previous gesture may never have reached #handlePointerEnd: a mouse button can be
+    // released outside of the listening element. Start from a clean slate so that its leftover
     // coordinates can't turn this gesture into a spurious navigation.
     this.#resetGestureState();
 
