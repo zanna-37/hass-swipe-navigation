@@ -129,6 +129,11 @@ const exceptions: ExceptionEntry[] = [
   //   gate. Don't widen this to the whole card: its title and search bar are not gesture surfaces.
   { selector: ".carousel-wrapper, .grid-wrapper, .list-wrapper, .featured-wrapper",
     host: "jellyha-library-card" },
+  // JellyHA Now Playing Card (https://github.com/zupancicmarko/JellyHA)
+  //   Only the seek bar and the volume track, both dragged horizontally. The poster, the playback
+  //   buttons and the texts are not gesture surfaces. The classes are generic, hence the host gate.
+  { selector: ".progress-container, .volume-slider-track",
+    host: "jellyha-now-playing-card" },
   // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
   //   Only the gesture surfaces: the moon-data slider (Swiper) and the two charts, where a finger
   //   drag scrubs the tooltip along the curve. The class and the ids are generic, hence the host
