@@ -82,6 +82,8 @@ Internally the list is compiled once at module load into three pre-joined CSS se
 
 ## Exception Check Flow (`src/swipeManager.ts`)
 
+The pointer listeners sit on the app layout and run in the **capture phase**, so they see a gesture even when a descendant stops the propagation of its events (Home Assistant does it on entities rows that hold a control, several cards do it on their buttons). Stopping an event is therefore not a way for a card to opt out: an element is kept out of the navigation only by an entry in the exception list.
+
 The `composedPath()` is walked from inner to outer (stops at `hui-view`). For each element:
 
 - **Early-out** — `element.matches(anyExceptionSelector)`. If false, skip the per-bucket checks for this element. This is the common case and keeps per-element cost constant as the list grows.

@@ -127,7 +127,17 @@ const exceptions: ExceptionEntry[] = [
   { selector: ".carousel-wrapper, .grid-wrapper, .list-wrapper, .featured-wrapper",
     host: "jellyha-library-card" },
   // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
-  "#swiper",
+  //   Only the gesture surfaces: the moon-data slider (Swiper) and the two charts, where a finger
+  //   drag scrubs the tooltip along the curve. The class and the ids are generic, hence the host
+  //   gates. Swiper moves its slides with a transform, so overflow can't tell whether there is
+  //   something to slide: hence no scrollDependent.
+  "#swiper", // the moon-data slider before v1.14.0
+  { selector: ".swiper-container",
+    host: "lunar-moon-data-info" },
+  { selector: "#dynamic-chart",
+    host: "lunar-moon-chart-dynamic" },
+  { selector: "#moonPositionChart",
+    host: "lunar-moon-chart-horizon" },
   // Map Card (https://github.com/nathan-gs/ha-map-card)
   "map-card",
   // Meteoalarm Card (https://github.com/MrBartusek/MeteoalarmCard)
@@ -150,6 +160,11 @@ const exceptions: ExceptionEntry[] = [
   // Plotly Graph Card (https://github.com/dbuezas/lovelace-plotly-graph-card)
   "#plotly g.draglayer",
   "#plotly .gl-container", // 3D plots: the WebGL scene canvas lives here, outside the SVG drag layer
+  //   Plotly's own controls, drawn outside the drag layer and dragged horizontally: the range
+  //   slider under the x axis, `layout.sliders`, and the scrollbar of a scrolling dropdown menu.
+  "#plotly g.rangeslider-container",
+  "#plotly g.slider-container",
+  "#plotly rect.scrollbar-horizontal",
   // round-slider (https://github.com/thomasloven/round-slider)
   "round-slider",
   // Sankey Chart Card (https://github.com/MindFreeze/ha-sankey-chart)
@@ -176,6 +191,7 @@ const exceptions: ExceptionEntry[] = [
   "todo-swipe-card",
   // Universal Remote Card (https://github.com/Nerwyn/universal-remote-card)
   "remote-touchpad",
+  "remote-dialog", // keyboard dialog: a swipe over the open modal must not change the view behind it
   //   Android TV Card touchpad
   "toucharea",
   ".circlepad",
