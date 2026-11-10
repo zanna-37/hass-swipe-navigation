@@ -76,8 +76,11 @@ const exceptions: ExceptionEntry[] = [
   //   The timeline pans on horizontal drag. One camera or many, the media sits in the same Embla
   //   carousel, so the container is excluded only while its slides actually overflow. The class is
   //   Embla's default, hence the host gate. Don't widen this to the whole card: its menu and status
-  //   chrome are not gesture surfaces and must keep navigating.
+  //   chrome are not gesture surfaces and must keep navigating. The previous and next buttons are
+  //   the exception: they only show when there is something to slide to and lie over the sides of
+  //   the carousel, outside of its container, right where a slide gesture starts.
   "advanced-camera-card-timeline-core",
+  "advanced-camera-card-next-previous-control",
   { selector: ".embla__container",
     host: "advanced-camera-card-carousel",
     scrollDependent: true },
@@ -126,6 +129,11 @@ const exceptions: ExceptionEntry[] = [
   //   gate. Don't widen this to the whole card: its title and search bar are not gesture surfaces.
   { selector: ".carousel-wrapper, .grid-wrapper, .list-wrapper, .featured-wrapper",
     host: "jellyha-library-card" },
+  // JellyHA Now Playing Card (https://github.com/zupancicmarko/JellyHA)
+  //   Only the seek bar and the volume track, both dragged horizontally. The poster, the playback
+  //   buttons and the texts are not gesture surfaces. The classes are generic, hence the host gate.
+  { selector: ".progress-container, .volume-slider-track",
+    host: "jellyha-now-playing-card" },
   // Lunar Phase Card (https://github.com/ngocjohn/lunar-phase-card)
   //   Only the gesture surfaces: the moon-data slider (Swiper) and the two charts, where a finger
   //   drag scrubs the tooltip along the curve. The class and the ids are generic, hence the host
@@ -172,7 +180,11 @@ const exceptions: ExceptionEntry[] = [
   // Simple Swipe Card (https://github.com/nutteloost/simple-swipe-card)
   "simple-swipe-card",
   // Slide confirm (https://github.com/itsbrianburton/slide-confirm)
-  ".slide-confirm",
+  //   Since v2 only the handle is dragged: the rest of the track, its text and the header are
+  //   not gesture surfaces. The class is generic, hence the host gate.
+  ".slide-confirm", // the track row before v2
+  { selector: ".handle",
+    host: "slide-confirm-slider" },
   // Slider button card (https://github.com/mattieha/slider-button-card)
   "slider-button-card",
   // Slide Toggle Card (https://github.com/ChadH360/slide-toggle-card)
