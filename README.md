@@ -1,6 +1,6 @@
 # Home Assistant Swipe Navigation
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration) ![Total dowloads](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/total?label=Total%20downloads) ![Downloads latest](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/latest/total?sort=semver&label=Dowloads%20@latest)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration) ![Total dowloads](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/total?label=Total%20downloads) ![Downloads latest](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/latest/total?sort=semver&label=Dowloads%20@latest) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/zanna_37)
 
 Swipe through Home Assistant Dashboard views on mobile.
 
@@ -18,6 +18,8 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
 * Option to wrap from first view to last view and vice versa
 * Supports RTL languages
 * Correctly ignores swipes over certain elements (e.g. sliders or maps)
+
+❤️ **Like this project?** Put a ⭐ on the repository or [buy me a ☕ on Ko-fi](https://ko-fi.com/zanna_37).
 
 ## Installation:
 **Follow only one of these installation methods.**
@@ -95,8 +97,11 @@ views:
 
 If you need help, Mark Watt has an excellent video covering the configuration [in this youtube video](https://www.youtube.com/watch?v=03IPN9lBEfE&t=663s).
 
-## Contributions
-If you want to help, put a ⭐ to the repository and open issues or pull requests to contribute to the development.
+## Support the project
+If you want to help, you can:
+* Put a ⭐ on the repository.
+* [Buy me a coffee on Ko-fi](https://ko-fi.com/zanna_37).
+* Open issues or pull requests to contribute to the development.
 
 ### For developers
 Have a look to the [CONTRIBUTING](./CONTRIBUTING.md) file.
