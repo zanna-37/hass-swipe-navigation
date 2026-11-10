@@ -191,6 +191,7 @@ const exceptions: ExceptionEntry[] = [
   "todo-swipe-card",
   // Universal Remote Card (https://github.com/Nerwyn/universal-remote-card)
   "remote-touchpad",
+  "remote-dialog", // keyboard dialog: a swipe over the open modal must not change the view behind it
   //   Android TV Card touchpad
   "toucharea",
   ".circlepad",
