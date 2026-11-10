@@ -25,7 +25,21 @@ This repository has been forked from [maykar/lovelace-swipe-navigation](https://
 **Follow only one of these installation methods.**
 
 <details>
-  <summary><b>Installation and tracking with HACS (recommended):</b></summary>
+  <summary><b>Installation and tracking with the Marketplace (recommended, Home Assistant 2026.11 and later):</b></summary>
+
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=zanna-37&repository=hass-swipe-navigation&category=plugin)
+
+1. Open the badge above to jump straight to this repository in the Marketplace.
+   Alternatively, open _Settings_ → _Marketplace_ and search for `Swipe Navigation`: the entry is listed as _Home Assistant Swipe Navigation_.
+
+2. On the repository page, select _Install_, check the version in the dialog, and select _Install_ again.
+   The Marketplace adds the dashboard resource automatically; if your dashboards are in YAML mode, the dialog shows the resource entry to add by hand instead.
+
+3. Reload the browser to load the new dashboard resource.
+</details>
+
+<details>
+  <summary><b>Installation and tracking with HACS (Home Assistant 2026.10 and earlier):</b></summary>
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=zanna-37&repository=hass-swipe-navigation&category=plugin)
 
