@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 -----
 
+## 🏷️ [v1.16.3] - 2026-11-10
+[Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.16.2...v1.16.3)
+
+### Fixed 🐛
+- Update the exception for "Lunar Phase Card": it now covers the data slider of the card's v1.14.0 and later, and its two charts ([`97fec5d`](https://github.com/zanna-37/hass-swipe-navigation/commit/97fec5da25a9f1d7ef355c423d562fee9f43eaaf))
+- Add exception for the range slider, the sliders and the dropdown scrollbar of "Plotly Graph Card" ([`6862191`](https://github.com/zanna-37/hass-swipe-navigation/commit/686219197f0bc2bb0bc061164d04ee9e30924a03))
+- Add exception for the keyboard dialog of "Universal Remote Card" ([`3a91cac`](https://github.com/zanna-37/hass-swipe-navigation/commit/3a91cac3d909ce06e3f80ed21e5977c581c63710))
+- Fix the swipe doing nothing when it starts on the control of an entities row (toggle, button, dropdown, text field) or on an element that keeps touch events to itself, such as the columns of "Multiple Entity Row" or a single camera of "Advanced Camera Card" ([`853c66f`](https://github.com/zanna-37/hass-swipe-navigation/commit/853c66f6896440c895841cafbd019d368ab675dd) closes [`#132`](https://github.com/zanna-37/hass-swipe-navigation/issues/132), [`#138`](https://github.com/zanna-37/hass-swipe-navigation/issues/138))
+- Add exception for the previous and next buttons of "Advanced Camera Card" ([`46f97aa`](https://github.com/zanna-37/hass-swipe-navigation/commit/46f97aaf0b5d5db6e96871ac18394cef7d02a581))
+- Update the exception for "Slide confirm": it now covers the handle of the card's v2 ([`c28fca3`](https://github.com/zanna-37/hass-swipe-navigation/commit/c28fca318352ba09661142be11a34c123164eafd))
+- Add exception for the seek bar and the volume track of "JellyHA Now Playing Card" ([`382e711`](https://github.com/zanna-37/hass-swipe-navigation/commit/382e711cb44b0aebcc1173bf9bf3abf95bfbac3b))
+
+
 ## 🏷️ [v1.16.2] - 2026-11-09
 [Full Changelog](https://github.com/zanna-37/hass-swipe-navigation/compare/v1.16.1...v1.16.2)
 
