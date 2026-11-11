@@ -6,10 +6,6 @@ Swipe through Home Assistant Dashboard views on mobile.
 
 ![preview](./example.gif)
 
-This repository has been forked from [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) to continue the development since the original project is currently unmaintained.
-
-💡 **Please uninstall [maykar/lovelace-swipe-navigation](https://github.com/maykar/lovelace-swipe-navigation) before proceeding, as it will conflict with this plugin.**
-
 ## Features:
 * Animated swiping through Dashboard views
 * Configure views to skip over
