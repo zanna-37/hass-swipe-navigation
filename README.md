@@ -1,6 +1,6 @@
 # Home Assistant Swipe Navigation
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration) ![Total dowloads](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/total?label=Total%20downloads) ![Downloads latest](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/latest/total?sort=semver&label=Dowloads%20@latest) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/zanna_37)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration) ![Total downloads](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/total?label=Total%20downloads) ![Downloads latest](https://img.shields.io/github/downloads/zanna-37/hass-swipe-navigation/latest/total?sort=semver&label=Downloads%20@latest) [![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/zanna_37)
 
 Swipe through Home Assistant Dashboard views on mobile.
 
@@ -114,7 +114,7 @@ If you want to help, you can:
 * Open issues or pull requests to contribute to the development.
 
 ### For developers
-Have a look to the [CONTRIBUTING](./CONTRIBUTING.md) file.
+Have a look at the [CONTRIBUTING](./CONTRIBUTING.md) file.
 
 ## Thank you
 Big thanks to:
