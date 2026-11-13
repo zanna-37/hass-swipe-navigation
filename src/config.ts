@@ -3,7 +3,7 @@ import { LogLevel, Logger } from "./logger";
 import { LOG_TAG } from "./loggerUtils";
 
 class Config {
-  private animate: "none" | "swipe" | "fade" | "flip" = "none";
+  private animate: "none" | "swipe" | "slide" | "fade" | "flip" = "none";
   private animate_duration = 200;
   private enable = true;
   private enable_mouse_swipe = false;
@@ -18,7 +18,7 @@ class Config {
   private swipe_amount = 0.15;
   private wrap = true;
 
-  public getAnimate(): "none" | "swipe" | "fade" | "flip" {
+  public getAnimate(): "none" | "swipe" | "slide" | "fade" | "flip" {
     return this.animate;
   }
 
@@ -134,6 +134,7 @@ const SwipeNavigationConfigSchema = z.object({
     .union([
       z.literal("none"),
       z.literal("swipe"),
+      z.literal("slide"),
       z.literal("fade"),
       z.literal("flip"),
     ]).optional(),

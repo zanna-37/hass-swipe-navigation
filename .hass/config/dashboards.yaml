@@ -24,6 +24,13 @@
       show_in_sidebar: true
       filename: ./dashboards/animate-none.yaml
 
+    animate-slide:
+      mode: yaml
+      title: Animate slide
+      icon: mdi:transition
+      show_in_sidebar: true
+      filename: ./dashboards/animate-slide.yaml
+
     animate-swipe:
       mode: yaml
       title: Animate swipe
