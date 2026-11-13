@@ -45,6 +45,13 @@
       show_in_sidebar: true
       filename: ./dashboards/default-values-with-logger.yaml
 
+    edge-margin:
+      mode: yaml
+      title: Edge margin
+      icon: mdi:border-left-variant
+      show_in_sidebar: true
+      filename: ./dashboards/edge-margin.yaml
+
     enable-false:
       mode: yaml
       title: Enable false

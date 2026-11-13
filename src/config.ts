@@ -5,6 +5,7 @@ import { LOG_TAG } from "./loggerUtils";
 class Config {
   private animate: "none" | "swipe" | "fade" | "flip" = "none";
   private animate_duration = 200;
+  private edge_margin = 0;
   private enable = true;
   private enable_mouse_swipe = false;
   private enable_on_subviews = true;
@@ -24,6 +25,10 @@ class Config {
 
   public getAnimateDuration(): number {
     return this.animate_duration;
+  }
+
+  public getEdgeMargin(): number {
+    return this.edge_margin;
   }
 
   public getEnable(): boolean {
@@ -80,6 +85,8 @@ class Config {
     if (rawConfig.animate != null) { newConfig.animate = rawConfig.animate; }
 
     if (rawConfig.animate_duration != null) { newConfig.animate_duration = rawConfig.animate_duration; }
+
+    if (rawConfig.edge_margin != null) { newConfig.edge_margin = rawConfig.edge_margin; }
 
     if (rawConfig.enable != null) { newConfig.enable = rawConfig.enable; }
 
@@ -138,6 +145,7 @@ const SwipeNavigationConfigSchema = z.object({
       z.literal("flip"),
     ]).optional(),
   animate_duration: z.number().optional(),
+  edge_margin: z.number().min(0).optional(),
   enable: z.boolean().optional(),
   enable_mouse_swipe: z.boolean().optional(),
   enable_on_subviews: z.boolean().optional(),
