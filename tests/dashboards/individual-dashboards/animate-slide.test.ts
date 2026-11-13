@@ -48,9 +48,8 @@ test("should keep pinned elements in place, using animation slide", async ({ pag
   if (navbarBox == null) { throw new Error("navbar doesn't have a bounding box"); }
 
   // Record, on every frame, where the visible navbar is drawn.
-  await page.evaluate(() => {
+  const positionsHandle = await page.evaluateHandle(() => {
     const positions: string[] = [];
-    (window as unknown as { navbarPositions: string[] }).navbarPositions = positions;
     const findNavbar = (root: Element | ShadowRoot): Element | null => {
       for (const element of Array.from(root.querySelectorAll("*"))) {
         if (element.localName == "navbar-card" && element.isConnected) {
@@ -72,6 +71,7 @@ test("should keep pinned elements in place, using animation slide", async ({ pag
       requestAnimationFrame(sample);
     };
     requestAnimationFrame(sample);
+    return positions;
   });
 
   const haAppLayout = page.locator("[id='view']");
@@ -81,7 +81,7 @@ test("should keep pinned elements in place, using animation slide", async ({ pag
   await expect(page).toHaveURL(dashboardPath + "/0");
   await page.waitForTimeout(1000);
 
-  const positions = await page.evaluate(() => (window as unknown as { navbarPositions: string[] }).navbarPositions);
+  const positions = await positionsHandle.jsonValue();
   expect(positions.length).toBeGreaterThan(0);
   expect(new Set(positions)).toEqual(new Set([`${Math.round(navbarBox.x)},${Math.round(navbarBox.y)}`]));
 });
@@ -93,9 +93,8 @@ test("should keep the view background in place, using animation slide", async ({
   await expect(page.locator("hui-view-background")).toBeAttached();
 
   // Record, on every frame, where the view background is drawn.
-  await page.evaluate(() => {
+  const positionsHandle = await page.evaluateHandle(() => {
     const positions: number[] = [];
-    (window as unknown as { backgroundPositions: number[] }).backgroundPositions = positions;
     const sample = () => {
       const background = document.querySelector("home-assistant")?.shadowRoot
         ?.querySelector("home-assistant-main")?.shadowRoot
@@ -106,6 +105,7 @@ test("should keep the view background in place, using animation slide", async ({
       requestAnimationFrame(sample);
     };
     requestAnimationFrame(sample);
+    return positions;
   });
 
   const haAppLayout = page.locator("[id='view']");
@@ -115,7 +115,7 @@ test("should keep the view background in place, using animation slide", async ({
   await expect(page).toHaveURL(dashboardPath + "/0");
   await page.waitForTimeout(1000);
 
-  const positions = await page.evaluate(() => (window as unknown as { backgroundPositions: number[] }).backgroundPositions);
+  const positions = await positionsHandle.jsonValue();
   expect(positions.length).toBeGreaterThan(0);
   // Whatever the layout puts it at, it must never move.
   expect(new Set(positions).size).toBe(1);
