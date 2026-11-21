@@ -40,6 +40,13 @@ const exceptions: ExceptionEntry[] = [
   { selector: ".badges.scroll",
     host: "hui-view-header",
     scrollDependent: true },
+  // Chart (history graph, statistics graph, energy and more-info charts)
+  //   Only charts with an axis to scrub. On touch devices HA marks those `touch-scrub` and sets
+  //   `touch-action: pan-y` on them, so a horizontal finger drag moves the tooltip along the axis
+  //   (and pans once zoomed). Charts without it (e.g. pie, Sankey) and the card around the chart
+  //   keep navigating. The class is generic, hence the host gate.
+  { selector: ".chart.touch-scrub",
+    host: "ha-chart-base" },
   // Dashboard tabs
   "ha-tabs", // removed in HA v2025.5
   "paper-tabs", // removed in HA v2025.5
