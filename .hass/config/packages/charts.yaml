@@ -1,0 +1,8 @@
+input_number:
+  # A unit, so the history graph draws it as a line chart on a time axis
+  chart_value:
+    name: Chart value
+    min: 0
+    max: 100
+    initial: 20
+    unit_of_measurement: "°C"

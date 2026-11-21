@@ -87,6 +87,13 @@
       show_in_sidebar: true
       filename: ./dashboards/one-heading-badges.yaml
 
+    one-history-graph:
+      mode: yaml
+      title: One history graph
+      icon: mdi:chart-line
+      show_in_sidebar: true
+      filename: ./dashboards/one-history-graph.yaml
+
     one-scrollbar:
       mode: yaml
       title: One scrollbar

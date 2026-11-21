@@ -1,0 +1,31 @@
+swipe_nav:
+  swipe_amount: 1
+  logger_level: verbose
+
+views:
+
+  - title: History graph
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          # A line chart on a time axis, which HA marks `touch-scrub` on touch devices
+          - type: history-graph
+            title: History
+            hours_to_show: 1
+            entities:
+              - input_number.chart_value
+
+          - type: markdown
+            title: Control
+            content: Content...
+
+  - title: View 2
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            title: View 2
+            content: Content...
